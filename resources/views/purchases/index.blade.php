@@ -150,7 +150,7 @@
                 name: name,
                 supplier: supplier,
                 price: purchasePrice,
-                qty: 10, // Default batch pembelian
+                qty: 1,
                 unit: unit
             };
         }
@@ -226,12 +226,12 @@
                     </td>
                     <td class="py-3 px-3 text-center">
                         <div class="flex items-center justify-center space-x-1">
-                            <button type="button" onclick="updatePurchaseQty(${item.id}, ${item.qty - 5})"
+                            <button type="button" onclick="updatePurchaseQty(${item.id}, ${item.qty - 1})"
                                 class="w-6 h-6 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs">-</button>
                             <input type="number" name="items[${index}][quantity]" value="${item.qty}" min="1"
                                 onchange="updatePurchaseQty(${item.id}, this.value)"
                                 class="w-14 text-center text-xs border border-gray-300 rounded py-1 focus:outline-none focus:border-blue-500">
-                            <button type="button" onclick="updatePurchaseQty(${item.id}, ${item.qty + 5})"
+                            <button type="button" onclick="updatePurchaseQty(${item.id}, ${item.qty + 1})"
                                 class="w-6 h-6 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs">+</button>
                         </div>
                     </td>
