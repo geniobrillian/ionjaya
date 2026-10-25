@@ -20,13 +20,13 @@
             <form action="{{ route('purchases.store') }}" method="POST" id="purchaseForm">
                 @csrf
                 <div class="overflow-x-auto min-h-[180px] sm:min-h-[220px]">
-                    <table class="w-full text-xs sm:text-sm text-left text-gray-700 whitespace-nowrap sm:whitespace-normal">
+                    <table class="w-full table-fixed text-xs sm:text-sm text-left text-gray-700">
                         <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
                             <tr>
                                 <th class="py-2.5 px-3">Barang & Pemasok</th>
                                 <th class="py-2.5 px-3 text-right w-36">Harga Beli (Rp)</th>
                                 <th class="py-2.5 px-3 text-center w-28">Jumlah</th>
-                                <th class="py-2.5 px-3 text-right">Subtotal</th>
+                                <th class="py-2.5 px-3 text-right w-32">Subtotal</th>
                                 <th class="py-2.5 px-2 text-center w-10">Aksi</th>
                             </tr>
                         </thead>
@@ -235,7 +235,7 @@
                                 class="w-6 h-6 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs">+</button>
                         </div>
                     </td>
-                    <td class="py-3 px-3 text-right font-bold text-gray-900 font-mono">
+                    <td class="py-3 px-3 text-right font-bold text-gray-900 font-mono whitespace-nowrap">
                         ${formatRupiah(subtotal)}
                     </td>
                     <td class="py-3 px-2 text-center">
