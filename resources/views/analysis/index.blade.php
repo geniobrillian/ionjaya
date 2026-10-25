@@ -120,12 +120,11 @@
                 </div>
 
                 <!-- Tombol Simpan/Terapkan Hasil -->
-                <form action="{{ route('analysis.apply') }}" method="POST"
-                    onsubmit="return confirm('Apakah Anda yakin ingin menerapkan hasil analisis FSN dan parameter ROP ini ke master data barang?')">
+                <form id="applyForm" action="{{ route('analysis.apply') }}" method="POST">
                     @csrf
                     <input type="hidden" name="start_date" value="{{ $startDateStr }}">
                     <input type="hidden" name="end_date" value="{{ $endDateStr }}">
-                    <button type="submit"
+                    <button type="button" onclick="openApplyModal()"
                         class="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-md shadow-sm transition-colors">
                         Terapkan Hasil ke Data Barang
                     </button>
@@ -198,6 +197,55 @@
         </div>
     @endif
 </div>
+
+    <!-- Modal Konfirmasi Terapkan Hasil Analisis -->
+    <div id="applyConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="applyModalTitle">
+        <!-- Backdrop dengan Efek Blur -->
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-md transition-opacity duration-300" onclick="closeApplyModal()"></div>
+
+        <!-- Kartu Modal di Tengah Layar -->
+        <div class="relative bg-white rounded-2xl border border-gray-200 shadow-2xl max-w-md w-full p-6 text-center transform transition-all z-10">
+            <!-- Tombol Tutup X -->
+            <button type="button" onclick="closeApplyModal()"
+                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none"
+                aria-label="Tutup Konfirmasi">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <!-- Ikon Peringatan -->
+            <div class="mx-auto w-14 h-14 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-500 mb-4 shadow-sm">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+
+            <!-- Judul Modal -->
+            <h3 id="applyModalTitle" class="text-lg font-bold text-gray-900 mb-2">
+                Terapkan Hasil Analisis?
+            </h3>
+
+            <!-- Pesan Konfirmasi -->
+            <div class="bg-amber-50/70 rounded-lg p-3.5 border border-amber-200/80 mb-5">
+                <p class="text-sm text-gray-700 leading-relaxed">
+                    Apakah Anda yakin ingin menerapkan hasil analisis FSN dan parameter ROP ini ke master data barang?
+                </p>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="flex justify-center gap-3">
+                <button type="button" onclick="closeApplyModal()"
+                    class="px-5 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
+                    Batal
+                </button>
+                <button type="button" onclick="confirmApply()" id="applyConfirmBtn"
+                    class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Ya, Terapkan
+                </button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -206,5 +254,31 @@
         document.getElementById('start_date').value = start;
         document.getElementById('end_date').value = end;
     }
+
+    // Modal Konfirmasi Terapkan Hasil Analisis
+    function openApplyModal() {
+        const modal = document.getElementById('applyConfirmModal');
+        modal.classList.remove('hidden');
+        const confirmBtn = document.getElementById('applyConfirmBtn');
+        if (confirmBtn) confirmBtn.focus();
+    }
+
+    function closeApplyModal() {
+        const modal = document.getElementById('applyConfirmModal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    function confirmApply() {
+        document.getElementById('applyForm').submit();
+    }
+
+    // Tutup popup jika tombol Escape ditekan
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeApplyModal();
+        }
+    });
 </script>
 @endpush
