@@ -67,7 +67,7 @@
         <!-- 3 Kartu Ringkasan Kategori FSN -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             <!-- Fast Moving -->
-            <div class="bg-white rounded-lg border-l-4 border-green-600 border border-gray-200 shadow-sm p-5">
+            <div class="bg-white rounded-lg border border-green-300 shadow-sm p-5">
                 <div class="flex items-center justify-between">
                     <div>
                         <span class="text-xs font-bold uppercase text-green-700 tracking-wider">Fast Moving (F)</span>
@@ -81,7 +81,7 @@
             </div>
 
             <!-- Slow Moving -->
-            <div class="bg-white rounded-lg border-l-4 border-yellow-500 border border-gray-200 shadow-sm p-5">
+            <div class="bg-white rounded-lg border border-yellow-300 shadow-sm p-5">
                 <div class="flex items-center justify-between">
                     <div>
                         <span class="text-xs font-bold uppercase text-yellow-700 tracking-wider">Slow Moving (S)</span>
@@ -95,7 +95,7 @@
             </div>
 
             <!-- Non Moving -->
-            <div class="bg-white rounded-lg border-l-4 border-gray-400 border border-gray-200 shadow-sm p-5">
+            <div class="bg-white rounded-lg border border-gray-300 shadow-sm p-5">
                 <div class="flex items-center justify-between">
                     <div>
                         <span class="text-xs font-bold uppercase text-gray-700 tracking-wider">Non Moving (N)</span>

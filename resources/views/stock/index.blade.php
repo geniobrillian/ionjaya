@@ -7,7 +7,7 @@
 <div class="space-y-6">
     <!-- Banner Peringatan Stok Menipis -->
     @if ($lowStockCount > 0)
-        <div class="bg-red-50 border-l-4 border-red-600 p-4 rounded-r-lg shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="bg-red-50 border border-red-200 p-4 rounded-lg shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
                 <p class="text-sm font-bold text-red-900">
                     Pemberitahuan Persediaan
