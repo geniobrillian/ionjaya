@@ -104,22 +104,6 @@
 
         <form action="{{ route('items.store') }}" method="POST" class="space-y-4">
             @csrf
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label for="item_code" class="block text-xs font-medium text-gray-700 mb-1">Kode Barang</label>
-                    <input type="text" name="item_code" id="item_code" required
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
-                        placeholder="Contoh: BRG021">
-                </div>
-
-                <div>
-                    <label for="unit" class="block text-xs font-medium text-gray-700 mb-1">Satuan</label>
-                    <input type="text" name="unit" id="unit" required value="pcs"
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
-                        placeholder="pcs, set, botol, dll">
-                </div>
-            </div>
-
             <div>
                 <label for="item_name" class="block text-xs font-medium text-gray-700 mb-1">Nama Barang</label>
                 <input type="text" name="item_name" id="item_name" required
@@ -198,9 +182,9 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label for="edit_item_code" class="block text-xs font-medium text-gray-700 mb-1">Kode Barang</label>
-                    <input type="text" name="item_code" id="edit_item_code" required
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
+                    <label for="edit_item_code" class="block text-xs font-medium text-gray-700 mb-1">Kode Barang (Otomatis)</label>
+                    <input type="text" name="item_code" id="edit_item_code" required readonly
+                        class="w-full rounded-md border border-gray-300 bg-gray-100 text-gray-500 px-3 py-2 text-sm focus:outline-none cursor-not-allowed">
                 </div>
 
                 <div>

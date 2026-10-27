@@ -47,6 +47,34 @@ class Item extends Model
         return $this->hasMany(TransactionDetail::class);
     }
 
+    /**
+     * Menghasilkan kode barang berikutnya secara otomatis (auto-increment).
+     * Contoh: BRG001 -> BRG002 -> BRG021, dst.
+     */
+    public static function generateNextCode(): string
+    {
+        $codes = self::pluck('item_code');
+        $maxNumber = 0;
+
+        foreach ($codes as $code) {
+            if (preg_match('/^BRG(\d+)$/i', $code, $matches)) {
+                $num = (int) $matches[1];
+                if ($num > $maxNumber) {
+                    $maxNumber = $num;
+                }
+            }
+        }
+
+        $nextNumber = $maxNumber + 1;
+
+        do {
+            $code = sprintf('BRG%03d', $nextNumber);
+            $nextNumber++;
+        } while (self::where('item_code', $code)->exists());
+
+        return $code;
+    }
+
     // Mendapatkan batas pemesanan berdasarkan kategori FSN
     public function getOrderThresholdAttribute(): int
     {

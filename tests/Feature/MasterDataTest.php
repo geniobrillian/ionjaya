@@ -148,6 +148,45 @@ class MasterDataTest extends TestCase
         ]);
     }
 
+    public function test_super_admin_can_create_item_with_auto_increment_code_and_default_unit(): void
+    {
+        // Tambah barang pertama tanpa kode barang dan tanpa satuan
+        $response1 = $this->actingAs($this->superAdmin)->post('/barang', [
+            'item_name' => 'Sparepart Baru Auto 1',
+            'supplier_id' => 1,
+            'purchase_price' => 15000,
+            'selling_price' => 25000,
+            'stock' => 5,
+            'minimum_stock' => 2,
+        ]);
+
+        $response1->assertRedirect('/barang');
+        $response1->assertSessionHas('success');
+
+        // Pastikan kode terbuat otomatis BRG021 (seeder memiliki sampai BRG020) dan unit default 'pcs'
+        $this->assertDatabaseHas('items', [
+            'item_code' => 'BRG021',
+            'item_name' => 'Sparepart Baru Auto 1',
+            'unit' => 'pcs',
+        ]);
+
+        // Tambah barang kedua secara berurutan
+        $response2 = $this->actingAs($this->superAdmin)->post('/barang', [
+            'item_name' => 'Sparepart Baru Auto 2',
+            'supplier_id' => 1,
+            'purchase_price' => 20000,
+            'selling_price' => 30000,
+            'stock' => 8,
+        ]);
+
+        $response2->assertRedirect('/barang');
+        $this->assertDatabaseHas('items', [
+            'item_code' => 'BRG022',
+            'item_name' => 'Sparepart Baru Auto 2',
+            'unit' => 'pcs',
+        ]);
+    }
+
     public function test_item_cannot_be_deleted_if_has_transactions(): void
     {
         // Item 1 memiliki riwayat transaksi dari seeder

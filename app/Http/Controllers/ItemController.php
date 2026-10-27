@@ -38,16 +38,15 @@ class ItemController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'item_code' => ['required', 'string', 'max:20', 'unique:items,item_code'],
+            'item_code' => ['nullable', 'string', 'max:20', 'unique:items,item_code'],
             'item_name' => ['required', 'string', 'max:100'],
             'supplier_id' => ['required', 'exists:suppliers,id'],
             'purchase_price' => ['required', 'numeric', 'min:0'],
             'selling_price' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
-            'unit' => ['required', 'string', 'max:20'],
+            'unit' => ['nullable', 'string', 'max:20'],
             'minimum_stock' => ['nullable', 'integer', 'min:0'],
         ], [
-            'item_code.required' => 'Kode barang wajib diisi.',
             'item_code.unique' => 'Kode barang sudah digunakan.',
             'item_name.required' => 'Nama barang wajib diisi.',
             'supplier_id.required' => 'Pemasok wajib dipilih.',
@@ -56,8 +55,15 @@ class ItemController extends Controller
             'selling_price.required' => 'Harga jual wajib diisi.',
             'stock.required' => 'Stok awal wajib diisi.',
             'stock.min' => 'Stok tidak boleh negatif.',
-            'unit.required' => 'Satuan barang wajib diisi.',
         ]);
+
+        if (empty($validated['item_code'])) {
+            $validated['item_code'] = Item::generateNextCode();
+        }
+
+        if (empty($validated['unit'])) {
+            $validated['unit'] = 'pcs';
+        }
 
         Item::create($validated);
 
@@ -76,7 +82,7 @@ class ItemController extends Controller
             'item_name' => ['required', 'string', 'max:100'],
             'supplier_id' => ['required', 'exists:suppliers,id'],
             'selling_price' => ['required', 'numeric', 'min:0'],
-            'unit' => ['required', 'string', 'max:20'],
+            'unit' => ['nullable', 'string', 'max:20'],
             'minimum_stock' => ['nullable', 'integer', 'min:0'],
         ], [
             'item_code.required' => 'Kode barang wajib diisi.',
@@ -84,8 +90,11 @@ class ItemController extends Controller
             'item_name.required' => 'Nama barang wajib diisi.',
             'supplier_id.required' => 'Pemasok wajib dipilih.',
             'selling_price.required' => 'Harga jual wajib diisi.',
-            'unit.required' => 'Satuan barang wajib diisi.',
         ]);
+
+        if (empty($validated['unit'])) {
+            $validated['unit'] = $item->unit ?? 'pcs';
+        }
 
         $item->update($validated);
 
