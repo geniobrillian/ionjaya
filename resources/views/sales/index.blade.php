@@ -101,7 +101,7 @@
                 <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
                     <tr>
                         <th class="py-3 px-4">No</th>
-                        <th class="py-3 px-4">Tanggal</th>
+                        <th class="py-3 px-4">Tanggal &amp; Jam</th>
                         <th class="py-3 px-4">Kasir</th>
                         <th class="py-3 px-4">Item Terjual</th>
                         <th class="py-3 px-4 text-right">Total Transaksi</th>
@@ -111,11 +111,16 @@
                     @forelse ($recentSales as $index => $sale)
                         <tr class="hover:bg-gray-50">
                             <td class="py-3 px-4 font-mono text-xs text-gray-500">TRX-{{ str_pad($sale->id, 5, '0', STR_PAD_LEFT) }}</td>
-                            <td class="py-3 px-4">{{ Carbon\Carbon::parse($sale->date)->translatedFormat('d M Y') }}</td>
+                            <td class="py-3 px-4">
+                                {{ Carbon\Carbon::parse($sale->date)->translatedFormat('d M Y') }}
+                                @if ($sale->time)
+                                    <span class="text-xs text-gray-400 block">{{ Carbon\Carbon::parse($sale->time)->format('H:i') }}</span>
+                                @endif
+                            </td>
                             <td class="py-3 px-4 font-medium text-gray-900">{{ $sale->user->name ?? 'Kasir' }}</td>
                             <td class="py-3 px-4">
                                 <span class="text-xs text-gray-600">
-                                    {{ $sale->details->pluck('item.item_name')->filter()->join(', ') }}
+                                    {{ $sale->details->map(fn ($d) => ($d->item->item_name ?? '-') . ' ×' . $d->quantity)->join(', ') }}
                                 </span>
                             </td>
                             <td class="py-3 px-4 text-right font-bold text-gray-900">

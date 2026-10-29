@@ -147,7 +147,7 @@
                         <tr>
                             <th class="py-2.5 px-3 w-10 text-center border-r border-gray-300">No</th>
                             <th class="py-2.5 px-3 w-28 border-r border-gray-300">No Nota</th>
-                            <th class="py-2.5 px-3 w-24 border-r border-gray-300">Tanggal</th>
+                            <th class="py-2.5 px-3 w-24 border-r border-gray-300">Tanggal &amp; Jam</th>
                             <th class="py-2.5 px-3 w-24 text-center border-r border-gray-300">Jenis</th>
                             <th class="py-2.5 px-3 w-28 border-r border-gray-300">Kasir/Petugas</th>
                             <th class="py-2.5 px-3 border-r border-gray-300">Rincian Barang</th>
@@ -161,7 +161,7 @@
                                 <td class="py-2 px-3 font-mono font-semibold border-r border-gray-300">
                                     {{ $tx->transaction_type === 'penjualan' ? 'TRX' : 'BELI' }}-{{ str_pad($tx->id, 5, '0', STR_PAD_LEFT) }}
                                 </td>
-                                <td class="py-2 px-3 border-r border-gray-300">{{ Carbon\Carbon::parse($tx->date)->translatedFormat('d/m/Y') }}</td>
+                                <td class="py-2 px-3 border-r border-gray-300">{{ Carbon\Carbon::parse($tx->date)->translatedFormat('d/m/Y') }}@if ($tx->time)<span class="text-gray-400 block text-[10px]">{{ Carbon\Carbon::parse($tx->time)->format('H:i') }}</span>@endif</td>
                                 <td class="py-2 px-3 text-center uppercase font-bold border-r border-gray-300 {{ $tx->transaction_type === 'penjualan' ? 'text-blue-700' : 'text-purple-700' }}">
                                     {{ $tx->transaction_type }}
                                 </td>
