@@ -202,8 +202,7 @@
                             <th class="py-2.5 px-3 text-center w-24 border-r border-gray-300">Lead Time</th>
                             <th class="py-2.5 px-3 text-center w-28 border-r border-gray-300">Safety Stock</th>
                             <th class="py-2.5 px-3 text-center w-28 border-r border-gray-300">Nilai ROP</th>
-                            <th class="py-2.5 px-3 text-center w-28 border-r border-gray-300">Batas Statis</th>
-                            <th class="py-2.5 px-3 text-center w-28">Batas Akhir</th>
+                            <th class="py-2.5 px-3 text-center w-28">Batas Pesan</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-300">
@@ -232,9 +231,6 @@
                                 </td>
                                 <td class="py-2 px-3 text-center font-mono font-bold text-blue-700 border-r border-gray-300">
                                     {{ $item->rop !== null ? $item->rop : '-' }}
-                                </td>
-                                <td class="py-2 px-3 text-center font-mono border-r border-gray-300">
-                                    {{ $item->minimum_stock !== null ? $item->minimum_stock : '-' }}
                                 </td>
                                 <td class="py-2 px-3 text-center font-mono font-bold text-gray-900">
                                     {{ $item->order_threshold }}

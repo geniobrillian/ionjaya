@@ -12,7 +12,7 @@
                 <h2 class="text-base font-semibold text-gray-900">Daftar Barang Perlu Dipesan</h2>
                 <p class="text-xs text-gray-600 mt-1 max-w-3xl leading-relaxed">
                     Halaman ini menampilkan seluruh barang yang stok fisiknya telah mencapai atau berada di bawah batas pemesanan 
-                    (nilai <strong>Reorder Point (ROP)</strong> untuk kategori <em>Fast Moving</em>, atau <strong>Batas Stok Minimum Statis</strong> untuk kategori <em>Slow Moving</em>).
+                    (nilai <strong>Reorder Point (ROP)</strong> untuk kategori <em>Fast Moving</em>, atau <strong>ROP tanpa Safety Stock</strong> untuk kategori <em>Slow Moving</em>).
                     Daftar diurutkan berdasarkan prioritas kategori perputaran barang.
                 </p>
             </div>
@@ -68,13 +68,8 @@
                                 </span>
                             </td>
                             <td class="py-3.5 px-4 text-center font-mono text-xs">
-                                @if ($item->fsn_category === 'F')
-                                    <span class="font-bold text-gray-900">{{ $item->rop }}</span>
-                                    <span class="text-[10px] text-gray-400 block">Nilai ROP</span>
-                                @else
-                                    <span class="font-bold text-gray-900">{{ $item->minimum_stock }}</span>
-                                    <span class="text-[10px] text-gray-400 block">Stok Statis</span>
-                                @endif
+                                <span class="font-bold text-gray-900">{{ $item->rop }}</span>
+                                <span class="text-[10px] text-gray-400 block">Nilai ROP</span>
                             </td>
                             <td class="py-3.5 px-4">
                                 <div class="font-medium text-gray-900">{{ $item->supplier->supplier_name ?? '-' }}</div>

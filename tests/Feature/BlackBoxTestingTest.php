@@ -256,10 +256,9 @@ class BlackBoxTestingTest extends TestCase
     public function test_tc11_stock_page_filtering(): void
     {
         $this->fastItem->update(['stock' => 1, 'reorder_point' => 5]);
-        // Tahap 1: ambang Slow masih dari minimum_stock (kolom masih ada sampai Tahap 2);
-        // penugasan langsung agar tidak terhalang fillable.
+        // Ambang Slow kini dari ROP hasil hitung (bukan minimum statis).
         $this->slowItem->stock = 50;
-        $this->slowItem->minimum_stock = 5;
+        $this->slowItem->rop = 5;
         $this->slowItem->save();
 
         // Filter: Hanya Menipis
@@ -416,7 +415,8 @@ class BlackBoxTestingTest extends TestCase
     }
 
     /**
-     * TC-18: Verifikasi bahwa Safety Stock dan ROP hanya dihitung untuk Fast Moving.
+     * TC-18: Verifikasi bahwa Safety Stock hanya dihitung untuk Fast Moving,
+     * sedangkan ROP dihitung untuk Fast (ROP + SS) dan Slow (ROP tanpa SS).
      */
     public function test_tc18_rop_is_only_calculated_for_fast_moving(): void
     {
@@ -432,8 +432,10 @@ class BlackBoxTestingTest extends TestCase
                 $this->assertGreaterThan(0, $row['rop']);
                 $this->assertNotNull($row['safety_stock']);
             } elseif ($row['fsn_category'] === 'S') {
-                $this->assertNull($row['rop']);
+                $this->assertNotNull($row['rop']);
+                $this->assertGreaterThan(0, $row['rop']);
                 $this->assertNull($row['safety_stock']);
+                $this->assertSame($row['rop'], $row['order_threshold']);
             } elseif ($row['fsn_category'] === 'N') {
                 $this->assertNull($row['rop']);
                 $this->assertNull($row['safety_stock']);

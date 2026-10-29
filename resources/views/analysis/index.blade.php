@@ -91,7 +91,7 @@
                     </div>
                     <span class="px-2.5 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-bold">1 &le; TOR &le; 3</span>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">Dikelola dengan batas stok minimum statis.</p>
+                <p class="text-xs text-gray-500 mt-2">Dikelola dengan Reorder Point (ROP) tanpa Safety Stock.</p>
             </div>
 
             <!-- Non Moving -->
@@ -183,7 +183,7 @@
                                         <span class="text-[9px] text-gray-400 block">(ROP)</span>
                                     @elseif ($row['fsn_category'] === 'S')
                                         <span class="font-bold text-gray-900">{{ $row['order_threshold'] }}</span>
-                                        <span class="text-[9px] text-gray-400 block">(Statis)</span>
+                                        <span class="text-[9px] text-gray-400 block">(ROP)</span>
                                     @else
                                         <span class="text-gray-400">0 (On-Demand)</span>
                                     @endif

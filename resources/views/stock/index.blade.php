@@ -116,8 +116,8 @@
                                     <span class="font-semibold text-gray-900">{{ $item->rop ?? '-' }}</span>
                                     <span class="text-[10px] text-gray-400 block">(ROP)</span>
                                 @elseif ($item->fsn_category === 'S')
-                                    <span class="font-semibold text-gray-900">{{ $item->minimum_stock ?? '-' }}</span>
-                                    <span class="text-[10px] text-gray-400 block">(Statis)</span>
+                                    <span class="font-semibold text-gray-900">{{ $item->rop ?? '-' }}</span>
+                                    <span class="text-[10px] text-gray-400 block">(ROP)</span>
                                 @else
                                     <span class="text-gray-400">-</span>
                                 @endif

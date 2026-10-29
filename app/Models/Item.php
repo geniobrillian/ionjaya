@@ -72,15 +72,12 @@ class Item extends Model
         return $code;
     }
 
-    // Mendapatkan batas pemesanan berdasarkan kategori FSN
+    // Mendapatkan batas pemesanan berdasarkan kategori FSN.
+    // Fast dan Slow memakai ROP hasil hitung (Slow tanpa Safety Stock).
     public function getOrderThresholdAttribute(): int
     {
-        if ($this->fsn_category === 'F') {
+        if ($this->fsn_category === 'F' || $this->fsn_category === 'S') {
             return (int) ($this->rop ?? 0);
-        }
-
-        if ($this->fsn_category === 'S') {
-            return (int) ($this->minimum_stock ?? 0);
         }
 
         return 0; // Kategori N (on-demand, tidak ada batas pemesanan)

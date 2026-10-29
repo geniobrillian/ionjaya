@@ -128,20 +128,25 @@ class FsnRopService
                 $nonCount++;
             }
 
-            // Tahap C & D: Perhitungan Safety Stock dan ROP (khusus Fast Moving)
+            // Tahap C & D: Perhitungan Safety Stock dan ROP.
+            // Safety Stock khusus Fast Moving; ROP dihitung untuk Fast
+            // (ROP + SS) dan Slow (ROP saja, tanpa SS).
             $safetyStock = null;
             $rop = null;
             $pMax = 0;
             $pRtDaily = 0;
             $leadTime = max(1, (int) ($item->supplier->lead_time ?? 1));
 
+            // Penjualan rata-rata harian (P_rt harian = P_pk / J_hp),
+            // dipakai kategori Fast dan Slow.
+            if ($fsnCategory === 'F' || $fsnCategory === 'S') {
+                $pRtDaily = $pPk / $jHp;
+            }
+
             if ($fsnCategory === 'F') {
                 // Penjualan maksimum harian (P_max)
                 $itemDailySales = $dailySalesGroup[$itemId] ?? collect();
                 $pMax = $itemDailySales->max('daily_sold') ?? 0;
-
-                // Penjualan rata-rata harian (P_rt harian = P_pk / J_hp)
-                $pRtDaily = $pPk / $jHp;
 
                 // Rumus 3.6: SS = (P_max - P_rt) x L
                 $calculatedSs = ($pMax - $pRtDaily) * $leadTime;
@@ -150,14 +155,20 @@ class FsnRopService
                 // Rumus 3.7: ROP = (P_rt x L) + SS
                 $calculatedRop = ($pRtDaily * $leadTime) + $safetyStock;
                 $rop = max(1, (int) round($calculatedRop));
+            } elseif ($fsnCategory === 'S') {
+                // ROP tanpa Safety Stock: R = ceil(P_rt harian x L).
+                // SS = 0 untuk Slow adalah keputusan trade-off biaya yang
+                // sadar (bukan klaim tanpa ketidakpastian): lead time
+                // 1 hari stabil, volume Slow kecil, dan pembelian
+                // insidental pegawai menjadi cadangan saat stok habis.
+                $rop = max(1, (int) ceil($pRtDaily * $leadTime));
             }
 
-            // Batas pemesanan untuk evaluasi stok menipis
+            // Batas pemesanan untuk evaluasi stok menipis (ROP hasil hitung,
+            // untuk Fast maupun Slow; Non Moving tidak punya batas).
             $orderThreshold = 0;
-            if ($fsnCategory === 'F') {
+            if ($fsnCategory === 'F' || $fsnCategory === 'S') {
                 $orderThreshold = $rop ?? 0;
-            } elseif ($fsnCategory === 'S') {
-                $orderThreshold = (int) ($item->minimum_stock ?? 0);
             }
 
             // Status stok menipis (Tahap E)
@@ -229,9 +240,12 @@ class FsnRopService
                 $category = $row['fsn_category'];
                 $item->fsn_category = $category;
 
-                // Parameter SS dan ROP hanya disimpan untuk kategori Fast Moving
+                // Fast: SS + ROP. Slow: ROP saja (SS null). Non: tidak ada.
                 if ($category === 'F') {
                     $item->safety_stock = $row['safety_stock'] ?? 0;
+                    $item->rop = $row['rop'] ?? 0;
+                } elseif ($category === 'S') {
+                    $item->safety_stock = null;
                     $item->rop = $row['rop'] ?? 0;
                 } else {
                     $item->safety_stock = null;

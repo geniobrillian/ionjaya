@@ -115,10 +115,10 @@ class ItemSeeder extends Seeder
                 'item_name' => 'Gir Belakang Supra X 125',
                 'purchase_price' => 45000,
                 'selling_price' => 60000,
-                'stock' => 2, // Stok rendah (ambang Slow ditentukan hasil analisis, Tahap 2)
+                'stock' => 2, // Di bawah ROP (4) -> MENIPIS
                 'fsn_category' => 'S',
                 'safety_stock' => null,
-                'rop' => null,
+                'rop' => 4,
                 'supplier_id' => 1,
             ],
             [
@@ -130,7 +130,7 @@ class ItemSeeder extends Seeder
                 'stock' => 12, // AMAN
                 'fsn_category' => 'S',
                 'safety_stock' => null,
-                'rop' => null,
+                'rop' => 3,
                 'supplier_id' => 2,
             ],
             [
@@ -142,7 +142,7 @@ class ItemSeeder extends Seeder
                 'stock' => 14, // AMAN
                 'fsn_category' => 'S',
                 'safety_stock' => null,
-                'rop' => null,
+                'rop' => 3,
                 'supplier_id' => 3,
             ],
             [
@@ -154,7 +154,7 @@ class ItemSeeder extends Seeder
                 'stock' => 10, // AMAN
                 'fsn_category' => 'S',
                 'safety_stock' => null,
-                'rop' => null,
+                'rop' => 2,
                 'supplier_id' => 1,
             ],
             [
@@ -166,7 +166,7 @@ class ItemSeeder extends Seeder
                 'stock' => 16, // AMAN
                 'fsn_category' => 'S',
                 'safety_stock' => null,
-                'rop' => null,
+                'rop' => 4,
                 'supplier_id' => 2,
             ],
             [
@@ -178,7 +178,7 @@ class ItemSeeder extends Seeder
                 'stock' => 11, // AMAN
                 'fsn_category' => 'S',
                 'safety_stock' => null,
-                'rop' => null,
+                'rop' => 3,
                 'supplier_id' => 3,
             ],
             [
@@ -190,7 +190,7 @@ class ItemSeeder extends Seeder
                 'stock' => 9, // AMAN
                 'fsn_category' => 'S',
                 'safety_stock' => null,
-                'rop' => null,
+                'rop' => 2,
                 'supplier_id' => 4,
             ],
 
