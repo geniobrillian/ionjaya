@@ -105,17 +105,6 @@
                     placeholder="Nama lengkap sparepart">
             </div>
 
-            <div>
-                <label for="supplier_id" class="block text-xs font-medium text-gray-700 mb-1">Pemasok (opsional)</label>
-                <select name="supplier_id" id="supplier_id"
-                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
-                    <option value="">Belum ditentukan (atur lewat Ubah Barang)</option>
-                    @foreach ($suppliers as $supplier)
-                        <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }} ({{ $supplier->lead_time }} hari)</option>
-                    @endforeach
-                </select>
-            </div>
-
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label for="purchase_price" class="block text-xs font-medium text-gray-700 mb-1">Harga Beli Awal (Rp)</label>

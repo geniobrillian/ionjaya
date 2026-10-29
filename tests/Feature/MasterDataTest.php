@@ -178,6 +178,25 @@ class MasterDataTest extends TestCase
         ]);
     }
 
+    public function test_super_admin_can_create_item_without_supplier(): void
+    {
+        // Form tambah tidak lagi menawarkan pilihan pemasok;
+        // penugasan pemasok hanya lewat Ubah Barang.
+        $response = $this->actingAs($this->superAdmin)->post('/barang', [
+            'item_name' => 'Sparepart Tanpa Pemasok',
+            'purchase_price' => 10000,
+            'selling_price' => 15000,
+        ]);
+
+        $response->assertRedirect('/barang');
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('items', [
+            'item_name' => 'Sparepart Tanpa Pemasok',
+            'supplier_id' => null,
+        ]);
+    }
+
     public function test_item_cannot_be_deleted_if_has_transactions(): void
     {
         // Item 1 memiliki riwayat transaksi dari seeder
