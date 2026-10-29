@@ -50,6 +50,10 @@ class ImportController extends Controller
      */
     public function preview(Request $request, ImportService $service)
     {
+        // Pengaman untuk file besar (ribuan baris). Perhitungan rumus
+        // Excel sudah tidak terjadi lagi, jadi ini hanya jaring pengaman.
+        set_time_limit(300);
+
         $request->validate([
             'file' => ['required', 'file', 'mimes:xlsx', 'max:10240'],
         ], [
@@ -83,6 +87,9 @@ class ImportController extends Controller
      */
     public function confirm(Request $request, ImportService $service)
     {
+        // Pengaman yang sama seperti pratinjau (file besar).
+        set_time_limit(300);
+
         $request->validate(['import_id' => ['required', 'string']]);
 
         $importId = basename($request->input('import_id'));

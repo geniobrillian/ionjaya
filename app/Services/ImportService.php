@@ -67,6 +67,7 @@ class ImportService
         $petunjuk->setCellValue('A8', '7. Penjualan yang membuat stok negatif MENGGAGALKAN seluruh impor (ditampilkan di pratinjau).');
         $petunjuk->setCellValue('A9', '8. Pemasok yang kodenya belum ada dibuat otomatis dari file (lead time dari Data Barang, atau 1 hari bila hanya muncul di Pembelian).');
         $petunjuk->setCellValue('A10', '9. Barang yang kodenya sudah ada di database DITOLAK (tidak ditimpa). Gunakan database kosong (migrate fresh tanpa seed) untuk impor awal.');
+        $petunjuk->setCellValue('A11', '10. Isi sel dengan NILAI langsung, bukan rumus Excel (rumus tidak dihitung saat impor).');
         $petunjuk->getColumnDimension('A')->setWidth(160);
 
         $this->templateSheet($spreadsheet, 'Data Barang',
@@ -108,6 +109,12 @@ class ImportService
     /**
      * Membaca file .xlsx menjadi baris-baris mentah per sheet.
      * Mengembalikan ['sheets' => [...], 'errors' => [...]].
+     *
+     * PENTING: hanya 4 sheet yang dipakai yang diubah ke array, dan TANPA
+     * kalkulasi formula. Versi sebelumnya menghitung semua sheet termasuk
+     * Rekap yang penuh rumus berat (SUMIFS/INDEX-MATCH ribuan baris),
+     * sehingga pratinjau file simulasi timeout 60 detik di Calculation.php.
+     * Sheet data berisi nilai langsung, bukan rumus, jadi ini aman.
      */
     public function parseFile(string $path): array
     {
@@ -115,16 +122,22 @@ class ImportService
 
         $errors = [];
         try {
-            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($path);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($path);
         } catch (\Throwable $e) {
             return ['sheets' => [], 'errors' => ['File tidak bisa dibaca sebagai Excel (.xlsx): ' . $e->getMessage()]];
         }
 
+        $needed = ['Data Barang', 'Stok Opname', 'Pembelian', 'Penjualan'];
         $sheets = [];
-        foreach ($spreadsheet->getSheetNames() as $name) {
-            $key = mb_strtolower(trim($name));
-            $rows = $spreadsheet->getSheetByName($name)->toArray(null, true, false);
-            $sheets[$key] = $rows;
+        foreach ($needed as $wanted) {
+            foreach ($spreadsheet->getSheetNames() as $name) {
+                if (mb_strtolower(trim($name)) === mb_strtolower($wanted)) {
+                    $sheets[mb_strtolower(trim($name))] = $spreadsheet->getSheetByName($name)->toArray(null, false, false);
+                    break;
+                }
+            }
         }
 
         return ['sheets' => $sheets, 'errors' => $errors];
