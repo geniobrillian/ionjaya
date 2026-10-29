@@ -76,6 +76,10 @@
                         class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('suppliers.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
                         Data Pemasok
                     </a>
+                    <a href="{{ route('imports.index') }}"
+                        class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('imports.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                        Impor Data
+                    </a>
                 @endif
             </nav>
         </div>

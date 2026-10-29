@@ -62,5 +62,13 @@ Route::middleware('auth')->group(function () {
             Route::put('/{supplier}', [\App\Http\Controllers\SupplierController::class, 'update'])->name('update');
             Route::delete('/{supplier}', [\App\Http\Controllers\SupplierController::class, 'destroy'])->name('destroy');
         });
+
+        Route::prefix('impor')->name('imports.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\ImportController::class, 'index'])->name('index');
+            Route::get('/template', [\App\Http\Controllers\ImportController::class, 'template'])->name('template');
+            Route::post('/pratinjau', [\App\Http\Controllers\ImportController::class, 'preview'])->name('preview');
+            Route::post('/konfirmasi', [\App\Http\Controllers\ImportController::class, 'confirm'])->name('confirm');
+            Route::get('/hasil', [\App\Http\Controllers\ImportController::class, 'result'])->name('result');
+        });
     });
 });
