@@ -40,7 +40,6 @@
                     </a>
                 @endif
 
-                <p class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">Transaksi</p>
                 <a href="{{ route('sales.index') }}"
                     class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('sales.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
                     Transaksi Penjualan
@@ -50,7 +49,6 @@
                     Transaksi Pembelian
                 </a>
 
-                <p class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">Stok</p>
                 <a href="{{ route('stock.index') }}"
                     class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('stock.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
                     Stok Barang
@@ -61,7 +59,6 @@
                 </a>
 
                 @if (Auth::user()->isSuperAdmin())
-                    <p class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">Analisis</p>
                     <a href="{{ route('analysis.index') }}"
                         class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('analysis.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
                         Analisis FSN & ROP
@@ -71,7 +68,6 @@
                         Laporan
                     </a>
 
-                    <p class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">Master Data</p>
                     <a href="{{ route('items.index') }}"
                         class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('items.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
                         Data Barang
