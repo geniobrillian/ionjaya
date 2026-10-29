@@ -82,6 +82,7 @@ class SaleController extends Controller
                 // 1. Simpan Header Transaksi Penjualan
                 $transaction = Transaction::create([
                     'date' => Carbon::today()->toDateString(),
+                    'time' => Carbon::now()->format('H:i:s'),
                     'transaction_type' => 'penjualan',
                     'total' => $totalTransaction,
                     'user_id' => Auth::id(),

@@ -13,6 +13,7 @@ class Transaction extends Model
 
     protected $fillable = [
         'date',
+        'time', // jam transaksi (HH:MM:SS), nullable untuk data lama
         'transaction_type', // penjualan atau pembelian
         'total',
         'user_id',

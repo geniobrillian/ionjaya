@@ -102,7 +102,6 @@
                             <th class="py-2.5 px-3 w-10 text-center border-r border-gray-300">No</th>
                             <th class="py-2.5 px-3 w-24 border-r border-gray-300">Kode</th>
                             <th class="py-2.5 px-3 border-r border-gray-300">Nama Barang</th>
-                            <th class="py-2.5 px-3 w-20 border-r border-gray-300">Satuan</th>
                             <th class="py-2.5 px-3 w-28 text-center border-r border-gray-300">Kategori</th>
                             <th class="py-2.5 px-3 text-right w-28 border-r border-gray-300">Harga Beli</th>
                             <th class="py-2.5 px-3 text-right w-28 border-r border-gray-300">Harga Jual</th>
@@ -117,7 +116,6 @@
                                 <td class="py-2 px-3 text-center border-r border-gray-300 font-mono">{{ $loop->iteration }}</td>
                                 <td class="py-2 px-3 font-mono font-semibold border-r border-gray-300">{{ $item->item_code }}</td>
                                 <td class="py-2 px-3 font-medium border-r border-gray-300">{{ $item->item_name }}</td>
-                                <td class="py-2 px-3 text-gray-600 border-r border-gray-300">{{ $item->unit }}</td>
                                 <td class="py-2 px-3 text-center font-bold border-r border-gray-300">
                                     {{ $item->fsn_category ?? '-' }}
                                 </td>

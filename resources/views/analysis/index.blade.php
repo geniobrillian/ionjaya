@@ -156,7 +156,6 @@
                                 <td class="py-2.5 px-3 font-mono font-semibold text-gray-900">{{ $row['item_code'] }}</td>
                                 <td class="py-2.5 px-4 font-medium text-gray-900">
                                     {{ $row['item_name'] }}
-                                    <span class="text-[10px] text-gray-400 block">{{ $row['unit'] }}</span>
                                 </td>
                                 <td class="py-2.5 px-3 text-right font-mono">{{ $row['p_pk'] }}</td>
                                 <td class="py-2.5 px-3 text-right font-mono text-gray-600">{{ number_format($row['p_rt'], 1) }}</td>

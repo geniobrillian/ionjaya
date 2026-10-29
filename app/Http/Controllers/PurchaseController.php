@@ -80,6 +80,7 @@ class PurchaseController extends Controller
                 // 1. Simpan Header Transaksi Pembelian
                 $transaction = Transaction::create([
                     'date' => Carbon::today()->toDateString(),
+                    'time' => Carbon::now()->format('H:i:s'),
                     'transaction_type' => 'pembelian',
                     'total' => $totalTransaction,
                     'user_id' => Auth::id(),

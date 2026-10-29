@@ -18,11 +18,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 32000,
                 'selling_price' => 45000,
                 'stock' => 3, // Di bawah ROP (8) -> MENIPIS
-                'unit' => 'set',
                 'fsn_category' => 'F',
                 'safety_stock' => 4,
                 'rop' => 8,
-                'minimum_stock' => null,
                 'supplier_id' => 1,
             ],
             [
@@ -32,11 +30,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 48000,
                 'selling_price' => 62000,
                 'stock' => 4, // Di bawah ROP (12) -> MENIPIS
-                'unit' => 'botol',
                 'fsn_category' => 'F',
                 'safety_stock' => 5,
                 'rop' => 12,
-                'minimum_stock' => null,
                 'supplier_id' => 1,
             ],
             [
@@ -46,11 +42,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 18000,
                 'selling_price' => 25000,
                 'stock' => 5, // Di bawah ROP (10) -> MENIPIS
-                'unit' => 'pcs',
                 'fsn_category' => 'F',
                 'safety_stock' => 4,
                 'rop' => 10,
-                'minimum_stock' => null,
                 'supplier_id' => 2,
             ],
             [
@@ -60,11 +54,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 185000,
                 'selling_price' => 230000,
                 'stock' => 2, // Di bawah ROP (6) -> MENIPIS
-                'unit' => 'pcs',
                 'fsn_category' => 'F',
                 'safety_stock' => 3,
                 'rop' => 6,
-                'minimum_stock' => null,
                 'supplier_id' => 3,
             ],
             [
@@ -74,11 +66,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 35000,
                 'selling_price' => 48000,
                 'stock' => 45, // AMAN
-                'unit' => 'set',
                 'fsn_category' => 'F',
                 'safety_stock' => 4,
                 'rop' => 9,
-                'minimum_stock' => null,
                 'supplier_id' => 1,
             ],
             [
@@ -88,11 +78,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 47000,
                 'selling_price' => 60000,
                 'stock' => 38, // AMAN
-                'unit' => 'botol',
                 'fsn_category' => 'F',
                 'safety_stock' => 5,
                 'rop' => 11,
-                'minimum_stock' => null,
                 'supplier_id' => 2,
             ],
             [
@@ -102,11 +90,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 65000,
                 'selling_price' => 85000,
                 'stock' => 28, // AMAN
-                'unit' => 'set',
                 'fsn_category' => 'F',
                 'safety_stock' => 3,
                 'rop' => 7,
-                'minimum_stock' => null,
                 'supplier_id' => 3,
             ],
             [
@@ -116,11 +102,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 28000,
                 'selling_price' => 38000,
                 'stock' => 32, // AMAN
-                'unit' => 'pcs',
                 'fsn_category' => 'F',
                 'safety_stock' => 3,
                 'rop' => 8,
-                'minimum_stock' => null,
                 'supplier_id' => 4,
             ],
 
@@ -131,12 +115,10 @@ class ItemSeeder extends Seeder
                 'item_name' => 'Gir Belakang Supra X 125',
                 'purchase_price' => 45000,
                 'selling_price' => 60000,
-                'stock' => 2, // Di bawah minimum_stock (4) -> MENIPIS
-                'unit' => 'pcs',
+                'stock' => 2, // Stok rendah (ambang Slow ditentukan hasil analisis, Tahap 2)
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => null,
-                'minimum_stock' => 4,
                 'supplier_id' => 1,
             ],
             [
@@ -146,11 +128,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 70000,
                 'selling_price' => 95000,
                 'stock' => 12, // AMAN
-                'unit' => 'pcs',
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => null,
-                'minimum_stock' => 3,
                 'supplier_id' => 2,
             ],
             [
@@ -160,11 +140,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 85000,
                 'selling_price' => 115000,
                 'stock' => 14, // AMAN
-                'unit' => 'pcs',
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => null,
-                'minimum_stock' => 3,
                 'supplier_id' => 3,
             ],
             [
@@ -174,11 +152,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 90000,
                 'selling_price' => 120000,
                 'stock' => 10, // AMAN
-                'unit' => 'set',
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => null,
-                'minimum_stock' => 2,
                 'supplier_id' => 1,
             ],
             [
@@ -188,11 +164,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 25000,
                 'selling_price' => 35000,
                 'stock' => 16, // AMAN
-                'unit' => 'pasang',
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => null,
-                'minimum_stock' => 4,
                 'supplier_id' => 2,
             ],
             [
@@ -202,11 +176,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 195000,
                 'selling_price' => 245000,
                 'stock' => 11, // AMAN
-                'unit' => 'pcs',
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => null,
-                'minimum_stock' => 3,
                 'supplier_id' => 3,
             ],
             [
@@ -216,11 +188,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 190000,
                 'selling_price' => 240000,
                 'stock' => 9, // AMAN
-                'unit' => 'pcs',
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => null,
-                'minimum_stock' => 2,
                 'supplier_id' => 4,
             ],
 
@@ -232,11 +202,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 280000,
                 'selling_price' => 360000,
                 'stock' => 6, // on-demand
-                'unit' => 'set',
                 'fsn_category' => 'N',
                 'safety_stock' => null,
                 'rop' => null,
-                'minimum_stock' => null,
                 'supplier_id' => 2,
             ],
             [
@@ -246,11 +214,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 35000,
                 'selling_price' => 50000,
                 'stock' => 8, // on-demand
-                'unit' => 'pcs',
                 'fsn_category' => 'N',
                 'safety_stock' => null,
                 'rop' => null,
-                'minimum_stock' => null,
                 'supplier_id' => 3,
             ],
             [
@@ -260,11 +226,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 420000,
                 'selling_price' => 530000,
                 'stock' => 5, // on-demand
-                'unit' => 'pcs',
                 'fsn_category' => 'N',
                 'safety_stock' => null,
                 'rop' => null,
-                'minimum_stock' => null,
                 'supplier_id' => 4,
             ],
             [
@@ -274,11 +238,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 210000,
                 'selling_price' => 275000,
                 'stock' => 5, // on-demand
-                'unit' => 'pcs',
                 'fsn_category' => 'N',
                 'safety_stock' => null,
                 'rop' => null,
-                'minimum_stock' => null,
                 'supplier_id' => 1,
             ],
             [
@@ -288,11 +250,9 @@ class ItemSeeder extends Seeder
                 'purchase_price' => 110000,
                 'selling_price' => 150000,
                 'stock' => 7, // on-demand
-                'unit' => 'pcs',
                 'fsn_category' => 'N',
                 'safety_stock' => null,
                 'rop' => null,
-                'minimum_stock' => null,
                 'supplier_id' => 2,
             ],
         ];

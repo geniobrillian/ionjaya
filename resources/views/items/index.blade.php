@@ -27,12 +27,10 @@
                         <th class="py-3.5 px-4 w-12 text-center">No</th>
                         <th class="py-3.5 px-4 w-24">Kode</th>
                         <th class="py-3.5 px-4">Nama Barang</th>
-                        <th class="py-3.5 px-4 w-20">Satuan</th>
                         <th class="py-3.5 px-4">Pemasok</th>
                         <th class="py-3.5 px-4 text-right w-32">Harga Beli</th>
                         <th class="py-3.5 px-4 text-right w-32">Harga Jual</th>
                         <th class="py-3.5 px-4 text-center w-24">Stok</th>
-                        <th class="py-3.5 px-4 text-center w-28">Min. Statis</th>
                         <th class="py-3.5 px-4 w-28 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -42,7 +40,6 @@
                             <td class="py-3.5 px-4 text-center text-xs text-gray-500 font-mono">{{ $loop->iteration + ($items->currentPage() - 1) * $items->perPage() }}</td>
                             <td class="py-3.5 px-4 font-mono text-xs font-semibold text-gray-900">{{ $item->item_code }}</td>
                             <td class="py-3.5 px-4 font-medium text-gray-900">{{ $item->item_name }}</td>
-                            <td class="py-3.5 px-4 text-xs text-gray-600">{{ $item->unit }}</td>
                             <td class="py-3.5 px-4 text-xs text-gray-600">{{ $item->supplier->supplier_name ?? '-' }}</td>
                             <td class="py-3.5 px-4 text-right font-mono text-xs text-gray-700">
                                 Rp {{ number_format($item->purchase_price, 0, ',', '.') }}
@@ -52,9 +49,6 @@
                             </td>
                             <td class="py-3.5 px-4 text-center font-bold {{ $item->stock <= 0 ? 'text-red-600' : 'text-gray-900' }}">
                                 {{ $item->stock }}
-                            </td>
-                            <td class="py-3.5 px-4 text-center text-xs text-gray-600 font-mono">
-                                {{ $item->minimum_stock ?? '-' }}
                             </td>
                             <td class="py-3.5 px-4 text-center">
                                 <div class="flex items-center justify-center space-x-2">
@@ -77,7 +71,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="py-8 text-center text-gray-400 text-sm">
+                            <td colspan="8" class="py-8 text-center text-gray-400 text-sm">
                                 Tidak ada data barang ditemukan.
                             </td>
                         </tr>
@@ -112,10 +106,10 @@
             </div>
 
             <div>
-                <label for="supplier_id" class="block text-xs font-medium text-gray-700 mb-1">Pemasok</label>
-                <select name="supplier_id" id="supplier_id" required
+                <label for="supplier_id" class="block text-xs font-medium text-gray-700 mb-1">Pemasok (opsional)</label>
+                <select name="supplier_id" id="supplier_id"
                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
-                    <option value="">Pilih Pemasok...</option>
+                    <option value="">Belum ditentukan (atur lewat Ubah Barang)</option>
                     @foreach ($suppliers as $supplier)
                         <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }} ({{ $supplier->lead_time }} hari)</option>
                     @endforeach
@@ -138,20 +132,10 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label for="stock" class="block text-xs font-medium text-gray-700 mb-1">Stok Awal</label>
-                    <input type="number" name="stock" id="stock" min="0" value="0" required
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label for="minimum_stock" class="block text-xs font-medium text-gray-700 mb-1">Stok Minimum Statis</label>
-                    <input type="number" name="minimum_stock" id="minimum_stock" min="0"
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
-                        placeholder="Khusus kategori Slow Moving">
-                    <span class="text-[10px] text-gray-500 mt-0.5 block">Batas restock untuk barang Slow Moving.</span>
-                </div>
+            <div class="rounded-md bg-gray-50 border border-gray-200 p-3">
+                <p class="text-xs text-gray-600">
+                    Barang baru mulai dari stok 0. Stok pertama masuk lewat Pembelian (satu pintu stok).
+                </p>
             </div>
 
             <div class="pt-3 border-t border-gray-200 flex items-center justify-end space-x-2">
@@ -180,18 +164,10 @@
             @csrf
             @method('PUT')
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label for="edit_item_code" class="block text-xs font-medium text-gray-700 mb-1">Kode Barang (Otomatis)</label>
-                    <input type="text" name="item_code" id="edit_item_code" required readonly
-                        class="w-full rounded-md border border-gray-300 bg-gray-100 text-gray-500 px-3 py-2 text-sm focus:outline-none cursor-not-allowed">
-                </div>
-
-                <div>
-                    <label for="edit_unit" class="block text-xs font-medium text-gray-700 mb-1">Satuan</label>
-                    <input type="text" name="unit" id="edit_unit" required
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
-                </div>
+            <div>
+                <label for="edit_item_code" class="block text-xs font-medium text-gray-700 mb-1">Kode Barang (Otomatis)</label>
+                <input type="text" name="item_code" id="edit_item_code" required readonly
+                    class="w-full rounded-md border border-gray-300 bg-gray-100 text-gray-500 px-3 py-2 text-sm focus:outline-none cursor-not-allowed">
             </div>
 
             <div>
@@ -201,27 +177,20 @@
             </div>
 
             <div>
-                <label for="edit_supplier_id" class="block text-xs font-medium text-gray-700 mb-1">Pemasok</label>
+                <label for="edit_supplier_id" class="block text-xs font-medium text-gray-700 mb-1">Pemasok (penugasan lewat sini)</label>
                 <select name="supplier_id" id="edit_supplier_id" required
                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
+                    <option value="">Belum ditentukan</option>
                     @foreach ($suppliers as $supplier)
                         <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }} ({{ $supplier->lead_time }} hari)</option>
                     @endforeach
                 </select>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label for="edit_selling_price" class="block text-xs font-medium text-gray-700 mb-1">Harga Jual (Rp)</label>
-                    <input type="number" name="selling_price" id="edit_selling_price" min="0" required
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label for="edit_minimum_stock" class="block text-xs font-medium text-gray-700 mb-1">Stok Minimum Statis</label>
-                    <input type="number" name="minimum_stock" id="edit_minimum_stock" min="0"
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
-                </div>
+            <div>
+                <label for="edit_selling_price" class="block text-xs font-medium text-gray-700 mb-1">Harga Jual (Rp)</label>
+                <input type="number" name="selling_price" id="edit_selling_price" min="0" required
+                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
             </div>
 
             <div class="rounded-md bg-gray-50 border border-gray-200 p-3">
@@ -261,10 +230,8 @@
 
         document.getElementById('edit_item_code').value = item.item_code;
         document.getElementById('edit_item_name').value = item.item_name;
-        document.getElementById('edit_unit').value = item.unit;
-        document.getElementById('edit_supplier_id').value = item.supplier_id;
+        document.getElementById('edit_supplier_id').value = item.supplier_id ?? '';
         document.getElementById('edit_selling_price').value = Math.round(item.selling_price);
-        document.getElementById('edit_minimum_stock').value = item.minimum_stock !== null ? item.minimum_stock : '';
 
         document.getElementById('editModal').classList.remove('hidden');
     }

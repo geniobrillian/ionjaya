@@ -76,12 +76,12 @@
                             </div>
                             <div class="text-xs text-gray-600 mt-0.5">
                                 Harga beli terakhir: <span class="font-semibold text-gray-800">Rp {{ number_format($item->purchase_price, 0, ',', '.') }}</span>
-                                &bull; Stok saat ini: {{ $item->stock }} {{ $item->unit }}
+                                &bull; Stok saat ini: {{ $item->stock }}
                             </div>
                         </div>
                         <div>
                             <button type="button"
-                                onclick="addToPurchase({{ $item->id }}, '{{ addslashes($item->item_name) }}', '{{ addslashes($item->supplier->supplier_name ?? '-') }}', {{ $item->purchase_price }}, '{{ $item->unit }}')"
+                                onclick="addToPurchase({{ $item->id }}, '{{ addslashes($item->item_name) }}', '{{ addslashes($item->supplier->supplier_name ?? '-') }}', {{ $item->purchase_price }})"
                                 class="px-3 py-1.5 bg-gray-100 hover:bg-blue-600 hover:text-white text-gray-700 rounded text-xs font-semibold transition-colors">
                                 + Tambah
                             </button>
@@ -141,7 +141,7 @@
         return 'Rp ' + Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
-    function addToPurchase(id, name, supplier, purchasePrice, unit) {
+    function addToPurchase(id, name, supplier, purchasePrice) {
         if (purchaseCart[id]) {
             purchaseCart[id].qty++;
         } else {
@@ -150,8 +150,7 @@
                 name: name,
                 supplier: supplier,
                 price: purchasePrice,
-                qty: 1,
-                unit: unit
+                qty: 1
             };
         }
         renderPurchaseCart();

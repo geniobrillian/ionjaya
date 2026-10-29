@@ -17,11 +17,9 @@ class Item extends Model
         'purchase_price',
         'selling_price',
         'stock',
-        'unit',
         'fsn_category',
         'safety_stock',
         'rop',
-        'minimum_stock',
         'supplier_id',
     ];
 
@@ -33,7 +31,6 @@ class Item extends Model
             'stock' => 'integer',
             'safety_stock' => 'integer',
             'rop' => 'integer',
-            'minimum_stock' => 'integer',
         ];
     }
 

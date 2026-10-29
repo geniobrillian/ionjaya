@@ -40,29 +40,22 @@ class ItemController extends Controller
         $validated = $request->validate([
             'item_code' => ['nullable', 'string', 'max:20', 'unique:items,item_code'],
             'item_name' => ['required', 'string', 'max:100'],
-            'supplier_id' => ['required', 'exists:suppliers,id'],
+            // Pemasok opsional saat tambah barang (ditugaskan lewat Ubah Barang).
+            'supplier_id' => ['nullable', 'exists:suppliers,id'],
             'purchase_price' => ['required', 'numeric', 'min:0'],
             'selling_price' => ['required', 'numeric', 'min:0'],
-            'stock' => ['required', 'integer', 'min:0'],
-            'unit' => ['nullable', 'string', 'max:20'],
-            'minimum_stock' => ['nullable', 'integer', 'min:0'],
+            // Stok awal dihapus (1 pintu ketat): barang baru mulai dari stok 0,
+            // stok pertama hanya masuk lewat Pembelian.
         ], [
             'item_code.unique' => 'Kode barang sudah digunakan.',
             'item_name.required' => 'Nama barang wajib diisi.',
-            'supplier_id.required' => 'Pemasok wajib dipilih.',
             'supplier_id.exists' => 'Pemasok yang dipilih tidak valid.',
             'purchase_price.required' => 'Harga beli wajib diisi.',
             'selling_price.required' => 'Harga jual wajib diisi.',
-            'stock.required' => 'Stok awal wajib diisi.',
-            'stock.min' => 'Stok tidak boleh negatif.',
         ]);
 
         if (empty($validated['item_code'])) {
             $validated['item_code'] = Item::generateNextCode();
-        }
-
-        if (empty($validated['unit'])) {
-            $validated['unit'] = 'pcs';
         }
 
         Item::create($validated);
@@ -80,10 +73,9 @@ class ItemController extends Controller
         $validated = $request->validate([
             'item_code' => ['required', 'string', 'max:20', 'unique:items,item_code,' . $item->id],
             'item_name' => ['required', 'string', 'max:100'],
+            // Pemasok wajib diisi di form ubah: disinilah penugasan pemasok dilakukan.
             'supplier_id' => ['required', 'exists:suppliers,id'],
             'selling_price' => ['required', 'numeric', 'min:0'],
-            'unit' => ['nullable', 'string', 'max:20'],
-            'minimum_stock' => ['nullable', 'integer', 'min:0'],
         ], [
             'item_code.required' => 'Kode barang wajib diisi.',
             'item_code.unique' => 'Kode barang sudah digunakan.',
@@ -91,10 +83,6 @@ class ItemController extends Controller
             'supplier_id.required' => 'Pemasok wajib dipilih.',
             'selling_price.required' => 'Harga jual wajib diisi.',
         ]);
-
-        if (empty($validated['unit'])) {
-            $validated['unit'] = $item->unit ?? 'pcs';
-        }
 
         $item->update($validated);
 

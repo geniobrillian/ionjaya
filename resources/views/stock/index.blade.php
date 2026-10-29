@@ -76,7 +76,6 @@
                         <th class="py-3.5 px-4 w-12 text-center">No</th>
                         <th class="py-3.5 px-4 w-28">Kode</th>
                         <th class="py-3.5 px-4">Nama Barang</th>
-                        <th class="py-3.5 px-4 w-24">Satuan</th>
                         <th class="py-3.5 px-4 w-32 text-center">Kategori FSN</th>
                         <th class="py-3.5 px-4 text-center w-32">Batas Pesan</th>
                         <th class="py-3.5 px-4 text-center w-28">Stok Fisik</th>
@@ -95,7 +94,6 @@
                                 <div class="font-medium text-gray-900">{{ $item->item_name }}</div>
                                 <div class="text-xs text-gray-500">{{ $item->supplier->supplier_name ?? '-' }}</div>
                             </td>
-                            <td class="py-3 px-4 text-xs text-gray-600">{{ $item->unit }}</td>
                             <td class="py-3 px-4 text-center">
                                 @if ($item->fsn_category === 'F')
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">

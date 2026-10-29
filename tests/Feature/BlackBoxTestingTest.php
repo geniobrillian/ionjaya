@@ -256,7 +256,11 @@ class BlackBoxTestingTest extends TestCase
     public function test_tc11_stock_page_filtering(): void
     {
         $this->fastItem->update(['stock' => 1, 'reorder_point' => 5]);
-        $this->slowItem->update(['stock' => 50, 'minimum_stock' => 5]);
+        // Tahap 1: ambang Slow masih dari minimum_stock (kolom masih ada sampai Tahap 2);
+        // penugasan langsung agar tidak terhalang fillable.
+        $this->slowItem->stock = 50;
+        $this->slowItem->minimum_stock = 5;
+        $this->slowItem->save();
 
         // Filter: Hanya Menipis
         $responseLow = $this->actingAs($this->adminKasir)->get(route('stock.index', ['status' => 'menipis']));
@@ -283,11 +287,8 @@ class BlackBoxTestingTest extends TestCase
             'item_code' => 'BRG_TEST_BB',
             'item_name' => 'Busi Iridium Racing Black Box',
             'supplier_id' => $this->supplier->id,
-            'unit' => 'pcs',
             'purchase_price' => 50000,
             'selling_price' => 75000,
-            'stock' => 10,
-            'minimum_stock' => 3,
         ]);
         $responseCreate->assertRedirect(route('items.index'));
         $this->assertDatabaseHas('items', ['item_code' => 'BRG_TEST_BB']);
@@ -299,9 +300,7 @@ class BlackBoxTestingTest extends TestCase
             'item_code' => 'BRG_TEST_BB',
             'item_name' => 'Busi Iridium Racing Black Box V2',
             'supplier_id' => $this->supplier->id,
-            'unit' => 'pcs',
             'selling_price' => 80000,
-            'minimum_stock' => 5,
         ]);
         $responseEdit->assertRedirect(route('items.index'));
         $this->assertDatabaseHas('items', ['item_name' => 'Busi Iridium Racing Black Box V2']);

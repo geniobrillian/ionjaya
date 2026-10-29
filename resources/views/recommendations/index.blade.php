@@ -46,7 +46,6 @@
                             <td class="py-3.5 px-4 font-mono text-xs font-semibold text-gray-900">{{ $item->item_code }}</td>
                             <td class="py-3.5 px-4">
                                 <div class="font-semibold text-gray-900">{{ $item->item_name }}</div>
-                                <div class="text-xs text-gray-500">Satuan: {{ $item->unit }}</div>
                             </td>
                             <td class="py-3.5 px-4 text-center">
                                 @if ($item->fsn_category === 'F')
@@ -67,7 +66,6 @@
                                 <span class="text-base font-bold text-red-600">
                                     {{ $item->stock }}
                                 </span>
-                                <span class="text-xs text-gray-400 block">{{ $item->unit }}</span>
                             </td>
                             <td class="py-3.5 px-4 text-center font-mono text-xs">
                                 @if ($item->fsn_category === 'F')

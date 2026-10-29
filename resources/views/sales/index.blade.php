@@ -72,14 +72,14 @@
                                 <span class="font-semibold text-gray-700">Rp {{ number_format($item->selling_price, 0, ',', '.') }}</span>
                                 <span>&bull;</span>
                                 <span class="{{ $item->stock <= 0 ? 'text-red-600 font-bold' : ($item->is_low_stock ? 'text-red-500 font-medium' : 'text-gray-600') }}">
-                                    Stok: {{ $item->stock }} {{ $item->unit }}
+                                    Stok: {{ $item->stock }}
                                 </span>
                             </div>
                         </div>
                         <div>
                             @if ($item->stock > 0)
                                 <button type="button"
-                                    onclick="addToCart({{ $item->id }}, '{{ addslashes($item->item_name) }}', {{ $item->selling_price }}, {{ $item->stock }}, '{{ $item->unit }}')"
+                                    onclick="addToCart({{ $item->id }}, '{{ addslashes($item->item_name) }}', {{ $item->selling_price }}, {{ $item->stock }})"
                                     class="px-3 py-1.5 bg-gray-100 hover:bg-blue-600 hover:text-white text-gray-700 rounded text-xs font-semibold transition-colors">
                                     + Tambah
                                 </button>
@@ -199,13 +199,13 @@
     }
 
     // Tampilkan Popup Modal Peringatan Stok
-    function showStockLimitModal(itemName, maxStock, unit) {
+    function showStockLimitModal(itemName, maxStock) {
         const modal = document.getElementById('stockLimitModal');
         const messageEl = document.getElementById('stockModalMessage');
         const okBtn = document.getElementById('stockModalOkBtn');
 
         if (messageEl) {
-            messageEl.innerHTML = `Barang <span class="font-bold text-gray-900">"${escapeHtml(itemName)}"</span> hanya tersisa <span class="font-bold text-amber-700">${maxStock} ${escapeHtml(unit)}</span> dan seluruh stok yang ada sudah dimasukkan ke keranjang penjualan. Anda tidak dapat menambahkan barang ini lagi.`;
+            messageEl.innerHTML = `Barang <span class="font-bold text-gray-900">"${escapeHtml(itemName)}"</span> hanya tersisa <span class="font-bold text-amber-700">${maxStock}</span> dan seluruh stok yang ada sudah dimasukkan ke keranjang penjualan. Anda tidak dapat menambahkan barang ini lagi.`;
         }
 
         modal.classList.remove('hidden');
@@ -227,20 +227,20 @@
         }
     });
 
-    function addToCart(id, name, price, maxStock, unit) {
+    function addToCart(id, name, price, maxStock) {
         if (cart[id]) {
             if (cart[id].qty < maxStock) {
                 cart[id].qty++;
             } else {
-                showStockLimitModal(name, maxStock, unit);
+                showStockLimitModal(name, maxStock);
                 return;
             }
         } else {
             if (maxStock <= 0) {
-                showStockLimitModal(name, 0, unit);
+                showStockLimitModal(name, 0);
                 return;
             }
-            cart[id] = { id, name, price, qty: 1, maxStock, unit };
+            cart[id] = { id, name, price, qty: 1, maxStock };
         }
         renderCart();
     }
@@ -254,7 +254,7 @@
             const item = cart[id];
             cart[id].qty = cart[id].maxStock;
             renderCart();
-            showStockLimitModal(item.name, item.maxStock, item.unit);
+            showStockLimitModal(item.name, item.maxStock);
             return;
         } else {
             cart[id].qty = newQty;

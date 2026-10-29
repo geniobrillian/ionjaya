@@ -170,7 +170,6 @@ class FsnRopService
                 'supplier_name' => $item->supplier->supplier_name ?? '-',
                 'lead_time' => $leadTime,
                 'stock' => $item->stock,
-                'unit' => $item->unit,
                 'p_aw' => $pAw,
                 'p_ms' => $pMs,
                 'p_pk' => $pPk,
@@ -184,7 +183,6 @@ class FsnRopService
                 'p_rt_daily' => round($pRtDaily, 2),
                 'safety_stock' => $safetyStock,
                 'rop' => $rop,
-                'minimum_stock' => $item->minimum_stock,
                 'order_threshold' => $orderThreshold,
                 'is_low_stock' => $isLowStock,
             ];

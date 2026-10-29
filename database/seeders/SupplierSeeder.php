@@ -24,7 +24,7 @@ class SupplierSeeder extends Seeder
                 'supplier_name' => 'CV Sumber Makmur Motor',
                 'address' => 'Jl. KH Wahid Hasyim No. 12, Jombang',
                 'phone' => '081298765432',
-                'lead_time' => 2,
+                'lead_time' => 1,
             ],
             [
                 'id' => 3,
@@ -32,7 +32,7 @@ class SupplierSeeder extends Seeder
                 'supplier_name' => 'PT Dirgaputra Ekapratama',
                 'address' => 'Jl. Mastrip No. 88, Surabaya',
                 'phone' => '082155443322',
-                'lead_time' => 3,
+                'lead_time' => 1,
             ],
             [
                 'id' => 4,
@@ -40,7 +40,7 @@ class SupplierSeeder extends Seeder
                 'supplier_name' => 'Distributor Bintang Mandiri',
                 'address' => 'Jl. Basuki Rahmat No. 10, Mojokerto',
                 'phone' => '085711223344',
-                'lead_time' => 5,
+                'lead_time' => 1,
             ],
         ];
 

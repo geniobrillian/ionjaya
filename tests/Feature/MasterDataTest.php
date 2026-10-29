@@ -110,20 +110,18 @@ class MasterDataTest extends TestCase
             'item_code' => 'BRG_TEST',
             'item_name' => 'Busi Iridium Racing Test',
             'supplier_id' => 1,
-            'unit' => 'pcs',
             'purchase_price' => 50000,
             'selling_price' => 75000,
-            'stock' => 10,
-            'minimum_stock' => 3,
         ]);
 
         $responseCreate->assertRedirect('/barang');
         $responseCreate->assertSessionHas('success');
 
+        // Tahap 1 (1 pintu ketat): barang baru mulai dari stok 0.
         $this->assertDatabaseHas('items', [
             'item_code' => 'BRG_TEST',
             'item_name' => 'Busi Iridium Racing Test',
-            'stock' => 10,
+            'stock' => 0,
         ]);
 
         // 2. Ubah Barang
@@ -132,9 +130,7 @@ class MasterDataTest extends TestCase
             'item_code' => 'BRG_TEST',
             'item_name' => 'Busi Iridium Racing V2',
             'supplier_id' => 1,
-            'unit' => 'pcs',
             'selling_price' => 80000,
-            'minimum_stock' => 5,
         ]);
 
         $responseUpdate->assertRedirect('/barang');
@@ -144,30 +140,27 @@ class MasterDataTest extends TestCase
             'id' => $item->id,
             'item_name' => 'Busi Iridium Racing V2',
             'selling_price' => 80000,
-            'stock' => 10, // Stok tetap tidak berubah
+            'stock' => 0, // Stok tetap tidak berubah
         ]);
     }
 
     public function test_super_admin_can_create_item_with_auto_increment_code_and_default_unit(): void
     {
-        // Tambah barang pertama tanpa kode barang dan tanpa satuan
+        // Tambah barang pertama tanpa kode barang
         $response1 = $this->actingAs($this->superAdmin)->post('/barang', [
             'item_name' => 'Sparepart Baru Auto 1',
             'supplier_id' => 1,
             'purchase_price' => 15000,
             'selling_price' => 25000,
-            'stock' => 5,
-            'minimum_stock' => 2,
         ]);
 
         $response1->assertRedirect('/barang');
         $response1->assertSessionHas('success');
 
-        // Pastikan kode terbuat otomatis BRG021 (seeder memiliki sampai BRG020) dan unit default 'pcs'
+        // Pastikan kode terbuat otomatis BRG021 (seeder memiliki sampai BRG020)
         $this->assertDatabaseHas('items', [
             'item_code' => 'BRG021',
             'item_name' => 'Sparepart Baru Auto 1',
-            'unit' => 'pcs',
         ]);
 
         // Tambah barang kedua secara berurutan
@@ -176,14 +169,12 @@ class MasterDataTest extends TestCase
             'supplier_id' => 1,
             'purchase_price' => 20000,
             'selling_price' => 30000,
-            'stock' => 8,
         ]);
 
         $response2->assertRedirect('/barang');
         $this->assertDatabaseHas('items', [
             'item_code' => 'BRG022',
             'item_name' => 'Sparepart Baru Auto 2',
-            'unit' => 'pcs',
         ]);
     }
 
@@ -209,7 +200,6 @@ class MasterDataTest extends TestCase
             'purchase_price' => 20000,
             'selling_price' => 30000,
             'stock' => 5,
-            'unit' => 'pcs',
         ]);
 
         $response = $this->actingAs($this->superAdmin)->delete('/barang/' . $item->id);
