@@ -39,8 +39,9 @@ class PurchaseController extends Controller
 
     /**
      * Menyimpan transaksi pembelian dari pemasok.
-     * Stok barang akan bertambah dan harga beli master barang diperbarui
-     * dengan harga beli terakhir.
+     * Stok barang akan bertambah. Harga transaksi selalu memakai harga
+     * beli master (Data Barang) — 1 pintu harga; harga dari request
+     * tidak pernah dipakai, jadi tidak bisa diubah lewat form pembelian.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -48,12 +49,10 @@ class PurchaseController extends Controller
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['required', 'exists:items,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
-            'items.*.purchase_price' => ['required', 'numeric', 'min:0'],
         ], [
             'items.required' => 'Daftar barang yang dibeli tidak boleh kosong.',
             'items.min' => 'Pilih minimal satu barang untuk dicatat sebagai pembelian.',
             'items.*.quantity.min' => 'Jumlah barang minimal 1.',
-            'items.*.purchase_price.min' => 'Harga beli tidak boleh negatif.',
         ]);
 
         try {
@@ -64,7 +63,8 @@ class PurchaseController extends Controller
                 foreach ($request->items as $row) {
                     $item = Item::lockForUpdate()->findOrFail($row['id']);
                     $qty = (int) $row['quantity'];
-                    $purchasePrice = (float) $row['purchase_price'];
+                    // 1 pintu harga: harga beli selalu dari master barang.
+                    $purchasePrice = (float) $item->purchase_price;
                     $subtotal = $qty * $purchasePrice;
 
                     $totalTransaction += $subtotal;
@@ -86,7 +86,9 @@ class PurchaseController extends Controller
                     'user_id' => Auth::id(),
                 ]);
 
-                // 2. Simpan Detail Transaksi, Tambah Stok, dan Update Harga Beli Terakhir
+                // 2. Simpan Detail Transaksi dan Tambah Stok
+                // (harga beli master TIDAK diubah di sini; satu-satunya
+                // pintu ubah harga beli adalah form Ubah Barang).
                 foreach ($detailsToInsert as $detail) {
                     TransactionDetail::create([
                         'transaction_id' => $transaction->id,
@@ -98,15 +100,10 @@ class PurchaseController extends Controller
 
                     // Tambah stok fisik
                     $detail['item']->increment('stock', $detail['quantity']);
-
-                    // Perbarui harga beli terakhir pada master barang (digunakan untuk rumus laba)
-                    $detail['item']->update([
-                        'purchase_price' => $detail['unit_price'],
-                    ]);
                 }
             });
 
-            return redirect()->route('purchases.index')->with('success', 'Transaksi pembelian berhasil dicatat. Stok barang telah bertambah dan harga beli master telah diperbarui.');
+            return redirect()->route('purchases.index')->with('success', 'Transaksi pembelian berhasil dicatat. Stok barang telah bertambah.');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage())->withInput();
         }

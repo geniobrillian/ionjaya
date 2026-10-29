@@ -150,6 +150,7 @@ class MasterDataTest extends TestCase
             'item_name' => 'Busi Iridium Racing V2',
             'supplier_id' => 1,
             'selling_price' => 80000,
+            'purchase_price' => 50000,
         ]);
 
         $responseUpdate->assertRedirect('/barang');

@@ -75,7 +75,7 @@
                                 <span>{{ $item->supplier->supplier_name ?? 'Pemasok Umum' }}</span>
                             </div>
                             <div class="text-xs text-gray-600 mt-0.5">
-                                Harga beli terakhir: <span class="font-semibold text-gray-800">Rp {{ number_format($item->purchase_price, 0, ',', '.') }}</span>
+                                Harga beli: <span class="font-semibold text-gray-800">Rp {{ number_format($item->purchase_price, 0, ',', '.') }}</span>
                                 &bull; Stok saat ini: {{ $item->stock }}
                             </div>
                         </div>
@@ -167,17 +167,6 @@
         renderPurchaseCart();
     }
 
-    function updatePurchasePrice(id, newPrice) {
-        if (!purchaseCart[id]) return;
-        newPrice = parseFloat(newPrice);
-        if (isNaN(newPrice) || newPrice < 0) {
-            purchaseCart[id].price = 0;
-        } else {
-            purchaseCart[id].price = newPrice;
-        }
-        renderPurchaseCart();
-    }
-
     function removePurchaseItem(id) {
         delete purchaseCart[id];
         renderPurchaseCart();
@@ -219,9 +208,8 @@
                         <input type="hidden" name="items[${index}][id]" value="${item.id}">
                     </td>
                     <td class="py-3 px-3 text-right">
-                        <input type="number" name="items[${index}][purchase_price]" value="${item.price}" min="0" step="500"
-                            onchange="updatePurchasePrice(${item.id}, this.value)"
-                            class="w-28 text-right text-xs border border-gray-300 rounded py-1 px-2 focus:outline-none focus:border-blue-500 font-mono">
+                        <input type="number" name="items[${index}][purchase_price]" value="${item.price}" min="0" step="500" readonly
+                            class="w-28 text-right text-xs border border-gray-300 bg-gray-100 text-gray-500 rounded py-1 px-2 focus:outline-none cursor-not-allowed font-mono">
                     </td>
                     <td class="py-3 px-3 text-center">
                         <div class="flex items-center justify-center space-x-1">

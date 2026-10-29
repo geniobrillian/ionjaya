@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Item;
 use App\Models\Supplier;
 use App\Models\Transaction;
+use App\Models\TransactionDetail;
 use App\Models\User;
 use App\Services\FsnRopService;
 use Carbon\Carbon;
@@ -203,21 +204,23 @@ class BlackBoxTestingTest extends TestCase
     }
 
     /**
-     * TC-09: Pembelian barang (stok bertambah dan harga beli master ter-update).
+     * TC-09: Pembelian barang (stok bertambah; harga transaksi memakai
+     * harga beli master dan harga master tidak berubah).
      */
-    public function test_tc09_purchase_increases_stock_and_updates_purchase_price(): void
+    public function test_tc09_purchase_increases_stock_and_uses_master_purchase_price(): void
     {
         $item = Item::first();
         $initialStock = $item->stock;
+        $masterPrice = (float) $item->purchase_price;
         $qtyPurchased = 10;
-        $newCostPrice = 75000;
+        $tamperedPrice = 75000; // Harga dari request harus diabaikan.
 
         $response = $this->actingAs($this->adminKasir)->post(route('purchases.store'), [
             'items' => [
                 [
                     'id' => $item->id,
                     'quantity' => $qtyPurchased,
-                    'purchase_price' => $newCostPrice,
+                    'purchase_price' => $tamperedPrice,
                 ],
             ],
         ]);
@@ -227,7 +230,12 @@ class BlackBoxTestingTest extends TestCase
 
         $item->refresh();
         $this->assertEquals($initialStock + $qtyPurchased, $item->stock);
-        $this->assertEquals($newCostPrice, (float) $item->purchase_price);
+        // Harga beli master tidak berubah oleh pembelian.
+        $this->assertEquals($masterPrice, (float) $item->purchase_price);
+        // Detail transaksi memakai harga master, bukan harga dari request.
+        $detail = TransactionDetail::where('item_id', $item->id)->latest('id')->first();
+        $this->assertEquals($masterPrice, (float) $detail->unit_price);
+        $this->assertEquals($qtyPurchased * $masterPrice, (float) $detail->subtotal);
     }
 
     // =========================================================================
@@ -294,12 +302,13 @@ class BlackBoxTestingTest extends TestCase
 
         $item = Item::where('item_code', 'BRG_TEST_BB')->first();
 
-        // 2. Edit Barang
+        // 2. Edit Barang (harga beli kini wajib di form ubah: 1 pintu harga)
         $responseEdit = $this->actingAs($this->superAdmin)->put(route('items.update', $item->id), [
             'item_code' => 'BRG_TEST_BB',
             'item_name' => 'Busi Iridium Racing Black Box V2',
             'supplier_id' => $this->supplier->id,
             'selling_price' => 80000,
+            'purchase_price' => 50000,
         ]);
         $responseEdit->assertRedirect(route('items.index'));
         $this->assertDatabaseHas('items', ['item_name' => 'Busi Iridium Racing Black Box V2']);

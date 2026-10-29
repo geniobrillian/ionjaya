@@ -76,12 +76,15 @@ class ItemController extends Controller
             // Pemasok wajib diisi di form ubah: disinilah penugasan pemasok dilakukan.
             'supplier_id' => ['required', 'exists:suppliers,id'],
             'selling_price' => ['required', 'numeric', 'min:0'],
+            // Harga beli diubah hanya lewat form ubah (1 pintu harga).
+            'purchase_price' => ['required', 'numeric', 'min:0'],
         ], [
             'item_code.required' => 'Kode barang wajib diisi.',
             'item_code.unique' => 'Kode barang sudah digunakan.',
             'item_name.required' => 'Nama barang wajib diisi.',
             'supplier_id.required' => 'Pemasok wajib dipilih.',
             'selling_price.required' => 'Harga jual wajib diisi.',
+            'purchase_price.required' => 'Harga beli wajib diisi.',
         ]);
 
         $item->update($validated);
