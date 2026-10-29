@@ -37,18 +37,21 @@ class SupplierController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'supplier_code' => ['required', 'string', 'max:20', 'unique:suppliers,supplier_code'],
+            'supplier_code' => ['nullable', 'string', 'max:20', 'unique:suppliers,supplier_code'],
             'supplier_name' => ['required', 'string', 'max:100'],
             'address' => ['nullable', 'string'],
             'phone' => ['nullable', 'string', 'max:20'],
             'lead_time' => ['required', 'integer', 'min:1'],
         ], [
-            'supplier_code.required' => 'Kode pemasok wajib diisi.',
             'supplier_code.unique' => 'Kode pemasok sudah digunakan.',
             'supplier_name.required' => 'Nama pemasok wajib diisi.',
             'lead_time.required' => 'Waktu tunggu (lead time) wajib diisi.',
             'lead_time.min' => 'Waktu tunggu pengiriman minimal 1 hari.',
         ]);
+
+        // Kode pemasok otomatis bila tidak diisi (form tambah tidak lagi
+        // meminta kode; kode eksplisit tetap dipertahankan bila ada).
+        $validated['supplier_code'] = $validated['supplier_code'] ?? Supplier::generateNextCode();
 
         Supplier::create($validated);
 

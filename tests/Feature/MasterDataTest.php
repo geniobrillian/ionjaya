@@ -72,6 +72,25 @@ class MasterDataTest extends TestCase
         ]);
     }
 
+    public function test_super_admin_can_create_supplier_without_code(): void
+    {
+        // Kode pemasok otomatis (SUP005, melanjutkan SUP001-SUP004 dari seeder).
+        $response = $this->actingAs($this->superAdmin)->post('/pemasok', [
+            'supplier_name' => 'Pemasok Otomatis Test',
+            'phone' => '089999888877',
+            'lead_time' => 1,
+            'address' => 'Jl. Test No. 10',
+        ]);
+
+        $response->assertRedirect('/pemasok');
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('suppliers', [
+            'supplier_code' => 'SUP005',
+            'supplier_name' => 'Pemasok Otomatis Test',
+        ]);
+    }
+
     public function test_supplier_cannot_be_deleted_if_has_items(): void
     {
         // Supplier 1 memiliki relasi dengan beberapa barang dari seeder

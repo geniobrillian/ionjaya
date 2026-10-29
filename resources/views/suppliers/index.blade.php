@@ -97,13 +97,6 @@
         <form action="{{ route('suppliers.store') }}" method="POST" class="space-y-4">
             @csrf
             <div>
-                <label for="supplier_code" class="block text-xs font-medium text-gray-700 mb-1">Kode Pemasok</label>
-                <input type="text" name="supplier_code" id="supplier_code" required
-                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
-                    placeholder="Contoh: SUP005">
-            </div>
-
-            <div>
                 <label for="supplier_name" class="block text-xs font-medium text-gray-700 mb-1">Nama Pemasok</label>
                 <input type="text" name="supplier_name" id="supplier_name" required
                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
