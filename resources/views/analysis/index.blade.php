@@ -172,9 +172,7 @@
                                 <td class="py-3 px-3 text-center">
                                     @if ($row['stock'] == 0)
                                         <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>Habis</span>
-                                    @elseif ($row['fsn_category'] === 'N')
-                                        <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-400"></span>Tidak Bergerak</span>
-                                    @elseif ($row['is_low_stock'])
+                                    @elseif ($row['fsn_category'] !== 'N' && $row['is_low_stock'])
                                         <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>Menipis</span>
                                     @else
                                         <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>Aman</span>
@@ -382,9 +380,7 @@
         let statusHtml = '';
         if (d.stock == 0) {
             statusHtml = '<span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>Habis</span>';
-        } else if (d.fsn_category === 'N') {
-            statusHtml = '<span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-400"></span>Tidak Bergerak</span>';
-        } else if (d.is_low_stock) {
+        } else if (d.fsn_category !== 'N' && d.is_low_stock) {
             statusHtml = '<span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>Menipis</span>';
         } else {
             statusHtml = '<span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>Aman</span>';
