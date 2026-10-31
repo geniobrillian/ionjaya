@@ -45,7 +45,7 @@
                 </div>
             </div>
 
-            <!-- Preset Pintas -->
+            {{-- Preset Pintas disembunyikan sementara (tombol tidak tampil, kode tetap ada dan bisa diaktifkan lagi):
             <div class="flex items-center gap-2 pt-2 text-xs text-gray-500">
                 <span class="font-medium text-gray-600">Pilihan Cepat:</span>
                 <button type="button" onclick="setPreset('{{ Carbon\Carbon::now()->subYear()->toDateString() }}', '{{ Carbon\Carbon::now()->toDateString() }}')"
@@ -57,6 +57,7 @@
                     90 Hari Terakhir
                 </button>
             </div>
+            --}}
         </form>
     </div>
 
