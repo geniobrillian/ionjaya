@@ -197,58 +197,62 @@
     <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
         <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-md transition-opacity duration-300" onclick="closeDetailModal()"></div>
 
-        <div class="relative bg-white rounded-2xl border border-gray-200 shadow-2xl max-w-md w-full p-6 transform transition-all z-10 max-h-[90vh] overflow-y-auto">
-            <button type="button" onclick="closeDetailModal()"
-                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none"
-                aria-label="Tutup Detail">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-
-            <h3 id="detailNama" class="text-lg font-bold text-gray-900 pr-8"></h3>
-            <div class="mt-2">
-                <span id="detailBadge" class="px-2.5 py-1 rounded text-xs font-bold"></span>
+        <div class="relative bg-white rounded-2xl border border-gray-200 shadow-2xl w-full p-6 transform transition-all z-10 max-h-[90vh] overflow-y-auto" style="max-width: 32rem;">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h3 id="detailNama" class="text-xl font-bold text-gray-900 leading-snug"></h3>
+                    <p id="detailKode" class="text-sm text-gray-500 mt-0.5"></p>
+                </div>
+                <button type="button" onclick="closeDetailModal()"
+                    class="shrink-0 text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none"
+                    aria-label="Tutup Detail">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
 
-            <dl class="mt-5 space-y-2.5 text-sm">
-                <div class="flex justify-between gap-4">
-                    <dt class="text-gray-500">Total terjual</dt>
-                    <dd id="detailTerjual" class="font-semibold text-gray-900"></dd>
-                </div>
-                <div class="flex justify-between gap-4">
-                    <dt class="text-gray-500">Kecepatan perputaran</dt>
-                    <dd id="detailTor" class="font-semibold text-gray-900"></dd>
-                </div>
-                <div class="flex justify-between gap-4">
-                    <dt class="text-gray-500">Rata-rata stok</dt>
-                    <dd id="detailRataStok" class="font-semibold text-gray-900"></dd>
-                </div>
-                <div class="flex justify-between gap-4">
-                    <dt class="text-gray-500">Penjualan tertinggi/hari</dt>
-                    <dd id="detailPmax" class="font-semibold text-gray-900"></dd>
-                </div>
-                <div class="flex justify-between gap-4">
-                    <dt class="text-gray-500">Stok saat ini</dt>
-                    <dd id="detailStok" class="font-semibold text-gray-900"></dd>
-                </div>
-                <div class="flex justify-between gap-4">
-                    <dt class="text-gray-500">Status</dt>
-                    <dd id="detailStatus" class="font-semibold text-gray-900"></dd>
-                </div>
-            </dl>
+            <div class="mt-3 flex flex-wrap items-center gap-2">
+                <span id="detailBadge" class="px-2.5 py-1 rounded-full text-xs font-bold"></span>
+                <span id="detailStatusPill"></span>
+            </div>
 
-            <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mt-6 mb-2.5">Pengendalian Stok</h4>
-            <dl class="space-y-2.5 text-sm">
-                <div class="flex justify-between gap-4">
+            <div id="detailTakeaway" class="mt-4 rounded-xl px-4 py-3 text-sm font-medium"></div>
+
+            <div class="mt-5 grid grid-cols-2 gap-3">
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-3">
+                    <p class="text-xs text-gray-500">Total terjual</p>
+                    <p id="detailTerjual" class="mt-1 text-base font-bold text-gray-900"></p>
+                </div>
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-3">
+                    <p class="text-xs text-gray-500">Stok saat ini</p>
+                    <p id="detailStok" class="mt-1 text-base font-bold text-gray-900"></p>
+                </div>
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-3">
+                    <p class="text-xs text-gray-500">Kecepatan perputaran</p>
+                    <p id="detailTor" class="mt-1 text-base font-bold text-gray-900"></p>
+                </div>
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-3">
+                    <p class="text-xs text-gray-500">Rata-rata stok</p>
+                    <p id="detailRataStok" class="mt-1 text-base font-bold text-gray-900"></p>
+                </div>
+                <div id="detailPmaxTile" class="col-span-2 bg-gray-50 border border-gray-200 rounded-xl p-3">
+                    <p class="text-xs text-gray-500">Penjualan tertinggi/hari</p>
+                    <p id="detailPmax" class="mt-1 text-base font-bold text-gray-900"></p>
+                </div>
+            </div>
+
+            <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mt-6 mb-1">Pengendalian Stok</h4>
+            <dl class="text-sm divide-y divide-gray-100">
+                <div class="flex justify-between gap-4 py-2.5">
                     <dt class="text-gray-500">Stok pengaman</dt>
                     <dd id="detailSs" class="font-semibold text-gray-900"></dd>
                 </div>
-                <div class="flex justify-between gap-4">
+                <div class="flex justify-between gap-4 py-2.5">
                     <dt class="text-gray-500">Batas pesan</dt>
                     <dd id="detailBatas" class="font-semibold text-gray-900"></dd>
                 </div>
-                <div class="flex justify-between gap-4">
+                <div class="flex justify-between gap-4 py-2.5">
                     <dt class="text-gray-500">Waktu tunggu</dt>
                     <dd id="detailLead" class="font-semibold text-gray-900"></dd>
                 </div>
@@ -362,30 +366,47 @@
         const d = JSON.parse(row.dataset.detail);
         const badge = document.getElementById('detailBadge');
         document.getElementById('detailNama').textContent = d.item_name;
+        document.getElementById('detailKode').textContent = d.code || '';
         if (d.fsn_category === 'F') {
             badge.textContent = 'FAST MOVING';
-            badge.className = 'px-2.5 py-1 rounded text-xs font-bold bg-green-100 text-green-800';
+            badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800';
         } else if (d.fsn_category === 'S') {
             badge.textContent = 'SLOW MOVING';
-            badge.className = 'px-2.5 py-1 rounded text-xs font-bold bg-yellow-100 text-yellow-800';
+            badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800';
         } else {
             badge.textContent = 'NON MOVING';
-            badge.className = 'px-2.5 py-1 rounded text-xs font-bold bg-gray-100 text-gray-700';
+            badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-700';
         }
         document.getElementById('detailTerjual').textContent = d.p_pk + ' unit';
         document.getElementById('detailTor').textContent = fmtID(d.tor, 2) + ' kali/tahun';
         document.getElementById('detailRataStok').textContent = fmtID(d.p_rt, 1) + ' unit';
-        document.getElementById('detailPmax').textContent = (d.fsn_category === 'F' ? d.p_max + ' unit/hari' : '—');
         document.getElementById('detailStok').textContent = d.stock + ' unit';
-        let statusHtml = '';
-        if (d.stock == 0) {
-            statusHtml = '<span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>Habis</span>';
-        } else if (d.fsn_category !== 'N' && d.is_low_stock) {
-            statusHtml = '<span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>Menipis</span>';
+        const pmaxTile = document.getElementById('detailPmaxTile');
+        if (d.fsn_category === 'F') {
+            pmaxTile.classList.remove('hidden');
+            document.getElementById('detailPmax').textContent = d.p_max + ' unit/hari';
         } else {
-            statusHtml = '<span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>Aman</span>';
+            pmaxTile.classList.add('hidden');
         }
-        document.getElementById('detailStatus').innerHTML = statusHtml;
+        const statusPill = document.getElementById('detailStatusPill');
+        const takeaway = document.getElementById('detailTakeaway');
+        if (d.stock == 0) {
+            statusPill.innerHTML = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-500 text-white"><span class="w-2 h-2 rounded-full bg-white"></span>Habis</span>';
+            takeaway.textContent = (d.fsn_category === 'N' ? 'Stok kosong — pesan hanya saat ada permintaan.' : 'Stok kosong — barang ini tidak bisa dijual. Pesan segera.');
+            takeaway.className = 'mt-4 rounded-xl px-4 py-3 text-sm font-medium bg-red-50 text-gray-900';
+        } else if (d.fsn_category !== 'N' && d.is_low_stock) {
+            statusPill.innerHTML = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800"><span class="w-2 h-2 rounded-full bg-orange-500"></span>Menipis</span>';
+            takeaway.textContent = 'Stok sudah di bawah batas pesan — segera pesan.';
+            takeaway.className = 'mt-4 rounded-xl px-4 py-3 text-sm font-medium bg-yellow-100 text-yellow-800';
+        } else if (d.fsn_category === 'N') {
+            statusPill.innerHTML = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800"><span class="w-2 h-2 rounded-full bg-green-500"></span>Aman</span>';
+            takeaway.textContent = 'Barang on-demand — pesan hanya saat ada permintaan.';
+            takeaway.className = 'mt-4 rounded-xl px-4 py-3 text-sm font-medium bg-gray-100 text-gray-700';
+        } else {
+            statusPill.innerHTML = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800"><span class="w-2 h-2 rounded-full bg-green-500"></span>Aman</span>';
+            takeaway.textContent = 'Stok masih di atas batas pesan — belum perlu pesan.';
+            takeaway.className = 'mt-4 rounded-xl px-4 py-3 text-sm font-medium bg-green-100 text-green-800';
+        }
         document.getElementById('detailSs').textContent = (d.safety_stock !== null ? d.safety_stock + ' unit' : '—');
         document.getElementById('detailBatas').textContent = (d.order_threshold > 0 ? d.order_threshold + ' unit' : '— (sesuai permintaan)');
         document.getElementById('detailLead').textContent = d.lead_time + ' hari';
