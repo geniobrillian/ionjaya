@@ -170,7 +170,9 @@
                                     {{ $row['order_threshold'] > 0 ? $row['order_threshold'] : '—' }}
                                 </td>
                                 <td class="py-3 px-3 text-center">
-                                    @if ($row['fsn_category'] === 'N')
+                                    @if ($row['stock'] == 0)
+                                        <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>Habis</span>
+                                    @elseif ($row['fsn_category'] === 'N')
                                         <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-400"></span>Tidak Bergerak</span>
                                     @elseif ($row['is_low_stock'])
                                         <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>Menipis</span>
@@ -231,6 +233,10 @@
                 <div class="flex justify-between gap-4">
                     <dt class="text-gray-500">Stok saat ini</dt>
                     <dd id="detailStok" class="font-semibold text-gray-900"></dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="text-gray-500">Status</dt>
+                    <dd id="detailStatus" class="font-semibold text-gray-900"></dd>
                 </div>
             </dl>
 
@@ -373,6 +379,17 @@
         document.getElementById('detailRataStok').textContent = fmtID(d.p_rt, 1) + ' unit';
         document.getElementById('detailPmax').textContent = (d.fsn_category === 'F' ? d.p_max + ' unit/hari' : '—');
         document.getElementById('detailStok').textContent = d.stock + ' unit';
+        let statusHtml = '';
+        if (d.stock == 0) {
+            statusHtml = '<span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>Habis</span>';
+        } else if (d.fsn_category === 'N') {
+            statusHtml = '<span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-400"></span>Tidak Bergerak</span>';
+        } else if (d.is_low_stock) {
+            statusHtml = '<span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>Menipis</span>';
+        } else {
+            statusHtml = '<span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>Aman</span>';
+        }
+        document.getElementById('detailStatus').innerHTML = statusHtml;
         document.getElementById('detailSs').textContent = (d.safety_stock !== null ? d.safety_stock + ' unit' : '—');
         document.getElementById('detailBatas').textContent = (d.order_threshold > 0 ? d.order_threshold + ' unit' : '— (sesuai permintaan)');
         document.getElementById('detailLead').textContent = d.lead_time + ' hari';
