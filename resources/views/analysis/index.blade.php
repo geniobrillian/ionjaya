@@ -1,16 +1,24 @@
 @extends('layouts.app')
 
-@section('title', 'Analisis FSN & ROP')
-@section('page_title', 'Analisis FSN & ROP')
+@section('title', 'Analisis Persediaan')
+@section('page_title', 'Analisis Persediaan')
 
 @section('content')
+@php
+    // Format tanggal Indonesia singkat: 1 Jan 2026 (tanpa bergantung locale server).
+    $bulanSingkat = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    $tglSingkat = function ($s) use ($bulanSingkat) {
+        $t = strtotime($s);
+        return date('j', $t) . ' ' . $bulanSingkat[date('n', $t) - 1] . ' ' . date('Y', $t);
+    };
+@endphp
 <div class="space-y-6">
     <!-- Kartu Pemilihan Periode Analisis -->
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
         <div class="mb-4">
-            <h2 class="text-base font-semibold text-gray-900">Periode Pengamatan Transaksi</h2>
+            <h2 class="text-base font-semibold text-gray-900">Periode Analisis</h2>
             <p class="text-xs text-gray-500 mt-0.5">
-                Pilih rentang tanggal riwayat transaksi yang akan digunakan untuk menghitung perputaran barang (TOR), klasifikasi FSN, serta batas Safety Stock dan Reorder Point.
+                Pilih periode transaksi yang ingin digunakan untuk menganalisis pergerakan dan kebutuhan stok barang.
             </p>
         </div>
 
@@ -32,7 +40,7 @@
                 <div class="sm:col-span-4 flex items-center space-x-2">
                     <button type="submit"
                         class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md shadow-sm transition-colors text-center">
-                        Proses Perhitungan
+                        Analisis Persediaan
                     </button>
                 </div>
             </div>
@@ -40,9 +48,9 @@
             <!-- Preset Pintas -->
             <div class="flex items-center gap-2 pt-2 text-xs text-gray-500">
                 <span class="font-medium text-gray-600">Pilihan Cepat:</span>
-                <button type="button" onclick="setPreset('2025-01-01', '2025-12-31')"
+                <button type="button" onclick="setPreset('{{ Carbon\Carbon::now()->subYear()->toDateString() }}', '{{ Carbon\Carbon::now()->toDateString() }}')"
                     class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded border border-gray-300 transition-colors">
-                    Tahun 2025 (Data Penelitian)
+                    12 Bulan Terakhir
                 </button>
                 <button type="button" onclick="setPreset('{{ Carbon\Carbon::now()->subDays(90)->toDateString() }}', '{{ Carbon\Carbon::now()->toDateString() }}')"
                     class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded border border-gray-300 transition-colors">
@@ -64,58 +72,43 @@
 
     <!-- Kondisi: Hasil Analisis Berhasil Dihitung -->
     @if ($analysisResult)
-        <!-- 3 Kartu Ringkasan Kategori FSN -->
+        <!-- 3 Kartu Ringkasan Pergerakan Barang -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             <!-- Fast Moving -->
             <div class="bg-white rounded-lg border border-green-300 shadow-sm p-5">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-bold uppercase text-green-700 tracking-wider">Fast Moving (F)</span>
-                        <div class="text-2xl font-extrabold text-gray-900 mt-1">
-                            {{ $analysisResult['summary']['fast_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
-                        </div>
-                    </div>
-                    <span class="px-2.5 py-1 rounded bg-green-100 text-green-800 text-xs font-bold">TOR > 3</span>
+                <span class="text-xs font-bold uppercase text-green-700 tracking-wider">Fast Moving (F)</span>
+                <div class="text-2xl font-extrabold text-gray-900 mt-1">
+                    {{ $analysisResult['summary']['fast_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">Dikelola dengan Safety Stock & ROP dinamis.</p>
+                <p class="text-xs text-gray-500 mt-2">Barang yang cepat terjual.</p>
             </div>
 
             <!-- Slow Moving -->
             <div class="bg-white rounded-lg border border-yellow-300 shadow-sm p-5">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-bold uppercase text-yellow-700 tracking-wider">Slow Moving (S)</span>
-                        <div class="text-2xl font-extrabold text-gray-900 mt-1">
-                            {{ $analysisResult['summary']['slow_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
-                        </div>
-                    </div>
-                    <span class="px-2.5 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-bold">1 &le; TOR &le; 3</span>
+                <span class="text-xs font-bold uppercase text-yellow-700 tracking-wider">Slow Moving (S)</span>
+                <div class="text-2xl font-extrabold text-gray-900 mt-1">
+                    {{ $analysisResult['summary']['slow_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">Dikelola dengan Reorder Point (ROP) tanpa Safety Stock.</p>
+                <p class="text-xs text-gray-500 mt-2">Barang yang jarang terjual.</p>
             </div>
 
             <!-- Non Moving -->
             <div class="bg-white rounded-lg border border-gray-300 shadow-sm p-5">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-bold uppercase text-gray-700 tracking-wider">Non Moving (N)</span>
-                        <div class="text-2xl font-extrabold text-gray-900 mt-1">
-                            {{ $analysisResult['summary']['non_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
-                        </div>
-                    </div>
-                    <span class="px-2.5 py-1 rounded bg-gray-100 text-gray-700 text-xs font-bold">TOR < 1</span>
+                <span class="text-xs font-bold uppercase text-gray-700 tracking-wider">Non Moving (N)</span>
+                <div class="text-2xl font-extrabold text-gray-900 mt-1">
+                    {{ $analysisResult['summary']['non_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">Pengadaan murni sesuai permintaan (on-demand).</p>
+                <p class="text-xs text-gray-500 mt-2">Barang yang tidak terjual.</p>
             </div>
         </div>
 
-        <!-- Tabel Hasil Perhitungan Lengkap -->
+        <!-- Tabel Hasil Analisis (tabel keputusan) -->
         <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h3 class="text-base font-semibold text-gray-900">Rincian Hasil Perhitungan Batch</h3>
+                    <h3 class="text-base font-semibold text-gray-900">Hasil Analisis Persediaan</h3>
                     <p class="text-xs text-gray-500 mt-0.5">
-                        Periode: <strong>{{ Carbon\Carbon::parse($startDateStr)->translatedFormat('d M Y') }}</strong> s/d <strong>{{ Carbon\Carbon::parse($endDateStr)->translatedFormat('d M Y') }}</strong> ({{ $analysisResult['period']['days'] }} hari).
+                        Periode: <strong>{{ $tglSingkat($startDateStr) }}</strong> – <strong>{{ $tglSingkat($endDateStr) }}</strong> ({{ $analysisResult['period']['days'] }} hari).
                     </p>
                 </div>
 
@@ -126,76 +119,143 @@
                     <input type="hidden" name="end_date" value="{{ $endDateStr }}">
                     <button type="button" onclick="openApplyModal()"
                         class="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-md shadow-sm transition-colors">
-                        Terapkan Hasil ke Data Barang
+                        Terapkan Hasil Analisis
                     </button>
                 </form>
             </div>
 
+            <!-- Filter dan Pencarian -->
+            <div class="p-4 border-b border-gray-200 flex flex-col sm:flex-row gap-3">
+                <select id="filterPergerakan" onchange="filterHasil()"
+                    class="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <option value="all">Semua</option>
+                    <option value="F">Cepat</option>
+                    <option value="S">Lambat</option>
+                    <option value="N">Tidak Bergerak</option>
+                </select>
+                <input type="text" id="cariBarang" oninput="filterHasil()" placeholder="Cari nama barang..."
+                    class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            </div>
+
             <div class="overflow-x-auto">
-                <table class="w-full text-xs text-left text-gray-700">
+                <table class="w-full text-sm text-left text-gray-700">
                     <thead class="text-[11px] text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th class="py-3 px-3 text-center">No</th>
                             <th class="py-3 px-3">Kode</th>
-                            <th class="py-3 px-4">Nama Barang</th>
-                            <th class="py-3 px-3 text-right">Penjualan (P_pk)</th>
-                            <th class="py-3 px-3 text-right">Rata-rata (P_rt)</th>
-                            <th class="py-3 px-3 text-right">Nilai TOR</th>
-                            <th class="py-3 px-3 text-center">Kategori</th>
-                            <th class="py-3 px-3 text-center">P_max</th>
-                            <th class="py-3 px-3 text-center">Lead Time</th>
-                            <th class="py-3 px-3 text-center">Safety Stock</th>
-                            <th class="py-3 px-3 text-center">ROP</th>
+                            <th class="py-3 px-4">Barang</th>
+                            <th class="py-3 px-3 text-center">Pergerakan</th>
                             <th class="py-3 px-3 text-center">Batas Pesan</th>
+                            <th class="py-3 px-3 text-center">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody id="hasilBody" class="divide-y divide-gray-200">
                         @foreach ($analysisResult['items'] as $row)
-                            <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="py-2.5 px-3 text-center text-gray-500 font-mono">{{ $loop->iteration }}</td>
-                                <td class="py-2.5 px-3 font-mono font-semibold text-gray-900">{{ $row['item_code'] }}</td>
-                                <td class="py-2.5 px-4 font-medium text-gray-900">
-                                    {{ $row['item_name'] }}
-                                </td>
-                                <td class="py-2.5 px-3 text-right font-mono">{{ $row['p_pk'] }}</td>
-                                <td class="py-2.5 px-3 text-right font-mono text-gray-600">{{ number_format($row['p_rt'], 1) }}</td>
-                                <td class="py-2.5 px-3 text-right font-mono font-bold text-gray-900">{{ number_format($row['tor'], 2) }}</td>
-                                <td class="py-2.5 px-3 text-center">
+                            <tr class="hasil-row cursor-pointer hover:bg-gray-50 transition-colors"
+                                data-kategori="{{ $row['fsn_category'] }}"
+                                data-nama="{{ strtolower($row['item_name']) }}"
+                                data-detail='@json(array_merge($row, ['days' => $analysisResult['period']['days']]))'
+                                onclick="openDetailModal(this)">
+                                <td class="py-3 px-3 font-mono font-semibold text-gray-900">{{ $row['item_code'] }}</td>
+                                <td class="py-3 px-4 font-medium text-gray-900">{{ $row['item_name'] }}</td>
+                                <td class="py-3 px-3 text-center">
                                     @if ($row['fsn_category'] === 'F')
-                                        <span class="px-2 py-0.5 rounded font-bold bg-green-100 text-green-800">F (Fast)</span>
+                                        <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>Cepat</span>
                                     @elseif ($row['fsn_category'] === 'S')
-                                        <span class="px-2 py-0.5 rounded font-bold bg-yellow-100 text-yellow-800">S (Slow)</span>
+                                        <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>Lambat</span>
                                     @else
-                                        <span class="px-2 py-0.5 rounded font-bold bg-gray-100 text-gray-700">N (Non)</span>
+                                        <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-400"></span>Tidak Bergerak</span>
                                     @endif
                                 </td>
-                                <td class="py-2.5 px-3 text-center font-mono">{{ $row['p_max'] > 0 ? $row['p_max'] : '-' }}</td>
-                                <td class="py-2.5 px-3 text-center font-mono text-gray-600">{{ $row['lead_time'] }} hr</td>
-                                <td class="py-2.5 px-3 text-center font-mono {{ $row['safety_stock'] !== null ? 'font-semibold text-gray-900' : 'text-gray-400' }}">
-                                    {{ $row['safety_stock'] !== null ? $row['safety_stock'] : '-' }}
+                                <td class="py-3 px-3 text-center font-mono font-bold text-gray-900">
+                                    {{ $row['order_threshold'] > 0 ? $row['order_threshold'] : '—' }}
                                 </td>
-                                <td class="py-2.5 px-3 text-center font-mono {{ $row['rop'] !== null ? 'font-bold text-blue-700' : 'text-gray-400' }}">
-                                    {{ $row['rop'] !== null ? $row['rop'] : '-' }}
-                                </td>
-                                <td class="py-2.5 px-3 text-center font-mono">
-                                    @if ($row['fsn_category'] === 'F')
-                                        <span class="font-bold text-gray-900">{{ $row['order_threshold'] }}</span>
-                                        <span class="text-[9px] text-gray-400 block">(ROP)</span>
-                                    @elseif ($row['fsn_category'] === 'S')
-                                        <span class="font-bold text-gray-900">{{ $row['order_threshold'] }}</span>
-                                        <span class="text-[9px] text-gray-400 block">(ROP)</span>
+                                <td class="py-3 px-3 text-center">
+                                    @if ($row['fsn_category'] === 'N')
+                                        <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-400"></span>Tidak Bergerak</span>
+                                    @elseif ($row['is_low_stock'])
+                                        <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>Menipis</span>
                                     @else
-                                        <span class="text-gray-400">0 (On-Demand)</span>
+                                        <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>Aman</span>
                                     @endif
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
+                <p id="hasilKosong" class="hidden text-center text-sm text-gray-500 py-8">
+                    Tidak ada barang yang cocok dengan filter atau pencarian.
+                </p>
             </div>
+            <p class="text-xs text-gray-400 px-5 py-3 border-t border-gray-200">
+                Klik salah satu barang untuk melihat detail analisis dan cara hasil ini dihitung.
+            </p>
         </div>
     @endif
 </div>
+
+    <!-- Modal Detail Barang -->
+    <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-md transition-opacity duration-300" onclick="closeDetailModal()"></div>
+
+        <div class="relative bg-white rounded-2xl border border-gray-200 shadow-2xl max-w-md w-full p-6 transform transition-all z-10 max-h-[90vh] overflow-y-auto">
+            <button type="button" onclick="closeDetailModal()"
+                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none"
+                aria-label="Tutup Detail">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <h3 id="detailNama" class="text-lg font-bold text-gray-900 pr-8"></h3>
+            <div class="mt-2">
+                <span id="detailBadge" class="px-2.5 py-1 rounded text-xs font-bold"></span>
+            </div>
+
+            <dl class="mt-5 space-y-2.5 text-sm">
+                <div class="flex justify-between gap-4">
+                    <dt class="text-gray-500">Total terjual</dt>
+                    <dd id="detailTerjual" class="font-semibold text-gray-900"></dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="text-gray-500">Kecepatan perputaran</dt>
+                    <dd id="detailTor" class="font-semibold text-gray-900"></dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="text-gray-500">Rata-rata stok</dt>
+                    <dd id="detailRataStok" class="font-semibold text-gray-900"></dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="text-gray-500">Penjualan tertinggi/hari</dt>
+                    <dd id="detailPmax" class="font-semibold text-gray-900"></dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="text-gray-500">Stok saat ini</dt>
+                    <dd id="detailStok" class="font-semibold text-gray-900"></dd>
+                </div>
+            </dl>
+
+            <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mt-6 mb-2.5">Pengendalian Stok</h4>
+            <dl class="space-y-2.5 text-sm">
+                <div class="flex justify-between gap-4">
+                    <dt class="text-gray-500">Stok pengaman</dt>
+                    <dd id="detailSs" class="font-semibold text-gray-900"></dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="text-gray-500">Batas pesan</dt>
+                    <dd id="detailBatas" class="font-semibold text-gray-900"></dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="text-gray-500">Waktu tunggu</dt>
+                    <dd id="detailLead" class="font-semibold text-gray-900"></dd>
+                </div>
+            </dl>
+
+            <details class="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <summary class="text-sm font-semibold text-gray-900 cursor-pointer">Bagaimana hasil ini dihitung?</summary>
+                <div id="detailHitung" class="mt-3 space-y-1.5 text-xs text-gray-700 font-mono leading-relaxed"></div>
+            </details>
+        </div>
+    </div>
 
     <!-- Modal Konfirmasi Terapkan Hasil Analisis -->
     <div id="applyConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="applyModalTitle">
@@ -228,7 +288,7 @@
             <!-- Pesan Konfirmasi -->
             <div class="bg-amber-50/70 rounded-lg p-3.5 border border-amber-200/80 mb-5">
                 <p class="text-sm text-gray-700 leading-relaxed">
-                    Apakah Anda yakin ingin menerapkan hasil analisis FSN dan parameter ROP ini ke master data barang?
+                    Hasil analisis ini akan disimpan ke Data Barang dan dipakai sebagai ambang stok (kategori, stok pengaman, dan batas pesan). Ambang lama akan diganti.
                 </p>
             </div>
 
@@ -273,10 +333,88 @@
         document.getElementById('applyForm').submit();
     }
 
+    // Filter kategori + pencarian nama barang pada tabel hasil
+    function filterHasil() {
+        const kategori = document.getElementById('filterPergerakan').value;
+        const cari = document.getElementById('cariBarang').value.trim().toLowerCase();
+        let terlihat = 0;
+        document.querySelectorAll('.hasil-row').forEach(function (row) {
+            const cocokKategori = kategori === 'all' || row.dataset.kategori === kategori;
+            const cocokNama = cari === '' || row.dataset.nama.indexOf(cari) !== -1;
+            const tampil = cocokKategori && cocokNama;
+            row.classList.toggle('hidden', !tampil);
+            if (tampil) terlihat++;
+        });
+        document.getElementById('hasilKosong').classList.toggle('hidden', terlihat > 0);
+    }
+
+    // Format angka gaya Indonesia (koma desimal)
+    function fmtID(n, desimal) {
+        return Number(n).toFixed(desimal).replace('.', ',');
+    }
+
+    // Modal Detail Barang
+    function openDetailModal(row) {
+        const d = JSON.parse(row.dataset.detail);
+        const badge = document.getElementById('detailBadge');
+        document.getElementById('detailNama').textContent = d.item_name;
+        if (d.fsn_category === 'F') {
+            badge.textContent = 'FAST MOVING';
+            badge.className = 'px-2.5 py-1 rounded text-xs font-bold bg-green-100 text-green-800';
+        } else if (d.fsn_category === 'S') {
+            badge.textContent = 'SLOW MOVING';
+            badge.className = 'px-2.5 py-1 rounded text-xs font-bold bg-yellow-100 text-yellow-800';
+        } else {
+            badge.textContent = 'NON MOVING';
+            badge.className = 'px-2.5 py-1 rounded text-xs font-bold bg-gray-100 text-gray-700';
+        }
+        document.getElementById('detailTerjual').textContent = d.p_pk + ' unit';
+        document.getElementById('detailTor').textContent = fmtID(d.tor, 2) + ' kali/tahun';
+        document.getElementById('detailRataStok').textContent = fmtID(d.p_rt, 1) + ' unit';
+        document.getElementById('detailPmax').textContent = (d.fsn_category === 'F' ? d.p_max + ' unit/hari' : '—');
+        document.getElementById('detailStok').textContent = d.stock + ' unit';
+        document.getElementById('detailSs').textContent = (d.safety_stock !== null ? d.safety_stock + ' unit' : '—');
+        document.getElementById('detailBatas').textContent = (d.order_threshold > 0 ? d.order_threshold + ' unit' : '— (sesuai permintaan)');
+        document.getElementById('detailLead').textContent = d.lead_time + ' hari';
+
+        let hitung = '';
+        hitung += 'Stok awal periode (P_aw) = ' + d.p_aw + '<br>';
+        hitung += 'Pembelian periode (P_ms) = ' + d.p_ms + '<br>';
+        hitung += 'Penjualan periode (P_pk) = ' + d.p_pk + '<br>';
+        hitung += 'Stok akhir (P_ak) = P_aw + P_ms &minus; P_pk = ' + d.p_ak + '<br>';
+        hitung += 'Rata-rata stok (P_rt) = (P_aw + P_ak) / 2 = ' + fmtID(d.p_rt, 1) + '<br>';
+        hitung += 'TOR periode (TOR_p) = P_pk / P_rt = ' + fmtID(d.tor_p, 2) + '<br>';
+        hitung += 'Waktu simpan (W_sp) = ' + d.days + ' / TOR_p = ' + fmtID(d.w_sp, 2) + ' hari<br>';
+        hitung += 'TOR tahunan = 365 / W_sp = ' + fmtID(d.tor, 2) + ' &rarr; ' + (d.fsn_category === 'F' ? 'Fast Moving' : (d.fsn_category === 'S' ? 'Slow Moving' : 'Non Moving')) + '<br>';
+        if (d.fsn_category === 'F' || d.fsn_category === 'S') {
+            hitung += 'Rata-rata harian = P_pk / ' + d.days + ' = ' + fmtID(d.p_rt_daily, 2) + '<br>';
+        }
+        if (d.fsn_category === 'F') {
+            hitung += 'Stok pengaman (SS) = (P_max &minus; rata-rata harian) x L = ' + d.safety_stock + '<br>';
+            hitung += 'Batas pesan (ROP) = rata-rata harian x L + SS = ' + d.rop + '<br>';
+        } else if (d.fsn_category === 'S') {
+            hitung += 'Batas pesan (ROP) = ceil(rata-rata harian x L) = ' + d.rop + '<br>';
+            hitung += 'Slow Moving tidak memakai Stok Pengaman.<br>';
+        } else {
+            hitung += 'Non Moving tidak memakai Stok Pengaman maupun Batas Pesan &mdash; pengadaan sesuai permintaan.<br>';
+        }
+        document.getElementById('detailHitung').innerHTML = hitung;
+
+        document.getElementById('detailModal').classList.remove('hidden');
+    }
+
+    function closeDetailModal() {
+        const modal = document.getElementById('detailModal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
     // Tutup popup jika tombol Escape ditekan
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeApplyModal();
+            closeDetailModal();
         }
     });
 </script>

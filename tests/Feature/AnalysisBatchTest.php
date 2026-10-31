@@ -26,8 +26,8 @@ class AnalysisBatchTest extends TestCase
         $response = $this->actingAs($this->superAdmin)->get('/analisis-fsn-rop');
 
         $response->assertStatus(200);
-        $response->assertSee('Analisis FSN & ROP');
-        $response->assertSee('Periode Pengamatan Transaksi');
+        $response->assertSee('Analisis Persediaan');
+        $response->assertSee('Periode Analisis');
     }
 
     public function test_analysis_batch_process_displays_fsn_and_rop_results(): void
@@ -41,8 +41,8 @@ class AnalysisBatchTest extends TestCase
         $response->assertSee('Fast Moving (F)');
         $response->assertSee('Slow Moving (S)');
         $response->assertSee('Non Moving (N)');
-        $response->assertSee('Rincian Hasil Perhitungan Batch');
-        $response->assertSee('Terapkan Hasil ke Data Barang');
+        $response->assertSee('Hasil Analisis Persediaan');
+        $response->assertSee('Terapkan Hasil Analisis');
     }
 
     public function test_analysis_batch_handles_empty_period_gracefully(): void

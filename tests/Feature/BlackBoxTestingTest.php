@@ -402,7 +402,7 @@ class BlackBoxTestingTest extends TestCase
         $response->assertSee('Fast Moving (F)');
         $response->assertSee('Slow Moving (S)');
         $response->assertSee('Non Moving (N)');
-        $response->assertSee('Terapkan Hasil ke Data Barang');
+        $response->assertSee('Terapkan Hasil Analisis');
     }
 
     /**

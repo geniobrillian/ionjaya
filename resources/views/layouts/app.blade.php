@@ -61,7 +61,7 @@
                 @if (Auth::user()->isSuperAdmin())
                     <a href="{{ route('analysis.index') }}"
                         class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('analysis.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                        Analisis FSN & ROP
+                        Analisis Persediaan
                     </a>
                     <a href="{{ route('reports.index') }}"
                         class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('reports.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
