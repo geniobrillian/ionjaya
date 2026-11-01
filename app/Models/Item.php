@@ -94,4 +94,27 @@ class Item extends Model
         $threshold = $this->order_threshold;
         return $threshold > 0 && $this->stock <= $threshold;
     }
+
+    // Status stok untuk tampilan (halaman Stok Barang).
+    // Urutan penting: stok 0 selalu Habis (semua kategori), baru kemudian
+    // Belum Dianalisis (belum pernah Terapkan), Non Moving berstok = Aman
+    // (tidak pernah Menipis), dan Fast/Slow mengikuti is_low_stock.
+    // Berbeda dengan is_low_stock (biner), status ini tidak pernah menyatakan
+    // AMAN untuk barang yang belum dianalisis.
+    public function getStockStatusAttribute(): string
+    {
+        if ($this->stock <= 0) {
+            return 'habis';
+        }
+
+        if (is_null($this->fsn_category)) {
+            return 'belum';
+        }
+
+        if ($this->fsn_category === 'N') {
+            return 'aman';
+        }
+
+        return $this->is_low_stock ? 'menipis' : 'aman';
+    }
 }

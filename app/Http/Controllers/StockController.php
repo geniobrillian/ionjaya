@@ -10,7 +10,7 @@ class StockController extends Controller
 {
     /**
      * Menampilkan daftar monitoring stok seluruh barang
-     * beserta indikator status MENIPIS / AMAN.
+     * beserta indikator status HABIS / MENIPIS / AMAN / BELUM DIANALISIS.
      */
     public function index(Request $request): View
     {
@@ -33,16 +33,19 @@ class StockController extends Controller
 
         $allItems = $query->get();
 
-        // Hitung total ringkasan status stok
+        // Hitung ringkasan status stok berdasarkan status tampilan.
+        // lowStockCount dipertahankan untuk banner (barang Fast/Slow yang
+        // stoknya mencapai/di bawah batas pemesanan, termasuk yang habis).
         $totalItems = $allItems->count();
         $lowStockCount = $allItems->filter(fn($item) => $item->is_low_stock)->count();
-        $safeStockCount = $totalItems - $lowStockCount;
+        $menipisCount = $allItems->filter(fn($item) => $item->stock_status === 'menipis')->count();
+        $safeStockCount = $allItems->filter(fn($item) => $item->stock_status === 'aman')->count();
+        $habisCount = $allItems->filter(fn($item) => $item->stock_status === 'habis')->count();
+        $belumCount = $allItems->filter(fn($item) => $item->stock_status === 'belum')->count();
 
-        // Filter status stok (Menipis vs Aman)
-        if ($statusFilter === 'menipis') {
-            $items = $allItems->filter(fn($item) => $item->is_low_stock);
-        } elseif ($statusFilter === 'aman') {
-            $items = $allItems->filter(fn($item) => ! $item->is_low_stock);
+        // Filter status stok (berdasarkan status tampilan, bukan biner menipis/aman)
+        if (in_array($statusFilter, ['menipis', 'aman', 'habis', 'belum'], true)) {
+            $items = $allItems->filter(fn($item) => $item->stock_status === $statusFilter);
         } else {
             $items = $allItems;
         }
@@ -54,7 +57,10 @@ class StockController extends Controller
             'statusFilter',
             'totalItems',
             'lowStockCount',
-            'safeStockCount'
+            'menipisCount',
+            'safeStockCount',
+            'habisCount',
+            'belumCount'
         ));
     }
 }

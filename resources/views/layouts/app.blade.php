@@ -32,7 +32,7 @@
             </div>
 
             <!-- Daftar Menu -->
-            <nav class="p-4 space-y-1 text-sm flex-1">
+            <nav class="p-4 space-y-1 text-sm flex-1 overflow-y-auto">
                 @if (Auth::user()->isSuperAdmin())
                     <a href="{{ route('dashboard') }}"
                         class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('dashboard') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
@@ -40,46 +40,88 @@
                     </a>
                 @endif
 
-                <a href="{{ route('sales.index') }}"
-                    class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('sales.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                    Transaksi Penjualan
-                </a>
-                <a href="{{ route('purchases.index') }}"
-                    class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('purchases.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                    Transaksi Pembelian
-                </a>
+                {{-- TRANSAKSI --}}
+                <details {{ request()->routeIs('sales.*', 'purchases.*') ? 'open' : '' }}>
+                    <summary class="flex items-center justify-between px-3 py-2 rounded-md font-semibold text-xs uppercase tracking-wider {{ request()->routeIs('sales.*', 'purchases.*') ? 'text-white' : 'text-gray-400' }} hover:text-white hover:bg-gray-800 cursor-pointer list-none transition-colors">
+                        <span>Transaksi</span>
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </summary>
+                    <div class="mt-1 space-y-1 ml-3 border-l border-gray-800 pl-2">
+                        <a href="{{ route('sales.index') }}"
+                            class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('sales.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                            Penjualan
+                        </a>
+                        <a href="{{ route('purchases.index') }}"
+                            class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('purchases.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                            Pembelian
+                        </a>
+                    </div>
+                </details>
 
-                <a href="{{ route('stock.index') }}"
-                    class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('stock.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                    Stok Barang
-                </a>
-                <a href="{{ route('recommendations.index') }}"
-                    class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('recommendations.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                    Rekomendasi Pengadaan
-                </a>
+                {{-- PERSEDIAAN --}}
+                <details {{ request()->routeIs('stock.*', 'analysis.*') ? 'open' : '' }}>
+                    <summary class="flex items-center justify-between px-3 py-2 rounded-md font-semibold text-xs uppercase tracking-wider {{ request()->routeIs('stock.*', 'analysis.*') ? 'text-white' : 'text-gray-400' }} hover:text-white hover:bg-gray-800 cursor-pointer list-none transition-colors">
+                        <span>Persediaan</span>
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </summary>
+                    <div class="mt-1 space-y-1 ml-3 border-l border-gray-800 pl-2">
+                        <a href="{{ route('stock.index') }}"
+                            class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('stock.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                            Stok Barang
+                        </a>
+                        @if (Auth::user()->isSuperAdmin())
+                            <a href="{{ route('analysis.index') }}"
+                                class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('analysis.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                                Analisis Persediaan
+                            </a>
+                        @endif
+                    </div>
+                </details>
 
                 @if (Auth::user()->isSuperAdmin())
-                    <a href="{{ route('analysis.index') }}"
-                        class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('analysis.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                        Analisis Persediaan
-                    </a>
-                    <a href="{{ route('reports.index') }}"
-                        class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('reports.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                        Laporan
-                    </a>
+                    {{-- DATA MASTER --}}
+                    <details {{ request()->routeIs('items.*', 'suppliers.*', 'imports.*') ? 'open' : '' }}>
+                        <summary class="flex items-center justify-between px-3 py-2 rounded-md font-semibold text-xs uppercase tracking-wider {{ request()->routeIs('items.*', 'suppliers.*', 'imports.*') ? 'text-white' : 'text-gray-400' }} hover:text-white hover:bg-gray-800 cursor-pointer list-none transition-colors">
+                            <span>Data Master</span>
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </summary>
+                        <div class="mt-1 space-y-1 ml-3 border-l border-gray-800 pl-2">
+                            <a href="{{ route('items.index') }}"
+                                class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('items.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                                Data Barang
+                            </a>
+                            <a href="{{ route('suppliers.index') }}"
+                                class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('suppliers.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                                Data Pemasok
+                            </a>
+                            <a href="{{ route('imports.index') }}"
+                                class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('imports.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                                Impor Data
+                            </a>
+                        </div>
+                    </details>
 
-                    <a href="{{ route('items.index') }}"
-                        class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('items.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                        Data Barang
-                    </a>
-                    <a href="{{ route('suppliers.index') }}"
-                        class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('suppliers.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                        Data Pemasok
-                    </a>
-                    <a href="{{ route('imports.index') }}"
-                        class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('imports.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                        Impor Data
-                    </a>
+                    {{-- LAPORAN --}}
+                    <details {{ request()->routeIs('reports.*') ? 'open' : '' }}>
+                        <summary class="flex items-center justify-between px-3 py-2 rounded-md font-semibold text-xs uppercase tracking-wider {{ request()->routeIs('reports.*') ? 'text-white' : 'text-gray-400' }} hover:text-white hover:bg-gray-800 cursor-pointer list-none transition-colors">
+                            <span>Laporan</span>
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </summary>
+                        <div class="mt-1 space-y-1 ml-3 border-l border-gray-800 pl-2">
+                            <a href="{{ route('reports.index') }}"
+                                class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('reports.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                                Laporan
+                            </a>
+                        </div>
+                    </details>
                 @endif
             </nav>
         </div>
