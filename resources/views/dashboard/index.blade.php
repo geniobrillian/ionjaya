@@ -61,15 +61,30 @@
         </div>
 
         <!-- Kartu 4: Peringatan Stok Menipis -->
-        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5">
-            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Peringatan Stok</span>
-            <div class="text-xl sm:text-2xl font-bold {{ $metrics['low_stock_count'] > 0 ? 'text-red-600' : 'text-green-700' }} mt-2">
-                {{ $metrics['low_stock_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
+        @if ($metrics['low_stock_count'] > 0)
+            {{-- Seluruh card bisa diklik menuju daftar Perlu Pengadaan.
+                 Saat jumlah 0, card tetap div biasa (daftar kosong tidak ada gunanya dibuka). --}}
+            <a href="{{ route('stock.index', ['status' => 'perlu']) }}" title="Lihat barang yang perlu pengadaan"
+                class="block bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5 hover:shadow-md hover:border-red-300 transition-shadow cursor-pointer">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Peringatan Stok</span>
+                <div class="text-xl sm:text-2xl font-bold text-red-600 mt-2">
+                    {{ $metrics['low_stock_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
+                </div>
+                <p class="text-[11px] text-red-600 font-semibold mt-1">
+                    Stok mencapai batas pemesanan
+                </p>
+            </a>
+        @else
+            <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Peringatan Stok</span>
+                <div class="text-xl sm:text-2xl font-bold text-green-700 mt-2">
+                    {{ $metrics['low_stock_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
+                </div>
+                <p class="text-[11px] text-gray-400 mt-1">
+                    Seluruh stok dalam kondisi aman
+                </p>
             </div>
-            <p class="text-[11px] {{ $metrics['low_stock_count'] > 0 ? 'text-red-600 font-semibold' : 'text-gray-400' }} mt-1">
-                {{ $metrics['low_stock_count'] > 0 ? 'Stok mencapai batas pemesanan' : 'Seluruh stok dalam kondisi aman' }}
-            </p>
-        </div>
+        @endif
     </div>
 
     <!-- Grafik Batang Tren 7 Hari Terakhir (SVG / CSS Flat) -->

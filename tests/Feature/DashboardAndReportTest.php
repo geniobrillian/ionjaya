@@ -42,6 +42,32 @@ class DashboardAndReportTest extends TestCase
     }
 
     /**
+     * Kartu Peringatan Stok bisa diklik menuju daftar Perlu Pengadaan
+     * saat ada barang yang stoknya mencapai batas; saat tidak ada,
+     * card tetap div biasa (tanpa tautan).
+     */
+    public function test_stock_warning_card_links_to_perlu_filter_when_low_stock_exists(): void
+    {
+        // Seeder punya barang menipis (mis. BRG001) sehingga jumlah > 0.
+        $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee('title="Lihat barang yang perlu pengadaan"', false);
+        $response->assertSee('/stok?status=perlu', false);
+    }
+
+    public function test_stock_warning_card_is_not_a_link_when_no_low_stock(): void
+    {
+        Item::query()->update(['stock' => 999]);
+
+        $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Seluruh stok dalam kondisi aman');
+        $response->assertDontSee('title="Lihat barang yang perlu pengadaan"', false);
+    }
+
+    /**
      * Test 2: Filter rentang waktu pada dashboard.
      */
     public function test_super_admin_can_filter_dashboard_time_range(): void
