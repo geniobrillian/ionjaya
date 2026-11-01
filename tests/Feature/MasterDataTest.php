@@ -246,4 +246,108 @@ class MasterDataTest extends TestCase
             'id' => $item->id,
         ]);
     }
+
+    public function test_super_admin_can_view_item_detail_page(): void
+    {
+        // BRG001 (seeder) punya pemasok Utama SUP001.
+        $item = Item::where('item_code', 'BRG001')->first();
+
+        $response = $this->actingAs($this->superAdmin)->get('/barang/' . $item->id);
+
+        $response->assertStatus(200);
+        $response->assertSee($item->item_name);
+        $response->assertSee('Pemasok Barang Ini');
+        $response->assertSee('Utama');
+    }
+
+    public function test_admin_cannot_access_item_detail_page(): void
+    {
+        $admin = User::where('role', 'admin')->first();
+        $item = Item::first();
+
+        $response = $this->actingAs($admin)->get('/barang/' . $item->id);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_super_admin_can_attach_detach_and_set_primary_supplier(): void
+    {
+        // BRG001: Utama awal SUP001 (id 1) dari seeder.
+        $item = Item::where('item_code', 'BRG001')->first();
+        $supplierBaru = Supplier::find(2);
+
+        // Tambah pemasok kedua (bukan Utama).
+        $responseAttach = $this->actingAs($this->superAdmin)->post('/barang/' . $item->id . '/pemasok', [
+            'supplier_id' => $supplierBaru->id,
+        ]);
+        $responseAttach->assertRedirect('/barang/' . $item->id);
+        $responseAttach->assertSessionHas('success');
+        $this->assertDatabaseHas('barang_pemasok', [
+            'barang_id' => $item->id,
+            'pemasok_id' => $supplierBaru->id,
+            'pemasok_utama' => false,
+        ]);
+        $this->assertDatabaseHas('barang_pemasok', [
+            'barang_id' => $item->id,
+            'pemasok_id' => 1,
+            'pemasok_utama' => true,
+        ]);
+
+        // Jadikan pemasok kedua sebagai Utama (Utama lama dicabut).
+        $responsePrimary = $this->actingAs($this->superAdmin)->post('/barang/' . $item->id . '/pemasok/' . $supplierBaru->id . '/utama');
+        $responsePrimary->assertRedirect('/barang/' . $item->id);
+        $this->assertDatabaseHas('barang_pemasok', [
+            'barang_id' => $item->id,
+            'pemasok_id' => $supplierBaru->id,
+            'pemasok_utama' => true,
+        ]);
+        $this->assertDatabaseHas('barang_pemasok', [
+            'barang_id' => $item->id,
+            'pemasok_id' => 1,
+            'pemasok_utama' => false,
+        ]);
+
+        // Hapus relasi pemasok kedua.
+        $responseDetach = $this->actingAs($this->superAdmin)->delete('/barang/' . $item->id . '/pemasok/' . $supplierBaru->id);
+        $responseDetach->assertRedirect('/barang/' . $item->id);
+        $this->assertDatabaseMissing('barang_pemasok', [
+            'barang_id' => $item->id,
+            'pemasok_id' => $supplierBaru->id,
+        ]);
+    }
+
+    public function test_first_supplier_attached_becomes_primary_automatically(): void
+    {
+        $item = Item::create([
+            'item_code' => 'BRG_NOSUP',
+            'item_name' => 'Barang Tanpa Pemasok',
+            'purchase_price' => 10000,
+            'selling_price' => 15000,
+            'stock' => 0,
+        ]);
+
+        $response = $this->actingAs($this->superAdmin)->post('/barang/' . $item->id . '/pemasok', [
+            'supplier_id' => 3,
+        ]);
+
+        $response->assertRedirect('/barang/' . $item->id);
+        $this->assertDatabaseHas('barang_pemasok', [
+            'barang_id' => $item->id,
+            'pemasok_id' => 3,
+            'pemasok_utama' => true,
+        ]);
+    }
+
+    public function test_attach_duplicate_supplier_is_rejected(): void
+    {
+        // BRG001 sudah punya SUP001 dari seeder.
+        $item = Item::where('item_code', 'BRG001')->first();
+
+        $response = $this->actingAs($this->superAdmin)->post('/barang/' . $item->id . '/pemasok', [
+            'supplier_id' => 1,
+        ]);
+
+        $response->assertSessionHas('error');
+        $this->assertEquals(1, $item->suppliers()->where('suppliers.id', 1)->count());
+    }
 }

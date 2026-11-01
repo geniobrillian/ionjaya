@@ -48,8 +48,13 @@ Route::middleware('auth')->group(function () {
         Route::prefix('barang')->name('items.')->group(function () {
             Route::get('/', [\App\Http\Controllers\ItemController::class, 'index'])->name('index');
             Route::post('/', [\App\Http\Controllers\ItemController::class, 'store'])->name('store');
+            Route::get('/{item}', [\App\Http\Controllers\ItemController::class, 'show'])->name('show');
             Route::put('/{item}', [\App\Http\Controllers\ItemController::class, 'update'])->name('update');
             Route::delete('/{item}', [\App\Http\Controllers\ItemController::class, 'destroy'])->name('destroy');
+            // Kelola relasi pemasok barang (pivot barang_pemasok).
+            Route::post('/{item}/pemasok', [\App\Http\Controllers\ItemController::class, 'attachSupplier'])->name('suppliers.attach');
+            Route::delete('/{item}/pemasok/{supplier}', [\App\Http\Controllers\ItemController::class, 'detachSupplier'])->name('suppliers.detach');
+            Route::post('/{item}/pemasok/{supplier}/utama', [\App\Http\Controllers\ItemController::class, 'setPrimarySupplier'])->name('suppliers.primary');
         });
 
         Route::prefix('pemasok')->name('suppliers.')->group(function () {
