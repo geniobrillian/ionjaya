@@ -5,20 +5,20 @@
 
 @section('content')
 <div class="space-y-6">
-    <!-- Banner Peringatan Stok Menipis -->
-    @if ($lowStockCount > 0)
+    <!-- Banner Peringatan Stok (angka = isi daftar gabungan persis) -->
+    @if ($perluCount > 0)
         <div class="bg-red-50 border border-red-200 p-4 rounded-lg shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
                 <p class="text-sm font-bold text-red-900">
                     Pemberitahuan Persediaan
                 </p>
                 <p class="text-xs text-red-700 mt-0.5">
-                    Terdapat <strong>{{ $lowStockCount }} jenis barang</strong> yang stoknya telah mencapai atau berada di bawah batas pemesanan. Segera lakukan pengadaan.
+                    Terdapat <strong>{{ $perluCount }} jenis barang</strong> yang perlu pengadaan: {{ $perluBreakdown }}. Segera lakukan pengadaan.
                 </p>
             </div>
-            <a href="{{ route('stock.index', ['status' => 'menipis']) }}"
+            <a href="{{ route('stock.index', ['status' => 'perlu']) }}"
                 class="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-md shadow-sm transition-colors text-center whitespace-nowrap shrink-0">
-                Lihat Barang Menipis
+                Lihat Barang yang Perlu Pengadaan
             </a>
         </div>
     @endif
@@ -52,6 +52,7 @@
                 <select name="status" id="status"
                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <option value="">Semua ({{ $totalItems }})</option>
+                    <option value="perlu" {{ $statusFilter === 'perlu' ? 'selected' : '' }}>Perlu Pengadaan ({{ $perluCount }})</option>
                     <option value="menipis" {{ $statusFilter === 'menipis' ? 'selected' : '' }}>Menipis ({{ $menipisCount }})</option>
                     <option value="aman" {{ $statusFilter === 'aman' ? 'selected' : '' }}>Aman ({{ $safeStockCount }})</option>
                     <option value="habis" {{ $statusFilter === 'habis' ? 'selected' : '' }}>Habis ({{ $habisCount }})</option>

@@ -198,4 +198,38 @@ class TransactionAndStockTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Tidak ada data barang yang sesuai dengan kriteria filter.');
     }
+
+    public function test_stock_perlu_filter_shows_habis_first_then_menipis(): void
+    {
+        // Seeder tidak punya barang stok 0, jadi buat satu barang habis.
+        Item::create([
+            'item_code' => 'BRG_HABIS',
+            'item_name' => 'Barang Habis Uji',
+            'purchase_price' => 10000,
+            'selling_price' => 15000,
+            'stock' => 0,
+            'fsn_category' => 'F',
+            'rop' => 8,
+        ]);
+
+        $response = $this->actingAs($this->admin)->get('/stok?status=perlu');
+        $response->assertStatus(200);
+        $response->assertSee('Perlu Pengadaan');
+        $response->assertSee('Barang Habis Uji');
+        // BRG001 seeder: stok 3 di bawah ROP 8 -> menipis.
+        $response->assertSee('Kampas Rem Depan Honda Beat');
+        // Habis (paling gawat) tampil sebelum menipis.
+        $response->assertSeeInOrder(['Barang Habis Uji', 'Kampas Rem Depan Honda Beat']);
+    }
+
+    public function test_stock_banner_shows_procurement_breakdown_and_links_to_perlu(): void
+    {
+        // Seeder punya barang menipis (mis. BRG001) sehingga banner tampil.
+        $response = $this->actingAs($this->admin)->get('/stok');
+        $response->assertStatus(200);
+        $response->assertSee('Pemberitahuan Persediaan');
+        $response->assertSee('yang perlu pengadaan');
+        $response->assertSee('Lihat Barang yang Perlu Pengadaan');
+        $response->assertSee('/stok?status=perlu', false);
+    }
 }

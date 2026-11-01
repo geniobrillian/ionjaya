@@ -34,17 +34,33 @@ class StockController extends Controller
         $allItems = $query->get();
 
         // Hitung ringkasan status stok berdasarkan status tampilan.
-        // lowStockCount dipertahankan untuk banner (barang Fast/Slow yang
-        // stoknya mencapai/di bawah batas pemesanan, termasuk yang habis).
+        // Banner dan filter "Perlu Pengadaan" memakai gabungan habis +
+        // menipis (status tampilan), BUKAN is_low_stock: is_low_stock
+        // menghitung habis Fast/Slow tapi bukan habis Non, sehingga
+        // angkanya tidak pernah sama persis dengan isi daftar gabungan.
         $totalItems = $allItems->count();
-        $lowStockCount = $allItems->filter(fn($item) => $item->is_low_stock)->count();
         $menipisCount = $allItems->filter(fn($item) => $item->stock_status === 'menipis')->count();
         $safeStockCount = $allItems->filter(fn($item) => $item->stock_status === 'aman')->count();
         $habisCount = $allItems->filter(fn($item) => $item->stock_status === 'habis')->count();
         $belumCount = $allItems->filter(fn($item) => $item->stock_status === 'belum')->count();
+        $perluCount = $menipisCount + $habisCount;
+        $perluParts = [];
+        if ($habisCount > 0) {
+            $perluParts[] = "{$habisCount} habis";
+        }
+        if ($menipisCount > 0) {
+            $perluParts[] = "{$menipisCount} menipis";
+        }
+        $perluBreakdown = implode(' dan ', $perluParts);
 
-        // Filter status stok (berdasarkan status tampilan, bukan biner menipis/aman)
-        if (in_array($statusFilter, ['menipis', 'aman', 'habis', 'belum'], true)) {
+        // Filter status stok (berdasarkan status tampilan).
+        // 'perlu' = gabungan yang perlu pengadaan: habis dulu (paling
+        // gawat), lalu menipis, abjad di dalam tiap kelompok.
+        if ($statusFilter === 'perlu') {
+            $items = $allItems->filter(fn($item) => in_array($item->stock_status, ['menipis', 'habis'], true))
+                ->sortBy(fn($item) => ($item->stock_status === 'habis' ? '0' : '1').$item->item_name)
+                ->values();
+        } elseif (in_array($statusFilter, ['menipis', 'aman', 'habis', 'belum'], true)) {
             $items = $allItems->filter(fn($item) => $item->stock_status === $statusFilter);
         } else {
             $items = $allItems;
@@ -56,11 +72,12 @@ class StockController extends Controller
             'categoryFilter',
             'statusFilter',
             'totalItems',
-            'lowStockCount',
             'menipisCount',
             'safeStockCount',
             'habisCount',
-            'belumCount'
+            'belumCount',
+            'perluCount',
+            'perluBreakdown'
         ));
     }
 }
