@@ -158,6 +158,13 @@ class ImportTest extends TestCase
         $this->assertEquals(50000, (float) $purchaseDetail->unit_price);
         // Transaksi pembelian impor mencatat pemasok dari barisnya (SUP901).
         $this->assertEquals('SUP901', $purchaseDetail->transaction->supplier->supplier_code);
+        // Barang impor mendapat relasi pivot Pemasok Utama dari Data Barang.
+        $supplier901 = \App\Models\Supplier::where('supplier_code', 'SUP901')->first();
+        $this->assertDatabaseHas('barang_pemasok', [
+            'barang_id' => $item901->id,
+            'pemasok_id' => $supplier901->id,
+            'pemasok_utama' => true,
+        ]);
         $saleDetail = TransactionDetail::where('item_id', $item901->id)
             ->whereHas('transaction', fn ($q) => $q->where('transaction_type', 'penjualan'))->first();
         $this->assertEquals(65000, (float) $saleDetail->unit_price);
@@ -202,6 +209,30 @@ class ImportTest extends TestCase
 
         $preview->assertStatus(200);
         $preview->assertSee('pemasok berbeda');
+        $preview->assertDontSee('Konfirmasi &amp; Impor');
+    }
+
+    public function test_purchase_from_unregistered_supplier_shows_error_in_preview(): void
+    {
+        if (! $this->libraryAvailable()) {
+            $this->markTestSkipped('PhpSpreadsheet belum terpasang.');
+        }
+
+        $sheets = $this->validSheets();
+        // Baris PBL-9 memakai SUP902 untuk BRG901, padahal pemasok
+        // terdaftar BRG901 di Data Barang adalah SUP901 (nomor sendiri
+        // agar tidak ikut memicu error pemasok campur).
+        $sheets['Pembelian'][1][0] = 'PBL-9';
+        $sheets['Pembelian'][1][7] = 'SUP902';
+        $sheets['Pembelian'][1][8] = 'Pemasok Lain';
+
+        $path = $this->buildXlsx($sheets);
+        $preview = $this->actingAs($this->superAdmin)->post('/impor/pratinjau', [
+            'file' => new UploadedFile($path, 'import.xlsx', null, null, true),
+        ]);
+
+        $preview->assertStatus(200);
+        $preview->assertSee('tidak terdaftar sebagai pemasok');
         $preview->assertDontSee('Konfirmasi &amp; Impor');
     }
 

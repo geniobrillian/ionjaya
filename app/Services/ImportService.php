@@ -68,6 +68,7 @@ class ImportService
         $petunjuk->setCellValue('A9', '8. Pemasok yang kodenya belum ada dibuat otomatis dari file (lead time dari Data Barang, atau 1 hari bila hanya muncul di Pembelian).');
         $petunjuk->setCellValue('A10', '9. Barang yang kodenya sudah ada di database DITOLAK (tidak ditimpa). Gunakan database kosong (migrate fresh tanpa seed) untuk impor awal.');
         $petunjuk->setCellValue('A11', '10. Isi sel dengan NILAI langsung, bukan rumus Excel (rumus tidak dihitung saat impor).');
+        $petunjuk->setCellValue('A12', '11. Baris Pembelian hanya boleh memakai pemasok yang terdaftar untuk barang itu di sheet Data Barang (pemasok lain ditolak di pratinjau). Relasi pemasok kedua, ketiga, dst. ditambahkan manual lewat Detail Barang setelah impor.');
         $petunjuk->getColumnDimension('A')->setWidth(160);
 
         $this->templateSheet($spreadsheet, 'Data Barang',
@@ -565,6 +566,16 @@ class ImportService
                 ];
             }
 
+            // Validasi relasi (D5): baris Pembelian hanya boleh memakai
+            // pemasok yang terdaftar untuk barang itu. File impor hanya
+            // bisa menyatakan satu pemasok per barang (kolom Kode Pemasok
+            // di sheet Data Barang = Pemasok Utama), jadi baris yang
+            // memakai pemasok lain ditolak di pratinjau. Baris tanpa
+            // kode pemasok lolos seperti dulu (tidak ada relasi dicek).
+            if ($type === 'pembelian' && $rowSupCode !== '' && $rowSupCode !== $items[$code]['supplier_code']) {
+                $this->addError($errors, "{$label} baris {$excelRow} ({$code}): pemasok {$rowSupCode} tidak terdaftar sebagai pemasok barang ini (pemasok terdaftar di Data Barang: {$items[$code]['supplier_code']}).");
+            }
+
             if ($number !== '') {
                 $key = $type . '|' . $number;
             } elseif ($type === 'pembelian' && $rowSupCode !== '') {
@@ -682,12 +693,12 @@ class ImportService
             }
 
             // Barang dengan stok opname (default 0 bila tanpa baris opname).
+            // Pemasok Data Barang ditulis sebagai relasi pivot Utama.
             $itemModels = [];
             foreach ($validated['items'] as $code => $item) {
                 $itemModels[$code] = Item::create([
                     'item_code' => $code,
                     'item_name' => $item['item_name'],
-                    'supplier_id' => $supplierIds[$item['supplier_code']],
                     'purchase_price' => $item['purchase_price'],
                     'selling_price' => $item['selling_price'],
                     'stock' => $validated['opening'][$code]['opening_stock'] ?? 0,
@@ -695,6 +706,7 @@ class ImportService
                     'safety_stock' => null,
                     'rop' => null,
                 ]);
+                $itemModels[$code]->suppliers()->attach($supplierIds[$item['supplier_code']], ['pemasok_utama' => true]);
             }
 
             // Transaksi kronologis, harga dari master, stok ikut aturan
