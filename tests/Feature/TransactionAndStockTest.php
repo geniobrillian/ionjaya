@@ -70,19 +70,20 @@ class TransactionAndStockTest extends TestCase
         $this->assertEquals($initialStock, $item->stock);
     }
 
-    public function test_purchase_transaction_can_be_created_and_increases_stock_and_updates_cost(): void
+    public function test_purchase_transaction_can_be_created_and_increases_stock_and_uses_master_price(): void
     {
         $item = Item::first();
         $initialStock = $item->stock;
         $qtyPurchased = 15;
-        $newCostPrice = 75000;
+        $masterPrice = (float) $item->purchase_price;
+        $tamperedPrice = 75000;
 
         $response = $this->actingAs($this->admin)->post('/pembelian', [
             'items' => [
                 [
                     'id' => $item->id,
                     'quantity' => $qtyPurchased,
-                    'purchase_price' => $newCostPrice,
+                    'purchase_price' => $tamperedPrice,
                 ],
             ],
         ]);
@@ -92,12 +93,12 @@ class TransactionAndStockTest extends TestCase
 
         $item->refresh();
         $this->assertEquals($initialStock + $qtyPurchased, $item->stock);
-        $this->assertEquals($newCostPrice, (float) $item->purchase_price);
+        $this->assertEquals($masterPrice, (float) $item->purchase_price);
 
         $this->assertDatabaseHas('transactions', [
             'transaction_type' => 'pembelian',
             'user_id' => $this->admin->id,
-            'total' => $qtyPurchased * $newCostPrice,
+            'total' => $qtyPurchased * $masterPrice,
         ]);
     }
 

@@ -30,7 +30,6 @@
                         <th class="py-3.5 px-4">Pemasok</th>
                         <th class="py-3.5 px-4 text-right w-32">Harga Beli</th>
                         <th class="py-3.5 px-4 text-right w-32">Harga Jual</th>
-                        <th class="py-3.5 px-4 text-center w-24">Stok</th>
                         <th class="py-3.5 px-4 w-28 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -46,9 +45,6 @@
                             </td>
                             <td class="py-3.5 px-4 text-right font-mono text-xs font-semibold text-gray-900">
                                 Rp {{ number_format($item->selling_price, 0, ',', '.') }}
-                            </td>
-                            <td class="py-3.5 px-4 text-center font-bold {{ $item->stock <= 0 ? 'text-red-600' : 'text-gray-900' }}">
-                                {{ $item->stock }}
                             </td>
                             <td class="py-3.5 px-4 text-center">
                                 <div class="flex items-center justify-center space-x-2">
@@ -71,7 +67,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="py-8 text-center text-gray-400 text-sm">
+                            <td colspan="7" class="py-8 text-center text-gray-400 text-sm">
                                 Tidak ada data barang ditemukan.
                             </td>
                         </tr>
