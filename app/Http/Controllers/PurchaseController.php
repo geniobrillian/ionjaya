@@ -11,7 +11,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class PurchaseController extends Controller
@@ -22,14 +21,14 @@ class PurchaseController extends Controller
      */
     public function index(Request $request): View
     {
-        $items = Item::with('supplier')
+        $items = Item::with('suppliers')
             ->orderBy('item_name')
             ->get();
 
         $suppliers = Supplier::orderBy('supplier_name')->get();
 
         // 10 riwayat transaksi pembelian terakhir
-        $recentPurchases = Transaction::with(['user', 'supplier', 'details.item.supplier'])
+        $recentPurchases = Transaction::with(['user', 'supplier', 'details.item'])
             ->where('transaction_type', 'pembelian')
             ->orderByDesc('id')
             ->take(10)
@@ -49,16 +48,33 @@ class PurchaseController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'supplier_id' => ['nullable', 'exists:suppliers,id'],
+            'supplier_id' => ['required', 'exists:suppliers,id'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['required', 'exists:items,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
         ], [
+            'supplier_id.required' => 'Pilih pemasok untuk transaksi pembelian ini.',
             'supplier_id.exists' => 'Pemasok yang dipilih tidak ditemukan.',
             'items.required' => 'Daftar barang yang dibeli tidak boleh kosong.',
             'items.min' => 'Pilih minimal satu barang untuk dicatat sebagai pembelian.',
             'items.*.quantity.min' => 'Jumlah barang minimal 1.',
         ]);
+
+        // Jaminan server atas filter katalog: tiap barang wajib punya
+        // relasi dengan pemasok terpilih. Filter layar hanya kenyamanan;
+        // pemeriksaan ini yang mencegah transaksi tercatat bohong
+        // (mis. relasi dihapus di tengah transaksi, atau tampilan diakali).
+        $supplierId = (int) $request->supplier_id;
+        $itemIds = collect($request->items)->pluck('id')->unique()->all();
+        $unregistered = Item::whereIn('id', $itemIds)
+            ->whereDoesntHave('suppliers', fn ($q) => $q->where('suppliers.id', $supplierId))
+            ->pluck('item_name')
+            ->all();
+        if ($unregistered !== []) {
+            return back()
+                ->with('error', 'Barang berikut tidak terdaftar pada pemasok yang dipilih: ' . implode(', ', $unregistered) . '. Daftarkan dulu relasinya di Detail Barang.')
+                ->withInput();
+        }
 
         try {
             DB::transaction(function () use ($request) {
@@ -83,19 +99,16 @@ class PurchaseController extends Controller
                 }
 
                 // 1. Simpan Header Transaksi Pembelian
-                $transactionData = [
+                // (pemasok kini wajib: guard kolom tidak lagi diperlukan,
+                // migrasi transactions.supplier_id sudah lama berjalan).
+                $transaction = Transaction::create([
                     'date' => Carbon::today()->toDateString(),
                     'time' => Carbon::now()->format('H:i:s'),
                     'transaction_type' => 'pembelian',
                     'total' => $totalTransaction,
                     'user_id' => Auth::id(),
-                ];
-
-                if ($request->filled('supplier_id') && Schema::hasColumn('transactions', 'supplier_id')) {
-                    $transactionData['supplier_id'] = $request->supplier_id;
-                }
-
-                $transaction = Transaction::create($transactionData);
+                    'supplier_id' => $request->supplier_id,
+                ]);
 
                 // 2. Simpan Detail Transaksi dan Tambah Stok
                 // (harga beli master TIDAK diubah di sini; satu-satunya

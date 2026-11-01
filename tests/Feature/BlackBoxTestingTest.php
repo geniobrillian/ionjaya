@@ -298,7 +298,6 @@ class BlackBoxTestingTest extends TestCase
         $responseCreate = $this->actingAs($this->superAdmin)->post(route('items.store'), [
             'item_code' => 'BRG_TEST_BB',
             'item_name' => 'Busi Iridium Racing Black Box',
-            'supplier_id' => $this->supplier->id,
             'purchase_price' => 50000,
             'selling_price' => 75000,
         ]);
@@ -311,7 +310,6 @@ class BlackBoxTestingTest extends TestCase
         $responseEdit = $this->actingAs($this->superAdmin)->put(route('items.update', $item->id), [
             'item_code' => 'BRG_TEST_BB',
             'item_name' => 'Busi Iridium Racing Black Box V2',
-            'supplier_id' => $this->supplier->id,
             'selling_price' => 80000,
             'purchase_price' => 50000,
         ]);

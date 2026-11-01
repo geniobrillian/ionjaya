@@ -109,7 +109,7 @@ class TransactionAndStockTest extends TestCase
         ]);
     }
 
-    public function test_purchase_transaction_can_be_created_without_supplier_id(): void
+    public function test_purchase_transaction_requires_supplier(): void
     {
         $item = Item::first();
 
@@ -119,15 +119,43 @@ class TransactionAndStockTest extends TestCase
             ],
         ]);
 
-        $response->assertRedirect('/pembelian');
-        $response->assertSessionHas('success');
+        $response->assertSessionHasErrors('supplier_id');
     }
 
-    public function test_purchase_history_does_not_have_supplier_column(): void
+    public function test_purchase_transaction_rejects_item_without_supplier_relation(): void
     {
+        // BRG003 seeder hanya dipasok SUP002 (id 2); dibeli dari SUP001 (id 1) harus ditolak.
+        $item = Item::where('item_code', 'BRG003')->first();
+        $initialStock = $item->stock;
+
+        $response = $this->actingAs($this->admin)->post('/pembelian', [
+            'supplier_id' => 1,
+            'items' => [
+                ['id' => $item->id, 'quantity' => 2],
+            ],
+        ]);
+
+        $response->assertSessionHas('error');
+        $item->refresh();
+        $this->assertEquals($initialStock, $item->stock);
+    }
+
+    public function test_purchase_history_shows_supplier_name(): void
+    {
+        $item = Item::first();
+        $supplier = Supplier::first();
+
+        $this->actingAs($this->admin)->post('/pembelian', [
+            'supplier_id' => $supplier->id,
+            'items' => [
+                ['id' => $item->id, 'quantity' => 2],
+            ],
+        ]);
+
         $response = $this->actingAs($this->admin)->get('/pembelian');
         $response->assertStatus(200);
-        $response->assertDontSee('<th class="py-3 px-4">Pemasok</th>', false);
+        $response->assertSee('<th class="py-3 px-4">Pemasok</th>', false);
+        $response->assertSee($supplier->supplier_name);
     }
 
     public function test_stock_monitoring_page_shows_correct_indicators_and_filters(): void
