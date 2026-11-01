@@ -32,7 +32,7 @@ class ReportController extends Controller
         $totalAmount = 0;
 
         if ($reportType === 'stok') {
-            $reportData = Item::with('supplier')->orderBy('item_name')->get();
+            $reportData = Item::with('suppliers')->orderBy('item_name')->get();
         } elseif ($reportType === 'transaksi') {
             $query = Transaction::with(['user', 'details.item'])
                 ->whereBetween('date', [$startDateStr, $endDateStr])
@@ -46,7 +46,7 @@ class ReportController extends Controller
             $reportData = $query->get();
             $totalAmount = $reportData->sum('total');
         } elseif ($reportType === 'fsn') {
-            $reportData = Item::with('supplier')
+            $reportData = Item::with('suppliers')
                 ->orderByRaw("CASE WHEN fsn_category = 'F' THEN 1 WHEN fsn_category = 'S' THEN 2 WHEN fsn_category = 'N' THEN 3 ELSE 4 END")
                 ->orderBy('item_name')
                 ->get();

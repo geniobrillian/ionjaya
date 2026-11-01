@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Supplier extends Model
 {
@@ -54,8 +54,15 @@ class Supplier extends Model
         return $code;
     }
 
-    public function items(): HasMany
+    /**
+     * Barang-barang yang dipasok pemasok ini (many-to-many).
+     * Dipakai juga oleh guard hapus pemasok: exists() tetap jalan
+     * untuk relasi pivot, jadi pemasok ber-relasi tetap tidak bisa
+     * dihapus.
+     */
+    public function items(): BelongsToMany
     {
-        return $this->hasMany(Item::class);
+        return $this->belongsToMany(Item::class, 'barang_pemasok', 'pemasok_id', 'barang_id')
+            ->withPivot('pemasok_utama');
     }
 }

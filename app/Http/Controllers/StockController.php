@@ -18,7 +18,7 @@ class StockController extends Controller
         $categoryFilter = $request->query('category');
         $statusFilter = $request->query('status');
 
-        $query = Item::with('supplier')->orderBy('item_name');
+        $query = Item::with('suppliers')->orderBy('item_name');
 
         if (! empty($search)) {
             $query->where(function ($q) use ($search) {

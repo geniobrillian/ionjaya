@@ -39,7 +39,7 @@
                             <td class="py-3.5 px-4 text-center text-xs text-gray-500 font-mono">{{ $loop->iteration + ($items->currentPage() - 1) * $items->perPage() }}</td>
                             <td class="py-3.5 px-4 font-mono text-xs font-semibold text-gray-900">{{ $item->item_code }}</td>
                             <td class="py-3.5 px-4 font-medium text-gray-900">{{ $item->item_name }}</td>
-                            <td class="py-3.5 px-4 text-xs text-gray-600">{{ $item->supplier->supplier_name ?? '-' }}</td>
+                            <td class="py-3.5 px-4 text-xs text-gray-600">{{ $item->primarySupplier->supplier_name ?? '-' }}</td>
                             <td class="py-3.5 px-4 text-right font-mono text-xs text-gray-700">
                                 Rp {{ number_format($item->purchase_price, 0, ',', '.') }}
                             </td>
@@ -162,15 +162,10 @@
                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
             </div>
 
-            <div>
-                <label for="edit_supplier_id" class="block text-xs font-medium text-gray-700 mb-1">Pemasok (penugasan lewat sini)</label>
-                <select name="supplier_id" id="edit_supplier_id" required
-                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
-                    <option value="">Belum ditentukan</option>
-                    @foreach ($suppliers as $supplier)
-                        <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }} ({{ $supplier->lead_time }} hari)</option>
-                    @endforeach
-                </select>
+            <div class="rounded-md bg-gray-50 border border-gray-200 p-3">
+                <p class="text-xs text-gray-600">
+                    Pemasok barang dikelola lewat halaman Detail Barang (klik nama barang di tabel) — satu barang bisa punya banyak pemasok.
+                </p>
             </div>
 
             <div>
@@ -223,7 +218,6 @@
 
         document.getElementById('edit_item_code').value = item.item_code;
         document.getElementById('edit_item_name').value = item.item_name;
-        document.getElementById('edit_supplier_id').value = item.supplier_id ?? '';
         document.getElementById('edit_selling_price').value = Math.round(item.selling_price);
         document.getElementById('edit_purchase_price').value = Math.round(item.purchase_price);
 

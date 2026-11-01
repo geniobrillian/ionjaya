@@ -124,11 +124,10 @@ class MasterDataTest extends TestCase
 
     public function test_super_admin_can_create_and_update_item(): void
     {
-        // 1. Tambah Barang
+        // 1. Tambah Barang (tanpa pemasok: relasi diatur lewat Detail Barang)
         $responseCreate = $this->actingAs($this->superAdmin)->post('/barang', [
             'item_code' => 'BRG_TEST',
             'item_name' => 'Busi Iridium Racing Test',
-            'supplier_id' => 1,
             'purchase_price' => 50000,
             'selling_price' => 75000,
         ]);
@@ -148,7 +147,6 @@ class MasterDataTest extends TestCase
         $responseUpdate = $this->actingAs($this->superAdmin)->put('/barang/' . $item->id, [
             'item_code' => 'BRG_TEST',
             'item_name' => 'Busi Iridium Racing V2',
-            'supplier_id' => 1,
             'selling_price' => 80000,
             'purchase_price' => 50000,
         ]);
@@ -169,7 +167,6 @@ class MasterDataTest extends TestCase
         // Tambah barang pertama tanpa kode barang
         $response1 = $this->actingAs($this->superAdmin)->post('/barang', [
             'item_name' => 'Sparepart Baru Auto 1',
-            'supplier_id' => 1,
             'purchase_price' => 15000,
             'selling_price' => 25000,
         ]);
@@ -186,7 +183,6 @@ class MasterDataTest extends TestCase
         // Tambah barang kedua secara berurutan
         $response2 = $this->actingAs($this->superAdmin)->post('/barang', [
             'item_name' => 'Sparepart Baru Auto 2',
-            'supplier_id' => 1,
             'purchase_price' => 20000,
             'selling_price' => 30000,
         ]);
@@ -200,8 +196,8 @@ class MasterDataTest extends TestCase
 
     public function test_super_admin_can_create_item_without_supplier(): void
     {
-        // Form tambah tidak lagi menawarkan pilihan pemasok;
-        // penugasan pemasok hanya lewat Ubah Barang.
+        // Form tambah tidak menawarkan pilihan pemasok; penugasan
+        // pemasok hanya lewat halaman Detail Barang.
         $response = $this->actingAs($this->superAdmin)->post('/barang', [
             'item_name' => 'Sparepart Tanpa Pemasok',
             'purchase_price' => 10000,
@@ -211,9 +207,10 @@ class MasterDataTest extends TestCase
         $response->assertRedirect('/barang');
         $response->assertSessionHas('success');
 
-        $this->assertDatabaseHas('items', [
-            'item_name' => 'Sparepart Tanpa Pemasok',
-            'supplier_id' => null,
+        $item = Item::where('item_name', 'Sparepart Tanpa Pemasok')->first();
+        $this->assertNotNull($item);
+        $this->assertDatabaseMissing('barang_pemasok', [
+            'barang_id' => $item->id,
         ]);
     }
 
@@ -235,7 +232,6 @@ class MasterDataTest extends TestCase
         $item = Item::create([
             'item_code' => 'BRG_EMPTY',
             'item_name' => 'Barang Baru Belum Transaksi',
-            'supplier_id' => 1,
             'purchase_price' => 20000,
             'selling_price' => 30000,
             'stock' => 5,

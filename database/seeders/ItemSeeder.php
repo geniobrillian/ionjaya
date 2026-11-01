@@ -21,7 +21,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'F',
                 'safety_stock' => 4,
                 'rop' => 8,
-                'supplier_id' => 1,
+                'primary_supplier_id' => 1,
             ],
             [
                 'id' => 2,
@@ -33,7 +33,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'F',
                 'safety_stock' => 5,
                 'rop' => 12,
-                'supplier_id' => 1,
+                'primary_supplier_id' => 1,
             ],
             [
                 'id' => 3,
@@ -45,7 +45,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'F',
                 'safety_stock' => 4,
                 'rop' => 10,
-                'supplier_id' => 2,
+                'primary_supplier_id' => 2,
             ],
             [
                 'id' => 4,
@@ -57,7 +57,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'F',
                 'safety_stock' => 3,
                 'rop' => 6,
-                'supplier_id' => 3,
+                'primary_supplier_id' => 3,
             ],
             [
                 'id' => 5,
@@ -69,7 +69,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'F',
                 'safety_stock' => 4,
                 'rop' => 9,
-                'supplier_id' => 1,
+                'primary_supplier_id' => 1,
             ],
             [
                 'id' => 6,
@@ -81,7 +81,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'F',
                 'safety_stock' => 5,
                 'rop' => 11,
-                'supplier_id' => 2,
+                'primary_supplier_id' => 2,
             ],
             [
                 'id' => 7,
@@ -93,7 +93,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'F',
                 'safety_stock' => 3,
                 'rop' => 7,
-                'supplier_id' => 3,
+                'primary_supplier_id' => 3,
             ],
             [
                 'id' => 8,
@@ -105,7 +105,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'F',
                 'safety_stock' => 3,
                 'rop' => 8,
-                'supplier_id' => 4,
+                'primary_supplier_id' => 4,
             ],
 
             // 7 Slow Moving Items
@@ -119,7 +119,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => 4,
-                'supplier_id' => 1,
+                'primary_supplier_id' => 1,
             ],
             [
                 'id' => 10,
@@ -131,7 +131,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => 3,
-                'supplier_id' => 2,
+                'primary_supplier_id' => 2,
             ],
             [
                 'id' => 11,
@@ -143,7 +143,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => 3,
-                'supplier_id' => 3,
+                'primary_supplier_id' => 3,
             ],
             [
                 'id' => 12,
@@ -155,7 +155,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => 2,
-                'supplier_id' => 1,
+                'primary_supplier_id' => 1,
             ],
             [
                 'id' => 13,
@@ -167,7 +167,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => 4,
-                'supplier_id' => 2,
+                'primary_supplier_id' => 2,
             ],
             [
                 'id' => 14,
@@ -179,7 +179,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => 3,
-                'supplier_id' => 3,
+                'primary_supplier_id' => 3,
             ],
             [
                 'id' => 15,
@@ -191,7 +191,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'S',
                 'safety_stock' => null,
                 'rop' => 2,
-                'supplier_id' => 4,
+                'primary_supplier_id' => 4,
             ],
 
             // 5 Non Moving Items
@@ -205,7 +205,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'N',
                 'safety_stock' => null,
                 'rop' => null,
-                'supplier_id' => 2,
+                'primary_supplier_id' => 2,
             ],
             [
                 'id' => 17,
@@ -217,7 +217,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'N',
                 'safety_stock' => null,
                 'rop' => null,
-                'supplier_id' => 3,
+                'primary_supplier_id' => 3,
             ],
             [
                 'id' => 18,
@@ -229,7 +229,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'N',
                 'safety_stock' => null,
                 'rop' => null,
-                'supplier_id' => 4,
+                'primary_supplier_id' => 4,
             ],
             [
                 'id' => 19,
@@ -241,7 +241,7 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'N',
                 'safety_stock' => null,
                 'rop' => null,
-                'supplier_id' => 1,
+                'primary_supplier_id' => 1,
             ],
             [
                 'id' => 20,
@@ -253,12 +253,17 @@ class ItemSeeder extends Seeder
                 'fsn_category' => 'N',
                 'safety_stock' => null,
                 'rop' => null,
-                'supplier_id' => 2,
+                'primary_supplier_id' => 2,
             ],
         ];
 
         foreach ($items as $data) {
-            Item::create($data);
+            // primary_supplier_id hanya penanda seeder: ditulis sebagai
+            // relasi pivot Pemasok Utama, bukan kolom items lagi.
+            $primarySupplierId = $data['primary_supplier_id'];
+            unset($data['primary_supplier_id']);
+            $item = Item::create($data);
+            $item->suppliers()->attach($primarySupplierId, ['pemasok_utama' => true]);
         }
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
-use App\Models\Supplier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -17,7 +16,7 @@ class ItemController extends Controller
     {
         $search = $request->query('q');
 
-        $query = Item::with('supplier')->orderBy('item_name');
+        $query = Item::with('suppliers')->orderBy('item_name');
 
         if (! empty($search)) {
             $query->where(function ($q) use ($search) {
@@ -27,9 +26,8 @@ class ItemController extends Controller
         }
 
         $items = $query->paginate(15)->withQueryString();
-        $suppliers = Supplier::orderBy('supplier_name')->get();
 
-        return view('items.index', compact('items', 'suppliers', 'search'));
+        return view('items.index', compact('items', 'search'));
     }
 
     /**
@@ -40,8 +38,8 @@ class ItemController extends Controller
         $validated = $request->validate([
             'item_code' => ['nullable', 'string', 'max:20', 'unique:items,item_code'],
             'item_name' => ['required', 'string', 'max:100'],
-            // Pemasok opsional saat tambah barang (ditugaskan lewat Ubah Barang).
-            'supplier_id' => ['nullable', 'exists:suppliers,id'],
+            // Tanpa pemasok saat tambah barang: relasi pemasok ditugaskan
+            // lewat halaman Detail Barang (bisa banyak, bisa nol).
             'purchase_price' => ['required', 'numeric', 'min:0'],
             'selling_price' => ['required', 'numeric', 'min:0'],
             // Stok awal dihapus (1 pintu ketat): barang baru mulai dari stok 0,
@@ -49,7 +47,6 @@ class ItemController extends Controller
         ], [
             'item_code.unique' => 'Kode barang sudah digunakan.',
             'item_name.required' => 'Nama barang wajib diisi.',
-            'supplier_id.exists' => 'Pemasok yang dipilih tidak valid.',
             'purchase_price.required' => 'Harga beli wajib diisi.',
             'selling_price.required' => 'Harga jual wajib diisi.',
         ]);
@@ -73,8 +70,8 @@ class ItemController extends Controller
         $validated = $request->validate([
             'item_code' => ['required', 'string', 'max:20', 'unique:items,item_code,' . $item->id],
             'item_name' => ['required', 'string', 'max:100'],
-            // Pemasok wajib diisi di form ubah: disinilah penugasan pemasok dilakukan.
-            'supplier_id' => ['required', 'exists:suppliers,id'],
+            // Tanpa pemasok di form ubah: relasi pemasok dikelola lewat
+            // halaman Detail Barang (bisa banyak, bisa nol).
             'selling_price' => ['required', 'numeric', 'min:0'],
             // Harga beli diubah hanya lewat form ubah (1 pintu harga).
             'purchase_price' => ['required', 'numeric', 'min:0'],
@@ -82,7 +79,6 @@ class ItemController extends Controller
             'item_code.required' => 'Kode barang wajib diisi.',
             'item_code.unique' => 'Kode barang sudah digunakan.',
             'item_name.required' => 'Nama barang wajib diisi.',
-            'supplier_id.required' => 'Pemasok wajib dipilih.',
             'selling_price.required' => 'Harga jual wajib diisi.',
             'purchase_price.required' => 'Harga beli wajib diisi.',
         ]);

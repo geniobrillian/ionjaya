@@ -95,7 +95,7 @@
                             <td class="py-3 px-4 font-mono text-xs font-semibold text-gray-900">{{ $item->item_code }}</td>
                             <td class="py-3 px-4">
                                 <div class="font-medium text-gray-900">{{ $item->item_name }}</div>
-                                <div class="text-xs text-gray-500">{{ $item->supplier->supplier_name ?? '-' }}</div>
+                                <div class="text-xs text-gray-500">{{ $item->primarySupplier->supplier_name ?? '-' }}</div>
                             </td>
                             <td class="py-3 px-4 text-center">
                                 @if ($item->fsn_category === 'F')

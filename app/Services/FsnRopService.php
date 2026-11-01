@@ -29,7 +29,7 @@ class FsnRopService
         $jHt = 365; // Jumlah hari dalam satu tahun acuan
 
         // Ambil seluruh master barang beserta relasi pemasok
-        $items = Item::with('supplier')->get();
+        $items = Item::with('suppliers')->get();
 
         // Ambil total penjualan (P_pk) per barang dalam periode
         $salesQuantities = DB::table('transaction_details')
@@ -135,7 +135,9 @@ class FsnRopService
             $rop = null;
             $pMax = 0;
             $pRtDaily = 0;
-            $leadTime = max(1, (int) ($item->supplier->lead_time ?? 1));
+            // Lead time acuan = lead time Pemasok Utama; barang tanpa
+            // Utama memakai 1 hari (fallback yang sama seperti dulu).
+            $leadTime = max(1, (int) ($item->primarySupplier->lead_time ?? 1));
 
             // Penjualan rata-rata harian (P_rt harian = P_pk / J_hp),
             // dipakai kategori Fast dan Slow.
@@ -178,7 +180,7 @@ class FsnRopService
                 'item_id' => $item->id,
                 'item_code' => $item->item_code,
                 'item_name' => $item->item_name,
-                'supplier_name' => $item->supplier->supplier_name ?? '-',
+                'supplier_name' => $item->primarySupplier->supplier_name ?? '-',
                 'lead_time' => $leadTime,
                 'stock' => $item->stock,
                 'p_aw' => $pAw,
@@ -268,7 +270,7 @@ class FsnRopService
      */
     public function getLowStockItems(): Collection
     {
-        $items = Item::with('supplier')->get();
+        $items = Item::with('suppliers')->get();
 
         return $items->filter(function (Item $item) {
             return $item->is_low_stock;

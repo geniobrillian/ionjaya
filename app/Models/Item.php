@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Item extends Model
@@ -20,7 +20,6 @@ class Item extends Model
         'fsn_category',
         'safety_stock',
         'rop',
-        'supplier_id',
     ];
 
     protected function casts(): array
@@ -34,9 +33,24 @@ class Item extends Model
         ];
     }
 
-    public function supplier(): BelongsTo
+    /**
+     * Pemasok-pemasok barang ini (many-to-many). Pivot hanya membawa
+     * penanda pemasok_utama — tanpa harga dan tanpa lead time.
+     */
+    public function suppliers(): BelongsToMany
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsToMany(Supplier::class, 'barang_pemasok', 'barang_id', 'pemasok_id')
+            ->withPivot('pemasok_utama');
+    }
+
+    /**
+     * Pemasok Utama barang ini (acuan lead time ROP dan tampilan),
+     * atau null bila barang belum punya pemasok / belum ada yang
+     * ditandai Utama. Utama = default, bukan wajib.
+     */
+    public function getPrimarySupplierAttribute(): ?Supplier
+    {
+        return $this->suppliers->first(fn ($supplier) => (bool) $supplier->pivot->pemasok_utama);
     }
 
     public function transactionDetails(): HasMany

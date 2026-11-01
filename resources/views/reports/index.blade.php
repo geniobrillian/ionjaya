@@ -212,7 +212,7 @@
                                 <td class="py-2 px-3 font-mono font-semibold border-r border-gray-300">{{ $item->item_code }}</td>
                                 <td class="py-2 px-3 font-medium border-r border-gray-300">
                                     {{ $item->item_name }}
-                                    <span class="text-[10px] text-gray-400 block">{{ $item->supplier->supplier_name ?? '-' }}</span>
+                                    <span class="text-[10px] text-gray-400 block">{{ $item->primarySupplier->supplier_name ?? '-' }}</span>
                                 </td>
                                 <td class="py-2 px-3 text-center font-bold border-r border-gray-300">
                                     @if ($item->fsn_category === 'F')
@@ -225,7 +225,7 @@
                                         <span class="text-gray-400">Belum dihitung</span>
                                     @endif
                                 </td>
-                                <td class="py-2 px-3 text-center font-mono border-r border-gray-300">{{ $item->supplier->lead_time ?? 1 }} hr</td>
+                                <td class="py-2 px-3 text-center font-mono border-r border-gray-300">{{ $item->primarySupplier->lead_time ?? 1 }} hr</td>
                                 <td class="py-2 px-3 text-center font-mono border-r border-gray-300">
                                     {{ $item->safety_stock !== null ? $item->safety_stock : '-' }}
                                 </td>
