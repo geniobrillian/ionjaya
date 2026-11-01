@@ -24,18 +24,9 @@ class AnalysisController extends Controller
      */
     public function index(Request $request): View
     {
-        // Tentukan nilai default rentang tanggal
-        // Cek apakah ada data transaksi pada tahun 2025
-        $has2025Transactions = Transaction::whereYear('date', 2025)->exists();
-
-        if ($has2025Transactions) {
-            $defaultStart = '2025-01-01';
-            $defaultEnd = '2025-12-31';
-        } else {
-            // Default 90 hari terakhir (data demonstrasi terkini)
-            $defaultStart = Carbon::now()->subDays(90)->toDateString();
-            $defaultEnd = Carbon::now()->toDateString();
-        }
+        // Tentukan nilai default rentang tanggal (default awal: 1 Januari 2026)
+        $defaultStart = '2026-01-01';
+        $defaultEnd = Carbon::now()->toDateString();
 
         $startDateStr = $request->query('start_date', $defaultStart);
         $endDateStr = $request->query('end_date', $defaultEnd);

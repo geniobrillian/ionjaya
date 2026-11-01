@@ -175,16 +175,30 @@
         <main class="flex-1 p-4 sm:p-6 lg:p-8 bg-gray-50 overflow-y-auto print:p-0 print:overflow-visible">
             <!-- Flash Message Alerts -->
             @if (session('success'))
-                <div class="mb-5 rounded-md bg-green-50 p-4 border border-green-200 flex items-center justify-between">
-                    <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
-                    <button type="button" onclick="this.parentElement.remove()" class="text-green-600 hover:text-green-800 text-sm font-bold">&times;</button>
+                <div class="mb-5 rounded-lg bg-green-50 p-4 border border-green-200 shadow-sm flex items-start sm:items-center justify-between gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0 text-green-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <p class="text-sm font-medium text-green-900">{{ session('success') }}</p>
+                    </div>
+                    <button type="button" onclick="this.closest('.mb-5').remove()" class="text-green-600 hover:text-green-800 p-1 rounded-md hover:bg-green-100 transition-colors shrink-0 text-lg leading-none" title="Tutup">&times;</button>
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="mb-5 rounded-md bg-red-50 p-4 border border-red-200 flex items-center justify-between">
-                    <p class="text-sm font-medium text-red-800">{{ session('error') }}</p>
-                    <button type="button" onclick="this.parentElement.remove()" class="text-red-600 hover:text-red-800 text-sm font-bold">&times;</button>
+                <div class="mb-5 rounded-lg bg-red-50 p-4 border border-red-200 shadow-sm flex items-start sm:items-center justify-between gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0 text-red-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </div>
+                        <p class="text-sm font-medium text-red-900">{{ session('error') }}</p>
+                    </div>
+                    <button type="button" onclick="this.closest('.mb-5').remove()" class="text-red-600 hover:text-red-800 p-1 rounded-md hover:bg-red-100 transition-colors shrink-0 text-lg leading-none" title="Tutup">&times;</button>
                 </div>
             @endif
 

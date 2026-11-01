@@ -51,7 +51,8 @@ class FsnRopServiceTest extends TestCase
                 $this->assertGreaterThanOrEqual(1.0, $tor);
                 $this->assertLessThanOrEqual(3.0, $tor);
                 $this->assertNull($item['safety_stock']);
-                $this->assertNull($item['rop']);
+                $this->assertNotNull($item['rop']);
+                $this->assertGreaterThanOrEqual(1, $item['rop']);
             } else {
                 $this->assertEquals('N', $category);
                 $this->assertLessThan(1.0, $tor);
@@ -80,7 +81,8 @@ class FsnRopServiceTest extends TestCase
         $slowItem = Item::where('fsn_category', 'S')->first();
         if ($slowItem) {
             $this->assertNull($slowItem->safety_stock);
-            $this->assertNull($slowItem->rop);
+            $this->assertNotNull($slowItem->rop);
+            $this->assertGreaterThanOrEqual(1, $slowItem->rop);
         }
 
         $nonItem = Item::where('fsn_category', 'N')->first();
