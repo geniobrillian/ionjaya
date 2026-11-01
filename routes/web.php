@@ -32,10 +32,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [\App\Http\Controllers\StockController::class, 'index'])->name('index');
     });
 
-    Route::prefix('rekomendasi')->name('recommendations.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\RecommendationController::class, 'index'])->name('index');
-    });
-
     // Rute Khusus Super Admin (Owner)
     Route::middleware('role:super_admin')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');

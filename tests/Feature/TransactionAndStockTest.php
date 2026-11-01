@@ -121,25 +121,25 @@ class TransactionAndStockTest extends TestCase
         $responseAman->assertSee('AMAN');
     }
 
-    public function test_recommendation_page_shows_only_low_stock_items_without_suggested_order_column(): void
+    public function test_stock_menipis_filter_shows_only_low_stock_items_without_suggested_order_column(): void
     {
-        $response = $this->actingAs($this->admin)->get('/rekomendasi');
+        $response = $this->actingAs($this->admin)->get('/stok?status=menipis');
         $response->assertStatus(200);
-        $response->assertSee('Rekomendasi Pengadaan');
-        $response->assertSee('Waktu Tunggu');
+        $response->assertSee('Stok Barang');
+        $response->assertSee('MENIPIS');
 
         // Memastikan tidak ada kolom terlarang 'Jumlah Pesan Disarankan' sesuai AGENTS.md
         $response->assertDontSee('Jumlah Pesan Disarankan');
         $response->assertDontSee('Jumlah Disarankan');
     }
 
-    public function test_recommendation_page_shows_safe_message_when_no_low_stock(): void
+    public function test_stock_menipis_filter_shows_empty_message_when_no_low_stock(): void
     {
         // Ubah semua stok barang menjadi sangat tinggi di atas batas ROP
         Item::query()->update(['stock' => 999]);
 
-        $response = $this->actingAs($this->admin)->get('/rekomendasi');
+        $response = $this->actingAs($this->admin)->get('/stok?status=menipis');
         $response->assertStatus(200);
-        $response->assertSee('Seluruh Stok dalam Kondisi Aman');
+        $response->assertSee('Tidak ada data barang yang sesuai dengan kriteria filter.');
     }
 }

@@ -16,9 +16,9 @@
                     Terdapat <strong>{{ $lowStockCount }} jenis barang</strong> yang stoknya telah mencapai atau berada di bawah batas pemesanan. Segera lakukan pengadaan.
                 </p>
             </div>
-            <a href="{{ route('recommendations.index') }}"
+            <a href="{{ route('stock.index', ['status' => 'menipis']) }}"
                 class="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-md shadow-sm transition-colors text-center whitespace-nowrap shrink-0">
-                Lihat Rekomendasi
+                Lihat Barang Menipis
             </a>
         </div>
     @endif
@@ -34,35 +34,37 @@
                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
             </div>
 
-            <!-- Filter Kategori FSN (3 cols) -->
+            <!-- Filter Pergerakan (3 cols) -->
             <div class="sm:col-span-1 lg:col-span-3">
-                <label for="category" class="block text-xs font-semibold text-gray-600 mb-1">Kategori FSN</label>
+                <label for="category" class="block text-xs font-semibold text-gray-600 mb-1">Pergerakan</label>
                 <select name="category" id="category"
                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                    <option value="">Semua Kategori</option>
-                    <option value="F" {{ $categoryFilter === 'F' ? 'selected' : '' }}>Fast Moving (F)</option>
-                    <option value="S" {{ $categoryFilter === 'S' ? 'selected' : '' }}>Slow Moving (S)</option>
-                    <option value="N" {{ $categoryFilter === 'N' ? 'selected' : '' }}>Non Moving (N)</option>
+                    <option value="">Semua Pergerakan</option>
+                    <option value="F" {{ $categoryFilter === 'F' ? 'selected' : '' }}>Cepat</option>
+                    <option value="S" {{ $categoryFilter === 'S' ? 'selected' : '' }}>Lambat</option>
+                    <option value="N" {{ $categoryFilter === 'N' ? 'selected' : '' }}>Tidak Bergerak</option>
                 </select>
             </div>
 
-            <!-- Filter Status Stok (4 cols) -->
-            <div class="sm:col-span-1 lg:col-span-4">
-                <label class="block text-xs font-semibold text-gray-600 mb-1">Status Ketersediaan</label>
-                <div class="flex flex-wrap items-center gap-1.5">
-                    <a href="{{ route('stock.index', ['q' => $search, 'category' => $categoryFilter]) }}"
-                        class="px-2.5 sm:px-3 py-2 text-xs font-medium rounded-md border transition-colors {{ empty($statusFilter) ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50' }}">
-                        Semua ({{ $totalItems }})
-                    </a>
-                    <a href="{{ route('stock.index', ['q' => $search, 'category' => $categoryFilter, 'status' => 'menipis']) }}"
-                        class="px-2.5 sm:px-3 py-2 text-xs font-medium rounded-md border transition-colors {{ $statusFilter === 'menipis' ? 'bg-red-600 text-white border-red-600' : 'bg-white text-red-700 border-gray-300 hover:bg-red-50' }}">
-                        Menipis ({{ $lowStockCount }})
-                    </a>
-                    <a href="{{ route('stock.index', ['q' => $search, 'category' => $categoryFilter, 'status' => 'aman']) }}"
-                        class="px-2.5 sm:px-3 py-2 text-xs font-medium rounded-md border transition-colors {{ $statusFilter === 'aman' ? 'bg-green-700 text-white border-green-700' : 'bg-white text-green-700 border-gray-300 hover:bg-green-50' }}">
-                        Aman ({{ $safeStockCount }})
-                    </a>
-                </div>
+            <!-- Filter Status Stok (3 cols) -->
+            <div class="sm:col-span-1 lg:col-span-3">
+                <label for="status" class="block text-xs font-semibold text-gray-600 mb-1">Status Stok</label>
+                <select name="status" id="status"
+                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <option value="">Semua ({{ $totalItems }})</option>
+                    <option value="menipis" {{ $statusFilter === 'menipis' ? 'selected' : '' }}>Menipis ({{ $menipisCount }})</option>
+                    <option value="aman" {{ $statusFilter === 'aman' ? 'selected' : '' }}>Aman ({{ $safeStockCount }})</option>
+                    <option value="habis" {{ $statusFilter === 'habis' ? 'selected' : '' }}>Habis ({{ $habisCount }})</option>
+                    <option value="belum" {{ $statusFilter === 'belum' ? 'selected' : '' }}>Belum Dianalisis ({{ $belumCount }})</option>
+                </select>
+            </div>
+
+            <!-- Tombol Cari (1 col) -->
+            <div class="sm:col-span-1 lg:col-span-1">
+                <button type="submit"
+                    class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md shadow-sm transition-colors text-center">
+                    Cari
+                </button>
             </div>
         </form>
     </div>
@@ -76,18 +78,19 @@
                         <th class="py-3.5 px-4 w-12 text-center">No</th>
                         <th class="py-3.5 px-4 w-28">Kode</th>
                         <th class="py-3.5 px-4">Nama Barang</th>
-                        <th class="py-3.5 px-4 w-32 text-center">Kategori FSN</th>
+                        <th class="py-3.5 px-4 w-32 text-center">Pergerakan</th>
                         <th class="py-3.5 px-4 text-center w-32">Batas Pesan</th>
-                        <th class="py-3.5 px-4 text-center w-28">Stok Fisik</th>
+                        <th class="py-3.5 px-4 text-center w-28">Stok Saat Ini</th>
                         <th class="py-3.5 px-4 text-center w-32">Status</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($items as $index => $item)
                         @php
-                            $isLow = $item->is_low_stock;
+                            $statusStok = $item->stock_status;
+                            $isAttention = in_array($statusStok, ['menipis', 'habis'], true);
                         @endphp
-                        <tr class="{{ $isLow ? 'bg-red-50/60 hover:bg-red-50' : 'hover:bg-gray-50' }} transition-colors">
+                        <tr class="{{ $isAttention ? 'bg-red-50/60 hover:bg-red-50' : 'hover:bg-gray-50' }} transition-colors">
                             <td class="py-3 px-4 text-center text-xs text-gray-500 font-mono">{{ $loop->iteration }}</td>
                             <td class="py-3 px-4 font-mono text-xs font-semibold text-gray-900">{{ $item->item_code }}</td>
                             <td class="py-3 px-4">
@@ -97,18 +100,18 @@
                             <td class="py-3 px-4 text-center">
                                 @if ($item->fsn_category === 'F')
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                        Fast Moving
+                                        Cepat
                                     </span>
                                 @elseif ($item->fsn_category === 'S')
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
-                                        Slow Moving
+                                        Lambat
                                     </span>
                                 @elseif ($item->fsn_category === 'N')
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-                                        Non Moving
+                                        Tidak Bergerak
                                     </span>
                                 @else
-                                    <span class="text-xs text-gray-400">Belum dihitung</span>
+                                    <span class="text-xs text-gray-400">— Belum Dianalisis</span>
                                 @endif
                             </td>
                             <td class="py-3 px-4 text-center font-mono text-xs">
@@ -123,14 +126,22 @@
                                 @endif
                             </td>
                             <td class="py-3 px-4 text-center">
-                                <span class="text-base font-bold {{ $isLow ? 'text-red-600' : 'text-gray-900' }}">
+                                <span class="text-base font-bold {{ $isAttention ? 'text-red-600' : 'text-gray-900' }}">
                                     {{ $item->stock }}
                                 </span>
                             </td>
                             <td class="py-3 px-4 text-center">
-                                @if ($isLow)
+                                @if ($statusStok === 'habis')
                                     <span class="inline-block px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-full tracking-wide">
+                                        HABIS
+                                    </span>
+                                @elseif ($statusStok === 'menipis')
+                                    <span class="inline-block px-3 py-1 bg-orange-600 text-white text-xs font-bold rounded-full tracking-wide">
                                         MENIPIS
+                                    </span>
+                                @elseif ($statusStok === 'belum')
+                                    <span class="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">
+                                        BELUM DIANALISIS
                                     </span>
                                 @else
                                     <span class="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">

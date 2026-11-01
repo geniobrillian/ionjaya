@@ -338,13 +338,13 @@
         document.getElementById('detailNama').textContent = d.item_name;
         document.getElementById('detailKode').textContent = d.item_code || '';
         if (d.fsn_category === 'F') {
-            badge.textContent = 'FAST MOVING';
+            badge.textContent = 'Cepat (Fast Moving)';
             badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800';
         } else if (d.fsn_category === 'S') {
-            badge.textContent = 'SLOW MOVING';
+            badge.textContent = 'Lambat (Slow Moving)';
             badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800';
         } else {
-            badge.textContent = 'NON MOVING';
+            badge.textContent = 'Tidak Bergerak (Non Moving)';
             badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700';
         }
         document.getElementById('detailTerjual').textContent = d.p_pk + ' unit';

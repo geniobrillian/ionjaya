@@ -114,37 +114,38 @@ class BlackBoxTestingTest extends TestCase
     }
 
     // =========================================================================
-    // USE CASE 2: LIHAT REKOMENDASI PENGADAAN (TC-05 & TC-06)
+    // USE CASE 2: LIHAT DAFTAR BARANG MENIPIS (TC-05 & TC-06)
+    // Dulu halaman Rekomendasi Pengadaan; kini filter Menipis di Stok Barang.
     // =========================================================================
 
     /**
-     * TC-05: Menampilkan rekomendasi pengadaan saat stok <= batas pemesanan.
+     * TC-05: Menampilkan barang menipis di Stok Barang saat stok <= batas pemesanan.
      */
-    public function test_tc05_recommendation_shows_items_below_reorder_threshold(): void
+    public function test_tc05_stock_menipis_filter_shows_items_below_reorder_threshold(): void
     {
         $this->fastItem->update([
             'stock' => 2,
             'reorder_point' => 10,
         ]);
 
-        $response = $this->actingAs($this->adminKasir)->get(route('recommendations.index'));
+        $response = $this->actingAs($this->adminKasir)->get(route('stock.index', ['status' => 'menipis']));
 
         $response->assertStatus(200);
         $response->assertSee($this->fastItem->item_name);
-        $response->assertSee('Rekomendasi Pengadaan');
+        $response->assertSee('MENIPIS');
     }
 
     /**
-     * TC-06: Menampilkan pesan aman saat seluruh stok berada di atas batas.
+     * TC-06: Menampilkan pesan kosong pada filter Menipis saat seluruh stok berada di atas batas.
      */
-    public function test_tc06_recommendation_shows_all_safe_message(): void
+    public function test_tc06_stock_menipis_filter_shows_empty_message(): void
     {
         Item::query()->update(['stock' => 999]);
 
-        $response = $this->actingAs($this->adminKasir)->get(route('recommendations.index'));
+        $response = $this->actingAs($this->adminKasir)->get(route('stock.index', ['status' => 'menipis']));
 
         $response->assertStatus(200);
-        $response->assertSee('Seluruh Stok dalam Kondisi Aman');
+        $response->assertSee('Tidak ada data barang yang sesuai dengan kriteria filter.');
     }
 
     // =========================================================================
