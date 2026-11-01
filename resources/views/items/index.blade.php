@@ -107,10 +107,11 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label for="purchase_price" class="block text-xs font-medium text-gray-700 mb-1">Harga Beli Awal (Rp)</label>
+                    <label for="purchase_price" class="block text-xs font-medium text-gray-700 mb-1">Harga Beli (Rp)</label>
                     <input type="number" name="purchase_price" id="purchase_price" min="0" required
                         class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
                         placeholder="0">
+                    <p class="text-[11px] text-gray-500 mt-1">Harga beli awal barang saat pertama kali dicatat.</p>
                 </div>
 
                 <div>

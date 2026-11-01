@@ -550,23 +550,25 @@ class ImportService
                 continue;
             }
 
+            // Pemasok baris Pembelian ('' bila kolom/kode kosong).
+            $rowSupCode = ($type === 'pembelian' && $supCodeIdx !== null)
+                ? $this->normCode($row[$supCodeIdx] ?? '')
+                : '';
+
             // Pemasok dari sheet Pembelian ikut didaftarkan (lead time 1
             // bila pemasok itu tidak muncul di Data Barang).
-            if ($type === 'pembelian' && $supCodeIdx !== null) {
-                $supCode = $this->normCode($row[$supCodeIdx] ?? '');
-                if ($supCode !== '' && ! isset($suppliers[$supCode])) {
-                    $suppliers[$supCode] = [
-                        'supplier_code' => $supCode,
-                        'supplier_name' => trim((string) ($row[$supNameIdx] ?? '')),
-                        'lead_time' => 1,
-                    ];
-                }
+            if ($rowSupCode !== '' && ! isset($suppliers[$rowSupCode])) {
+                $suppliers[$rowSupCode] = [
+                    'supplier_code' => $rowSupCode,
+                    'supplier_name' => trim((string) ($row[$supNameIdx] ?? '')),
+                    'lead_time' => 1,
+                ];
             }
 
             if ($number !== '') {
                 $key = $type . '|' . $number;
-            } elseif ($type === 'pembelian' && $supCodeIdx !== null && $this->normCode($row[$supCodeIdx] ?? '') !== '') {
-                $key = $type . '|' . $date . '|' . $this->normCode($row[$supCodeIdx] ?? '');
+            } elseif ($type === 'pembelian' && $rowSupCode !== '') {
+                $key = $type . '|' . $date . '|' . $rowSupCode;
             } else {
                 $key = $type . '|row-' . $excelRow;
             }
@@ -578,10 +580,21 @@ class ImportService
                     'type' => $type,
                     'date' => $date,
                     'time' => $time,
+                    'supplier_code' => $rowSupCode !== '' ? $rowSupCode : null,
                     'lines' => [],
                     'seq' => $seq++,
                 ];
                 $order[] = $key;
+            } elseif ($type === 'pembelian' && $rowSupCode !== '') {
+                // Satu transaksi pembelian = satu pemasok: baris bernomor
+                // sama tidak boleh membawa pemasok berbeda (error ini
+                // memblokir impor, sama seperti error validasi lainnya).
+                $groupSup = $groups[$key]['supplier_code'];
+                if ($groupSup === null) {
+                    $groups[$key]['supplier_code'] = $rowSupCode;
+                } elseif ($rowSupCode !== $groupSup) {
+                    $this->addError($errors, "{$label} baris {$excelRow}: satu No. Pembelian '{$number}' punya pemasok berbeda ({$groupSup} vs {$rowSupCode}).");
+                }
             }
             $groups[$key]['lines'][] = ['item_code' => $code, 'quantity' => $qty, 'excel_row' => $excelRow];
         }
@@ -705,6 +718,11 @@ class ImportService
                     'transaction_type' => $tx['type'],
                     'total' => $total,
                     'user_id' => $userId,
+                    // Pembelian: pemasok transaksi dari baris-barisnya
+                    // (sudah divalidasi satu pemasok per nomor); penjualan: null.
+                    'supplier_id' => $tx['type'] === 'pembelian' && ! empty($tx['supplier_code'])
+                        ? ($supplierIds[$tx['supplier_code']] ?? null)
+                        : null,
                 ]);
 
                 foreach ($details as $detail) {

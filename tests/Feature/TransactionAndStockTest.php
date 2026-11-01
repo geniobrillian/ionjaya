@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Item;
+use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -70,19 +71,23 @@ class TransactionAndStockTest extends TestCase
         $this->assertEquals($initialStock, $item->stock);
     }
 
-    public function test_purchase_transaction_can_be_created_and_increases_stock_and_updates_cost(): void
+    public function test_purchase_transaction_can_be_created_and_increases_stock_and_records_supplier(): void
     {
         $item = Item::first();
         $initialStock = $item->stock;
+        $initialPrice = (float) $item->purchase_price;
         $qtyPurchased = 15;
-        $newCostPrice = 75000;
+        $supplier = Supplier::first();
 
         $response = $this->actingAs($this->admin)->post('/pembelian', [
+            'supplier_id' => $supplier->id,
             'items' => [
                 [
                     'id' => $item->id,
                     'quantity' => $qtyPurchased,
-                    'purchase_price' => $newCostPrice,
+                    // Harga dari request sengaja beda: pembelian harus
+                    // tetap memakai harga master (1 pintu harga).
+                    'purchase_price' => $initialPrice + 10000,
                 ],
             ],
         ]);
@@ -92,13 +97,44 @@ class TransactionAndStockTest extends TestCase
 
         $item->refresh();
         $this->assertEquals($initialStock + $qtyPurchased, $item->stock);
-        $this->assertEquals($newCostPrice, (float) $item->purchase_price);
+        // Harga master TIDAK berubah lewat pembelian (perilaku Tahap 4;
+        // versi lama test ini keliru menuntut harga berubah).
+        $this->assertEquals($initialPrice, (float) $item->purchase_price);
 
         $this->assertDatabaseHas('transactions', [
             'transaction_type' => 'pembelian',
             'user_id' => $this->admin->id,
-            'total' => $qtyPurchased * $newCostPrice,
+            'supplier_id' => $supplier->id,
+            'total' => $qtyPurchased * $initialPrice,
         ]);
+    }
+
+    public function test_purchase_transaction_requires_supplier(): void
+    {
+        $item = Item::first();
+
+        $response = $this->actingAs($this->admin)->post('/pembelian', [
+            'items' => [
+                ['id' => $item->id, 'quantity' => 2],
+            ],
+        ]);
+
+        $response->assertSessionHasErrors('supplier_id');
+    }
+
+    public function test_purchase_history_shows_supplier_name(): void
+    {
+        $item = Item::first();
+        $supplier = Supplier::first();
+
+        $this->actingAs($this->admin)->post('/pembelian', [
+            'supplier_id' => $supplier->id,
+            'items' => [['id' => $item->id, 'quantity' => 2]],
+        ]);
+
+        $response = $this->actingAs($this->admin)->get('/pembelian');
+        $response->assertStatus(200);
+        $response->assertSee($supplier->supplier_name);
     }
 
     public function test_stock_monitoring_page_shows_correct_indicators_and_filters(): void

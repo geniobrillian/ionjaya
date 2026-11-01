@@ -156,6 +156,8 @@ class ImportTest extends TestCase
         $purchaseDetail = TransactionDetail::where('item_id', $item901->id)
             ->whereHas('transaction', fn ($q) => $q->where('transaction_type', 'pembelian'))->first();
         $this->assertEquals(50000, (float) $purchaseDetail->unit_price);
+        // Transaksi pembelian impor mencatat pemasok dari barisnya (SUP901).
+        $this->assertEquals('SUP901', $purchaseDetail->transaction->supplier->supplier_code);
         $saleDetail = TransactionDetail::where('item_id', $item901->id)
             ->whereHas('transaction', fn ($q) => $q->where('transaction_type', 'penjualan'))->first();
         $this->assertEquals(65000, (float) $saleDetail->unit_price);
@@ -179,6 +181,27 @@ class ImportTest extends TestCase
         $preview->assertStatus(200);
         $preview->assertSee('tidak bisa dilanjutkan');
         $preview->assertSee('negatif');
+        $preview->assertDontSee('Konfirmasi &amp; Impor');
+    }
+
+    public function test_purchase_with_mixed_suppliers_in_one_number_shows_error_in_preview(): void
+    {
+        if (! $this->libraryAvailable()) {
+            $this->markTestSkipped('PhpSpreadsheet belum terpasang.');
+        }
+
+        $sheets = $this->validSheets();
+        // Baris kedua PBL-1 memakai pemasok berbeda (SUP902).
+        $sheets['Pembelian'][2][7] = 'SUP902';
+        $sheets['Pembelian'][2][8] = 'Pemasok Lain';
+
+        $path = $this->buildXlsx($sheets);
+        $preview = $this->actingAs($this->superAdmin)->post('/impor/pratinjau', [
+            'file' => new UploadedFile($path, 'import.xlsx', null, null, true),
+        ]);
+
+        $preview->assertStatus(200);
+        $preview->assertSee('pemasok berbeda');
         $preview->assertDontSee('Konfirmasi &amp; Impor');
     }
 

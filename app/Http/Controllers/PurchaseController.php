@@ -28,7 +28,7 @@ class PurchaseController extends Controller
         $suppliers = Supplier::orderBy('supplier_name')->get();
 
         // 10 riwayat transaksi pembelian terakhir
-        $recentPurchases = Transaction::with(['user', 'details.item.supplier'])
+        $recentPurchases = Transaction::with(['user', 'supplier', 'details.item.supplier'])
             ->where('transaction_type', 'pembelian')
             ->orderByDesc('id')
             ->take(10)
@@ -39,17 +39,22 @@ class PurchaseController extends Controller
 
     /**
      * Menyimpan transaksi pembelian dari pemasok.
-     * Stok barang akan bertambah. Harga transaksi selalu memakai harga
-     * beli master (Data Barang) — 1 pintu harga; harga dari request
-     * tidak pernah dipakai, jadi tidak bisa diubah lewat form pembelian.
+     * Satu transaksi = satu pemasok (dipilih di form, dicatat di
+     * transaksi). Stok barang akan bertambah. Harga transaksi selalu
+     * memakai harga beli master (Data Barang) — 1 pintu harga; harga
+     * dari request tidak pernah dipakai, jadi tidak bisa diubah lewat
+     * form pembelian.
      */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
+            'supplier_id' => ['required', 'exists:suppliers,id'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['required', 'exists:items,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
         ], [
+            'supplier_id.required' => 'Pilih pemasok untuk transaksi pembelian ini.',
+            'supplier_id.exists' => 'Pemasok yang dipilih tidak ditemukan.',
             'items.required' => 'Daftar barang yang dibeli tidak boleh kosong.',
             'items.min' => 'Pilih minimal satu barang untuk dicatat sebagai pembelian.',
             'items.*.quantity.min' => 'Jumlah barang minimal 1.',
@@ -84,6 +89,7 @@ class PurchaseController extends Controller
                     'transaction_type' => 'pembelian',
                     'total' => $totalTransaction,
                     'user_id' => Auth::id(),
+                    'supplier_id' => $request->supplier_id,
                 ]);
 
                 // 2. Simpan Detail Transaksi dan Tambah Stok

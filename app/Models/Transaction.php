@@ -17,6 +17,7 @@ class Transaction extends Model
         'transaction_type', // penjualan atau pembelian
         'total',
         'user_id',
+        'supplier_id', // pemasok transaksi pembelian (null untuk penjualan & riwayat lama)
     ];
 
     protected function casts(): array
@@ -30,6 +31,11 @@ class Transaction extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
     }
 
     public function details(): HasMany

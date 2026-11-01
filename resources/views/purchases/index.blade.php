@@ -19,11 +19,28 @@
 
             <form action="{{ route('purchases.store') }}" method="POST" id="purchaseForm">
                 @csrf
+                <!-- Pemasok transaksi: satu transaksi = satu pemasok -->
+                <div class="mb-4">
+                    <label for="supplierSelect" class="block text-xs font-semibold text-gray-600 mb-1">Pemasok</label>
+                    <select name="supplier_id" id="supplierSelect" required onchange="renderPurchaseCart()"
+                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                        <option value="">— Pilih Pemasok —</option>
+                        @foreach ($suppliers as $supplier)
+                            <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
+                                {{ $supplier->supplier_name }} ({{ $supplier->supplier_code }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="text-[11px] text-gray-500 mt-1">Seluruh barang dalam transaksi ini dicatat dibeli dari pemasok ini.</p>
+                    @if ($suppliers->isEmpty())
+                        <p class="text-[11px] text-red-600 mt-1">Belum ada pemasok. Buat dulu di Data Pemasok sebelum mencatat pembelian.</p>
+                    @endif
+                </div>
                 <div class="overflow-x-auto min-h-[180px] sm:min-h-[220px]">
                     <table class="w-full table-fixed text-xs sm:text-sm text-left text-gray-700">
                         <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th class="py-2.5 px-3">Barang & Pemasok</th>
+                                <th class="py-2.5 px-3">Barang</th>
                                 <th class="py-2.5 px-3 text-right w-36">Harga Beli (Rp)</th>
                                 <th class="py-2.5 px-3 text-center w-28">Jumlah</th>
                                 <th class="py-2.5 px-3 text-right w-32">Subtotal</th>
@@ -57,7 +74,7 @@
         <!-- Kolom Katalog Barang & Pemasok (5 cols desktop, full width mobile/tab) -->
         <div class="lg:col-span-5 bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-6">
             <div class="pb-3 sm:pb-4 border-b border-gray-200 mb-4">
-                <h2 class="text-base font-semibold text-gray-900 mb-2">Pilih Sparepart</h2>
+                <h2 class="text-base font-semibold text-gray-900 mb-2">Pilih Barang</h2>
                 <input type="text" id="catalogSearch" placeholder="Cari nama atau kode barang..."
                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
             </div>
@@ -81,7 +98,7 @@
                         </div>
                         <div>
                             <button type="button"
-                                onclick="addToPurchase({{ $item->id }}, '{{ addslashes($item->item_name) }}', '{{ addslashes($item->supplier->supplier_name ?? '-') }}', {{ $item->purchase_price }})"
+                                onclick="addToPurchase({{ $item->id }}, '{{ addslashes($item->item_name) }}', {{ $item->purchase_price }})"
                                 class="px-3 py-1.5 bg-gray-100 hover:bg-blue-600 hover:text-white text-gray-700 rounded text-xs font-semibold transition-colors">
                                 + Tambah
                             </button>
@@ -101,6 +118,7 @@
                     <tr>
                         <th class="py-3 px-4">No Transaksi</th>
                         <th class="py-3 px-4">Tanggal &amp; Jam</th>
+                        <th class="py-3 px-4">Pemasok</th>
                         <th class="py-3 px-4">Petugas</th>
                         <th class="py-3 px-4">Barang Masuk</th>
                         <th class="py-3 px-4 text-right">Total Pembelian</th>
@@ -116,6 +134,7 @@
                                     <span class="text-xs text-gray-400 block">{{ Carbon\Carbon::parse($purchase->time)->format('H:i') }}</span>
                                 @endif
                             </td>
+                            <td class="py-3 px-4">{{ $purchase->supplier->supplier_name ?? '-' }}</td>
                             <td class="py-3 px-4 font-medium text-gray-900">{{ $purchase->user->name ?? 'Kasir' }}</td>
                             <td class="py-3 px-4">
                                 <span class="text-xs text-gray-600">
@@ -128,7 +147,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="py-6 text-center text-gray-400">Belum ada riwayat transaksi pembelian.</td>
+                            <td colspan="6" class="py-6 text-center text-gray-400">Belum ada riwayat transaksi pembelian.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -146,14 +165,13 @@
         return 'Rp ' + Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
-    function addToPurchase(id, name, supplier, purchasePrice) {
+    function addToPurchase(id, name, purchasePrice) {
         if (purchaseCart[id]) {
             purchaseCart[id].qty++;
         } else {
             purchaseCart[id] = {
                 id: id,
                 name: name,
-                supplier: supplier,
                 price: purchasePrice,
                 qty: 1
             };
@@ -209,7 +227,6 @@
                 <tr>
                     <td class="py-3 px-3">
                         <div class="font-medium text-gray-900">${item.name}</div>
-                        <div class="text-xs text-gray-500">${item.supplier}</div>
                         <input type="hidden" name="items[${index}][id]" value="${item.id}">
                     </td>
                     <td class="py-3 px-3 text-right">
@@ -243,7 +260,9 @@
         tbody.innerHTML = html;
         countText.innerText = keys.length + ' item dipilih';
         totalText.innerText = formatRupiah(total);
-        submitBtn.disabled = false;
+        // Tombol aktif hanya bila keranjang terisi DAN pemasok sudah dipilih.
+        const supplierSelect = document.getElementById('supplierSelect');
+        submitBtn.disabled = keys.length === 0 || !supplierSelect.value;
     }
 
     // Filter Pencarian Katalog Pembelian

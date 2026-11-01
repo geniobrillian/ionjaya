@@ -217,6 +217,7 @@ class BlackBoxTestingTest extends TestCase
         $tamperedPrice = 75000; // Harga dari request harus diabaikan.
 
         $response = $this->actingAs($this->adminKasir)->post(route('purchases.store'), [
+            'supplier_id' => $this->supplier->id,
             'items' => [
                 [
                     'id' => $item->id,
@@ -237,6 +238,9 @@ class BlackBoxTestingTest extends TestCase
         $detail = TransactionDetail::where('item_id', $item->id)->latest('id')->first();
         $this->assertEquals($masterPrice, (float) $detail->unit_price);
         $this->assertEquals($qtyPurchased * $masterPrice, (float) $detail->subtotal);
+        // Transaksi mencatat pemasok yang dipilih (satu transaksi = satu pemasok).
+        $transaction = Transaction::find($detail->transaction_id);
+        $this->assertEquals($this->supplier->id, $transaction->supplier_id);
     }
 
     // =========================================================================
