@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class PurchaseController extends Controller
@@ -48,12 +49,11 @@ class PurchaseController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'supplier_id' => ['required', 'exists:suppliers,id'],
+            'supplier_id' => ['nullable', 'exists:suppliers,id'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['required', 'exists:items,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
         ], [
-            'supplier_id.required' => 'Pilih pemasok untuk transaksi pembelian ini.',
             'supplier_id.exists' => 'Pemasok yang dipilih tidak ditemukan.',
             'items.required' => 'Daftar barang yang dibeli tidak boleh kosong.',
             'items.min' => 'Pilih minimal satu barang untuk dicatat sebagai pembelian.',
@@ -83,14 +83,19 @@ class PurchaseController extends Controller
                 }
 
                 // 1. Simpan Header Transaksi Pembelian
-                $transaction = Transaction::create([
+                $transactionData = [
                     'date' => Carbon::today()->toDateString(),
                     'time' => Carbon::now()->format('H:i:s'),
                     'transaction_type' => 'pembelian',
                     'total' => $totalTransaction,
                     'user_id' => Auth::id(),
-                    'supplier_id' => $request->supplier_id,
-                ]);
+                ];
+
+                if ($request->filled('supplier_id') && Schema::hasColumn('transactions', 'supplier_id')) {
+                    $transactionData['supplier_id'] = $request->supplier_id;
+                }
+
+                $transaction = Transaction::create($transactionData);
 
                 // 2. Simpan Detail Transaksi dan Tambah Stok
                 // (harga beli master TIDAK diubah di sini; satu-satunya

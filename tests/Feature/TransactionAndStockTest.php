@@ -109,7 +109,7 @@ class TransactionAndStockTest extends TestCase
         ]);
     }
 
-    public function test_purchase_transaction_requires_supplier(): void
+    public function test_purchase_transaction_can_be_created_without_supplier_id(): void
     {
         $item = Item::first();
 
@@ -119,22 +119,15 @@ class TransactionAndStockTest extends TestCase
             ],
         ]);
 
-        $response->assertSessionHasErrors('supplier_id');
+        $response->assertRedirect('/pembelian');
+        $response->assertSessionHas('success');
     }
 
-    public function test_purchase_history_shows_supplier_name(): void
+    public function test_purchase_history_does_not_have_supplier_column(): void
     {
-        $item = Item::first();
-        $supplier = Supplier::first();
-
-        $this->actingAs($this->admin)->post('/pembelian', [
-            'supplier_id' => $supplier->id,
-            'items' => [['id' => $item->id, 'quantity' => 2]],
-        ]);
-
         $response = $this->actingAs($this->admin)->get('/pembelian');
         $response->assertStatus(200);
-        $response->assertSee($supplier->supplier_name);
+        $response->assertDontSee('<th class="py-3 px-4">Pemasok</th>', false);
     }
 
     public function test_stock_monitoring_page_shows_correct_indicators_and_filters(): void

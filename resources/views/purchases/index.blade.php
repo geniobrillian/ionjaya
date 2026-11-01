@@ -19,23 +19,6 @@
 
             <form action="{{ route('purchases.store') }}" method="POST" id="purchaseForm">
                 @csrf
-                <!-- Pemasok transaksi: satu transaksi = satu pemasok -->
-                <div class="mb-4">
-                    <label for="supplierSelect" class="block text-xs font-semibold text-gray-600 mb-1">Pemasok</label>
-                    <select name="supplier_id" id="supplierSelect" required onchange="renderPurchaseCart()"
-                        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                        <option value="">— Pilih Pemasok —</option>
-                        @foreach ($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
-                                {{ $supplier->supplier_name }} ({{ $supplier->supplier_code }})
-                            </option>
-                        @endforeach
-                    </select>
-                    <p class="text-[11px] text-gray-500 mt-1">Seluruh barang dalam transaksi ini dicatat dibeli dari pemasok ini.</p>
-                    @if ($suppliers->isEmpty())
-                        <p class="text-[11px] text-red-600 mt-1">Belum ada pemasok. Buat dulu di Data Pemasok sebelum mencatat pembelian.</p>
-                    @endif
-                </div>
                 <div class="overflow-x-auto min-h-[180px] sm:min-h-[220px]">
                     <table class="w-full table-fixed text-xs sm:text-sm text-left text-gray-700">
                         <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
@@ -118,7 +101,6 @@
                     <tr>
                         <th class="py-3 px-4">No Transaksi</th>
                         <th class="py-3 px-4">Tanggal &amp; Jam</th>
-                        <th class="py-3 px-4">Pemasok</th>
                         <th class="py-3 px-4">Petugas</th>
                         <th class="py-3 px-4">Barang Masuk</th>
                         <th class="py-3 px-4 text-right">Total Pembelian</th>
@@ -134,7 +116,6 @@
                                     <span class="text-xs text-gray-400 block">{{ Carbon\Carbon::parse($purchase->time)->format('H:i') }}</span>
                                 @endif
                             </td>
-                            <td class="py-3 px-4">{{ $purchase->supplier->supplier_name ?? '-' }}</td>
                             <td class="py-3 px-4 font-medium text-gray-900">{{ $purchase->user->name ?? 'Kasir' }}</td>
                             <td class="py-3 px-4">
                                 <span class="text-xs text-gray-600">
@@ -147,7 +128,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-6 text-center text-gray-400">Belum ada riwayat transaksi pembelian.</td>
+                            <td colspan="5" class="py-6 text-center text-gray-400">Belum ada riwayat transaksi pembelian.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -260,9 +241,8 @@
         tbody.innerHTML = html;
         countText.innerText = keys.length + ' item dipilih';
         totalText.innerText = formatRupiah(total);
-        // Tombol aktif hanya bila keranjang terisi DAN pemasok sudah dipilih.
-        const supplierSelect = document.getElementById('supplierSelect');
-        submitBtn.disabled = keys.length === 0 || !supplierSelect.value;
+        // Tombol aktif bila keranjang terisi.
+        submitBtn.disabled = keys.length === 0;
     }
 
     // Filter Pencarian Katalog Pembelian
