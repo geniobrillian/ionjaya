@@ -21,7 +21,7 @@ class SaleController extends Controller
     public function index(Request $request): View
     {
         // Ambil daftar barang yang siap dijual (urut abjad)
-        $items = Item::with('supplier')
+        $items = Item::with('suppliers')
             ->orderBy('item_name')
             ->get();
 
