@@ -477,10 +477,12 @@ class BlackBoxTestingTest extends TestCase
         $responseTrx->assertStatus(200);
         $responseTrx->assertSee('LAPORAN RIWAYAT TRANSAKSI PENJUALAN');
 
-        // 3. Laporan FSN
+        // 3. Laporan Persediaan (FSN/ROP) — judul diubah dari
+        // "LAPORAN HASIL ANALISIS FSN" pada batch refinement bahasa owner.
         $responseFsn = $this->actingAs($this->superAdmin)->get(route('reports.index', ['type' => 'fsn']));
         $responseFsn->assertStatus(200);
-        $responseFsn->assertSee('LAPORAN HASIL ANALISIS FSN', false);
+        $responseFsn->assertSee('LAPORAN PERSEDIAAN', false);
+        $responseFsn->assertSee('Analisis berdasarkan metode FSN dan ROP.');
     }
 
     /**
