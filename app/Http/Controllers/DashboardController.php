@@ -28,7 +28,7 @@ class DashboardController extends Controller
     public function index(Request $request): View
     {
         $range = $request->query('range', 'weekly');
-        if (! in_array($range, ['today', 'weekly', 'monthly', 'all'])) {
+        if (! in_array($range, ['today', 'weekly', 'monthly', 'last_month', 'all'])) {
             $range = 'weekly';
         }
 

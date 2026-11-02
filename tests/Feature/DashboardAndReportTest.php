@@ -61,8 +61,7 @@ class DashboardAndReportTest extends TestCase
     /**
      * Saat jumlah > 0, card Peringatan Stok memakai tint merah yang sama
      * dengan hero alert Perlu Pengadaan (bg-red-50/border-red-200).
-     * Dicari lewat title-nya agar tidak tertukar dengan hero (yang tidak
-     * punya title dan tombolnya bg-red-600, bukan bg-red-50).
+     * Dicari lewat title-nya sehingga hanya card yang terperiksa.
      */
     public function test_stock_warning_card_uses_alert_tint_when_low_stock_exists(): void
     {
@@ -259,17 +258,38 @@ class DashboardAndReportTest extends TestCase
     }
 
     /**
-     * Hero dashboard muncul saat ada barang yang perlu pengadaan, dan
-     * tersembunyi saat tidak ada.
+     * Hero dashboard DISEMBUNYIKAN SEMENTARA (2026-11-02, permintaan
+     * owner): dibungkus komentar Blade, bukan dihapus. Bahkan saat ada
+     * barang yang perlu pengadaan, tombol hero tidak tampil — jalur
+     * menuju daftarnya tetap lewat card Peringatan Stok.
      */
-    public function test_dashboard_hero_shows_perlu_pengadaan_when_needed(): void
+    public function test_dashboard_hero_hidden_temporarily_even_when_needed(): void
     {
         Item::first()->update(['stock' => 0]);
 
         $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
 
         $response->assertStatus(200);
-        $response->assertSee('Lihat Barang yang Perlu Pengadaan');
+        $response->assertDontSee('Lihat Barang yang Perlu Pengadaan');
+    }
+
+    /**
+     * Filter "Bulan Lalu": label periode menunjukkan satu bulan kalender
+     * penuh sebelum bulan berjalan.
+     */
+    public function test_dashboard_last_month_filter_shows_previous_calendar_month(): void
+    {
+        $lastMonth = now()->subMonthNoOverflow();
+        $expectedStart = $lastMonth->copy()->startOfMonth()->translatedFormat('d M Y');
+        $expectedEnd = $lastMonth->copy()->endOfMonth()->translatedFormat('d M Y');
+
+        $response = $this->actingAs($this->superAdmin)
+            ->get(route('dashboard', ['range' => 'last_month']));
+
+        $response->assertStatus(200);
+        $response->assertSee('Bulan Lalu');
+        $response->assertSee($expectedStart);
+        $response->assertSee($expectedEnd);
     }
 
     public function test_dashboard_hero_hidden_when_no_procurement_needed(): void

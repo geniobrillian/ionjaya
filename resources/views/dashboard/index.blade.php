@@ -5,6 +5,12 @@
 
 @section('content')
 <div class="space-y-6">
+    {{-- Hero Perlu Pengadaan DISEMBUNYIKAN SEMENTARA (2026-11-02, atas
+         permintaan owner) — dibungkus komentar Blade, BUKAN dihapus.
+         Card Peringatan Stok, banner Stok, dan filter Perlu Pengadaan
+         tetap aktif sebagai jalur menuju daftarnya. Untuk menampilkan
+         lagi, hapus baris komentar pembuka dan penutup blok ini saja. --}}
+    {{--
     @if ($perluCount > 0)
         <!-- Hero Perlu Pengadaan: hal yang harus dilakukan, paling menonjol.
              Istilah memakai "Perlu Pengadaan" (konsep yang sudah ada di banner,
@@ -22,6 +28,7 @@
             </a>
         </div>
     @endif
+    --}}
 
     <!-- Header Dashboard & Filter Rentang Waktu -->
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -45,6 +52,10 @@
             <a href="{{ route('dashboard', ['range' => 'monthly']) }}"
                 class="px-2.5 sm:px-3 py-1.5 rounded transition-colors whitespace-nowrap {{ $range === 'monthly' ? 'bg-white text-gray-900 font-bold shadow-xs' : 'text-gray-600 hover:text-gray-900' }}">
                 Bulan Ini
+            </a>
+            <a href="{{ route('dashboard', ['range' => 'last_month']) }}"
+                class="px-2.5 sm:px-3 py-1.5 rounded transition-colors whitespace-nowrap {{ $range === 'last_month' ? 'bg-white text-gray-900 font-bold shadow-xs' : 'text-gray-600 hover:text-gray-900' }}">
+                Bulan Lalu
             </a>
         </div>
     </div>

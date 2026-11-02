@@ -297,6 +297,11 @@ class FsnRopService
         } elseif ($range === 'monthly') {
             $startDate = $today->copy()->startOfMonth()->startOfDay();
             $endDate = $today->copy()->endOfMonth()->endOfDay();
+        } elseif ($range === 'last_month') {
+            // Bulan lalu: satu bulan kalender penuh sebelum bulan berjalan.
+            $lastMonth = $today->copy()->subMonthNoOverflow();
+            $startDate = $lastMonth->copy()->startOfMonth()->startOfDay();
+            $endDate = $lastMonth->copy()->endOfMonth()->endOfDay();
         } elseif ($range === 'all') {
             $startDate = Carbon::create(2020, 1, 1)->startOfDay();
             $endDate = $today->copy()->endOfDay();
@@ -310,7 +315,12 @@ class FsnRopService
         $details = TransactionDetail::with('item')
             ->whereHas('transaction', function ($q) use ($startDate, $endDate) {
                 $q->where('transaction_type', 'penjualan')
-                    ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()]);
+                    // Batas atas memakai end-of-day (23:59:59), bukan 'Y-m-d':
+                    // pola 'Y-m-d' mengecualikan hari terakhir di SQLite
+                    // (nilai tersimpan 'Y-m-d 00:00:00' > 'Y-m-d') — penyebab
+                    // yang sama dengan bug grafik tren yang diperbaiki di
+                    // commit 480f1fc. Aman juga untuk kolom DATE di MySQL.
+                    ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateTimeString()]);
             })
             ->get();
 
@@ -335,7 +345,7 @@ class FsnRopService
 
         // Hitung total transaksi penjualan unik
         $totalTransactions = Transaction::where('transaction_type', 'penjualan')
-            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateTimeString()])
             ->count();
 
         // Hitung jumlah barang menipis saat ini
