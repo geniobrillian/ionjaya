@@ -262,6 +262,18 @@ class DashboardAndReportTest extends TestCase
     }
 
     /**
+     * Urutan card dashboard: Peringatan Stok paling kiri, lalu Jumlah
+     * Transaksi, Estimasi Laba Kotor, dan Total Penjualan.
+     */
+    public function test_dashboard_cards_order_starts_with_stock_warning(): void
+    {
+        $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSeeInOrder(['Peringatan Stok', 'Jumlah Transaksi', 'Estimasi Laba Kotor', 'Total Penjualan']);
+    }
+
+    /**
      * Test 7: Admin kasir ditolak saat mengakses laporan.
      */
     public function test_admin_cashier_cannot_access_reports(): void

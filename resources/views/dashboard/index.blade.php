@@ -49,42 +49,9 @@
         </div>
     </div>
 
-    <!-- 4 Kartu Metrik Indikator Utama -->
+    <!-- 4 Kartu Metrik Indikator Utama (urutan: peringatan dulu, lalu aktivitas) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <!-- Kartu 1: Estimasi Laba Kotor (aksen hijau: satu-satunya card angka positif) -->
-        <div class="bg-green-50 rounded-lg border border-green-200 shadow-sm p-4 sm:p-5">
-            <span class="text-xs font-semibold text-green-700 uppercase tracking-wider block">Estimasi Laba Kotor</span>
-            <div class="text-xl sm:text-2xl font-bold text-green-700 mt-2">
-                Rp {{ number_format($metrics['total_profit'], 0, ',', '.') }}
-            </div>
-            <p class="text-[11px] text-gray-500 mt-1">Penjualan &minus; Harga Beli Terakhir</p>
-            @php
-                $profitMargin = $metrics['total_sales'] > 0
-                    ? round($metrics['total_profit'] / $metrics['total_sales'] * 100, 1)
-                    : 0;
-            @endphp
-            <p class="text-[11px] text-green-700 font-semibold mt-1">Margin estimasi {{ number_format($profitMargin, 1, ',', '.') }}% dari penjualan</p>
-        </div>
-
-        <!-- Kartu 2: Total Omset Penjualan -->
-        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5">
-            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Total Penjualan</span>
-            <div class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">
-                Rp {{ number_format($metrics['total_sales'], 0, ',', '.') }}
-            </div>
-            <p class="text-[11px] text-gray-400 mt-1">Nilai kotor transaksi penjualan</p>
-        </div>
-
-        <!-- Kartu 3: Jumlah Transaksi -->
-        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5">
-            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Jumlah Transaksi</span>
-            <div class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">
-                {{ $metrics['total_transactions'] }} <span class="text-xs font-normal text-gray-500">struk</span>
-            </div>
-            <p class="text-[11px] text-gray-400 mt-1">Total nota penjualan periode ini</p>
-        </div>
-
-        <!-- Kartu 4: Peringatan Stok Menipis -->
+        <!-- Kartu 1: Peringatan Stok Menipis -->
         @if ($metrics['low_stock_count'] > 0)
             {{-- Seluruh card bisa diklik menuju daftar Perlu Pengadaan.
                  Saat jumlah 0, card tetap div biasa (daftar kosong tidak ada gunanya dibuka). --}}
@@ -109,6 +76,39 @@
                 </p>
             </div>
         @endif
+
+        <!-- Kartu 2: Jumlah Transaksi -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5">
+            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Jumlah Transaksi</span>
+            <div class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">
+                {{ $metrics['total_transactions'] }} <span class="text-xs font-normal text-gray-500">struk</span>
+            </div>
+            <p class="text-[11px] text-gray-400 mt-1">Total nota penjualan periode ini</p>
+        </div>
+
+        <!-- Kartu 3: Estimasi Laba Kotor (aksen hijau: satu-satunya card angka positif) -->
+        <div class="bg-green-50 rounded-lg border border-green-200 shadow-sm p-4 sm:p-5">
+            <span class="text-xs font-semibold text-green-700 uppercase tracking-wider block">Estimasi Laba Kotor</span>
+            <div class="text-xl sm:text-2xl font-bold text-green-700 mt-2">
+                Rp {{ number_format($metrics['total_profit'], 0, ',', '.') }}
+            </div>
+            <p class="text-[11px] text-gray-500 mt-1">Penjualan &minus; Harga Beli Terakhir</p>
+            @php
+                $profitMargin = $metrics['total_sales'] > 0
+                    ? round($metrics['total_profit'] / $metrics['total_sales'] * 100, 1)
+                    : 0;
+            @endphp
+            <p class="text-[11px] text-green-700 font-semibold mt-1">Margin estimasi {{ number_format($profitMargin, 1, ',', '.') }}% dari penjualan</p>
+        </div>
+
+        <!-- Kartu 4: Total Omset Penjualan -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5">
+            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Total Penjualan</span>
+            <div class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">
+                Rp {{ number_format($metrics['total_sales'], 0, ',', '.') }}
+            </div>
+            <p class="text-[11px] text-gray-400 mt-1">Nilai kotor transaksi penjualan</p>
+        </div>
     </div>
 
     <!-- Grafik Batang Tren 7 Hari Terakhir (SVG / CSS Flat) -->
