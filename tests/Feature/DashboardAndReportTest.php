@@ -68,6 +68,21 @@ class DashboardAndReportTest extends TestCase
     }
 
     /**
+     * Sidebar Laporan adalah tautan langsung (seperti Dashboard),
+     * bukan dropdown: menunya tetap ada, tapi tanpa ringkasan grup.
+     */
+    public function test_sidebar_laporan_is_direct_link_not_dropdown(): void
+    {
+        $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Laporan');
+        // Ringkasan dropdown lama (<span>Laporan</span>) sudah tidak ada.
+        $response->assertDontSee('<span>Laporan</span>', false);
+        $response->assertSee('/laporan', false);
+    }
+
+    /**
      * Test 2: Filter rentang waktu pada dashboard.
      */
     public function test_super_admin_can_filter_dashboard_time_range(): void

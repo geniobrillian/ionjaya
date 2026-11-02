@@ -107,21 +107,12 @@
                         </div>
                     </details>
 
-                    {{-- LAPORAN --}}
-                    <details {{ request()->routeIs('reports.*') ? 'open' : '' }}>
-                        <summary class="flex items-center justify-between px-3 py-2 rounded-md font-semibold text-xs uppercase tracking-wider {{ request()->routeIs('reports.*') ? 'text-white' : 'text-gray-400' }} hover:text-white hover:bg-gray-800 cursor-pointer list-none transition-colors">
-                            <span>Laporan</span>
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </summary>
-                        <div class="mt-1 space-y-1 ml-3 border-l border-gray-800 pl-2">
-                            <a href="{{ route('reports.index') }}"
-                                class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('reports.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-                                Laporan
-                            </a>
-                        </div>
-                    </details>
+                    {{-- LAPORAN (menu tunggal: tautan langsung seperti Dashboard,
+                         bukan dropdown — grup ini hanya berisi satu halaman) --}}
+                    <a href="{{ route('reports.index') }}"
+                        class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('reports.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                        Laporan
+                    </a>
                 @endif
             </nav>
         </div>
