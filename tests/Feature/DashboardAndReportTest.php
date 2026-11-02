@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Item;
 use App\Models\Supplier;
 use App\Models\Transaction;
+use App\Models\TransactionDetail;
+use App\Services\FsnRopService;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -102,6 +104,60 @@ class DashboardAndReportTest extends TestCase
         $response->assertSee('Arahkan kursor ke salah satu hari');
         $response->assertSee('data-sales=', false);
         $response->assertSee('data-profit=', false);
+    }
+
+    /**
+     * Regresi: grafik tren harian harus menghitung penjualan nyata.
+     * (Bug lama: tren selalu nol meski ada transaksi. Tes ini membandingkan
+     * selisih sebelum/sesudah menambah transaksi, jadi kebal terhadap
+     * data seeder dan gagal bila tren mengabaikan data baru.)
+     */
+    public function test_daily_trend_counts_recent_sales(): void
+    {
+        $service = app(FsnRopService::class);
+        $item = Item::first();
+        $this->assertNotNull($item);
+
+        $today = Carbon::today();
+        $yesterday = $today->copy()->subDay();
+        $purchasePrice = (float) $item->purchase_price;
+
+        $before = collect($service->calculateProfit('weekly')['daily_trend'])->keyBy('date');
+
+        $txYesterday = Transaction::create([
+            'user_id' => $this->superAdmin->id,
+            'transaction_type' => 'penjualan',
+            'date' => $yesterday->toDateString(),
+            'total' => 200000,
+        ]);
+        TransactionDetail::create([
+            'transaction_id' => $txYesterday->id,
+            'item_id' => $item->id,
+            'quantity' => 2,
+            'unit_price' => 100000,
+            'subtotal' => 200000,
+        ]);
+
+        $txToday = Transaction::create([
+            'user_id' => $this->superAdmin->id,
+            'transaction_type' => 'penjualan',
+            'date' => $today->toDateString(),
+            'total' => 50000,
+        ]);
+        TransactionDetail::create([
+            'transaction_id' => $txToday->id,
+            'item_id' => $item->id,
+            'quantity' => 1,
+            'unit_price' => 50000,
+            'subtotal' => 50000,
+        ]);
+
+        $after = collect($service->calculateProfit('weekly')['daily_trend'])->keyBy('date');
+
+        $this->assertEqualsWithDelta($before[$yesterday->toDateString()]['sales'] + 200000, $after[$yesterday->toDateString()]['sales'], 0.01);
+        $this->assertEqualsWithDelta($before[$yesterday->toDateString()]['profit'] + (200000 - 2 * $purchasePrice), $after[$yesterday->toDateString()]['profit'], 0.01);
+        $this->assertEqualsWithDelta($before[$today->toDateString()]['sales'] + 50000, $after[$today->toDateString()]['sales'], 0.01);
+        $this->assertEqualsWithDelta($before[$today->toDateString()]['profit'] + (50000 - 1 * $purchasePrice), $after[$today->toDateString()]['profit'], 0.01);
     }
 
     /**

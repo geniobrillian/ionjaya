@@ -353,18 +353,21 @@ class FsnRopService
             ];
         }
 
-        $trendDetails = TransactionDetail::with('item')
+        // Pola yang sama seperti perhitungan card di atas: whereHas + relasi
+        // yang di-eager-load, tanpa join manual. Tanggal diambil dari cast
+        // 'date' model Transaction sehingga formatnya dijamin Y-m-d.
+        // (Versi lama memakai join + alias tx_date untuk mencocokkan hari;
+        // penulisan ulang ini menghapus konstruksi itu sepenuhnya.)
+        $trendDetails = TransactionDetail::with(['item', 'transaction'])
             ->whereHas('transaction', function ($q) use ($today) {
                 $q->where('transaction_type', 'penjualan')
                     ->whereBetween('date', [$today->copy()->subDays(6)->toDateString(), $today->toDateString()]);
             })
-            ->join('transactions', 'transaction_details.transaction_id', '=', 'transactions.id')
-            ->select('transaction_details.*', 'transactions.date as tx_date')
             ->get();
 
         foreach ($trendDetails as $td) {
-            $dateKey = $td->tx_date;
-            if (isset($trendDates[$dateKey])) {
+            $dateKey = $td->transaction?->date?->toDateString();
+            if ($dateKey !== null && isset($trendDates[$dateKey])) {
                 $qty = $td->quantity;
                 $sellingPrice = (float) $td->unit_price;
                 $purchasePrice = $td->item ? (float) $td->item->purchase_price : 0;
