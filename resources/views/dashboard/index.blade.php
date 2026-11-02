@@ -33,13 +33,19 @@
 
     <!-- 4 Kartu Metrik Indikator Utama -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <!-- Kartu 1: Estimasi Laba Kotor -->
-        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5">
-            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Estimasi Laba Kotor</span>
-            <div class="text-xl sm:text-2xl font-bold text-blue-700 mt-2">
+        <!-- Kartu 1: Estimasi Laba Kotor (aksen hijau: satu-satunya card angka positif) -->
+        <div class="bg-green-50 rounded-lg border border-green-200 shadow-sm p-4 sm:p-5">
+            <span class="text-xs font-semibold text-green-700 uppercase tracking-wider block">Estimasi Laba Kotor</span>
+            <div class="text-xl sm:text-2xl font-bold text-green-700 mt-2">
                 Rp {{ number_format($metrics['total_profit'], 0, ',', '.') }}
             </div>
-            <p class="text-[11px] text-gray-400 mt-1">Penjualan &minus; Harga Beli Terakhir</p>
+            <p class="text-[11px] text-gray-500 mt-1">Penjualan &minus; Harga Beli Terakhir</p>
+            @php
+                $profitMargin = $metrics['total_sales'] > 0
+                    ? round($metrics['total_profit'] / $metrics['total_sales'] * 100, 1)
+                    : 0;
+            @endphp
+            <p class="text-[11px] text-green-700 font-semibold mt-1">Margin estimasi {{ number_format($profitMargin, 1, ',', '.') }}% dari penjualan</p>
         </div>
 
         <!-- Kartu 2: Total Omset Penjualan -->
@@ -92,7 +98,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-gray-100 mb-6">
             <div>
                 <h3 class="text-base font-semibold text-gray-900">Tren Penjualan & Laba Harian (7 Hari Terakhir)</h3>
-                <p class="text-xs text-gray-500">Perbandingan nilai omset penjualan (biru) dan estimasi laba kotor (hijau).</p>
+                <p class="text-xs text-gray-500">Perbandingan nilai omset penjualan (biru) dan estimasi laba kotor (hijau). Grafik ini selalu menampilkan 7 hari terakhir, terlepas dari filter periode di atas.</p>
             </div>
             <div class="flex items-center space-x-4 text-xs shrink-0">
                 <span class="flex items-center"><span class="w-3 h-3 bg-blue-600 rounded-xs mr-1.5"></span> Penjualan</span>
@@ -102,6 +108,13 @@
 
         @php
             $maxVal = collect($metrics['daily_trend'])->max('sales') ?: 100000;
+            // Hari luar biasa: penjualan hari terbesar minimal 2x hari terbesar kedua.
+            // Aturan ini generik (tidak mengunci tanggal) — pada data simulasi, ini
+            // menandai hari borong 30 Okt yang memang disengaja.
+            $sortedSales = collect($metrics['daily_trend'])->pluck('sales')->sortDesc()->values();
+            $outlierSales = ($sortedSales->get(1, 0) > 0 && $sortedSales[0] >= 2 * $sortedSales[1])
+                ? $sortedSales[0]
+                : null;
         @endphp
 
         <div class="grid grid-cols-7 gap-3 sm:gap-6 items-end h-56 pt-6 pb-2 px-2 border-b border-gray-200">
@@ -109,25 +122,58 @@
                 @php
                     $salesHeight = $maxVal > 0 ? max(4, round(($day['sales'] / $maxVal) * 100)) : 4;
                     $profitHeight = $maxVal > 0 ? max(4, round(($day['profit'] / $maxVal) * 100)) : 4;
+                    $isOutlier = $outlierSales !== null && $day['sales'] === $outlierSales;
                 @endphp
-                <div class="flex flex-col items-center h-full justify-end group">
-                    <div class="text-[10px] text-gray-500 font-mono opacity-0 group-hover:opacity-100 transition-opacity mb-1 whitespace-nowrap">
+                <div class="chart-day flex flex-col items-center h-full justify-end group" tabindex="0"
+                    data-label="{{ $day['label'] }}"
+                    data-sales="Rp {{ number_format($day['sales'], 0, ',', '.') }}"
+                    data-profit="Rp {{ number_format($day['profit'], 0, ',', '.') }}"
+                    data-outlier="{{ $isOutlier ? '1' : '0' }}">
+                    {{-- Nilai laba selalu terlihat (layar sm ke atas; di HP nilainya lewat baris rincian di bawah) --}}
+                    <div class="hidden sm:block text-[10px] text-green-700 font-mono font-semibold mb-1 whitespace-nowrap">
                         Rp {{ number_format($day['profit'], 0, ',', '.') }}
                     </div>
                     <div class="w-full flex items-end justify-center space-x-1 sm:space-x-2 h-40">
-                        <!-- Bar Penjualan -->
-                        <div class="w-3 sm:w-5 bg-blue-600 rounded-t-xs transition-all hover:bg-blue-700"
-                            style="height: {{ $salesHeight }}%"
-                            title="Penjualan: Rp {{ number_format($day['sales'], 0, ',', '.') }}"></div>
+                        <!-- Bar Penjualan (oranye bila hari luar biasa) -->
+                        <div class="w-3 sm:w-5 {{ $isOutlier ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-600 hover:bg-blue-700' }} rounded-t-xs transition-all"
+                            style="height: {{ $salesHeight }}%"></div>
                         <!-- Bar Laba -->
                         <div class="w-3 sm:w-5 bg-green-600 rounded-t-xs transition-all hover:bg-green-700"
-                            style="height: {{ $profitHeight }}%"
-                            title="Laba: Rp {{ number_format($day['profit'], 0, ',', '.') }}"></div>
+                            style="height: {{ $profitHeight }}%"></div>
                     </div>
-                    <span class="text-[11px] text-gray-600 mt-2 font-medium">{{ $day['label'] }}</span>
+                    <span class="text-[11px] {{ $isOutlier ? 'text-amber-700 font-bold' : 'text-gray-600 font-medium' }} mt-2">{{ $day['label'] }}</span>
                 </div>
             @endforeach
         </div>
+
+        @if ($outlierSales !== null)
+            <p class="text-[11px] text-amber-700 mt-3">Bar oranye menandai hari dengan penjualan jauh di atas hari lain dalam 7 hari ini.</p>
+        @endif
+        {{-- Baris rincian interaktif: diperbarui saat kursor/fokus menyentuh salah satu hari.
+             Dipakai baris ini (bukan tooltip melayang) karena tooltip di atas bar akan
+             menabrak judul grafik; tanpa library apa pun sehingga tetap jalan offline. --}}
+        <p id="chart-detail" class="text-xs text-gray-600 mt-3">Arahkan kursor ke salah satu hari untuk melihat rinciannya.</p>
+        <script>
+            (function () {
+                var detail = document.getElementById('chart-detail');
+                if (!detail) return;
+                var defaultText = detail.textContent;
+                document.querySelectorAll('.chart-day').forEach(function (el) {
+                    function show() {
+                        var text = el.dataset.label + ' — Penjualan ' + el.dataset.sales + ' · Estimasi laba ' + el.dataset.profit;
+                        if (el.dataset.outlier === '1') {
+                            text += ' · Hari luar biasa';
+                        }
+                        detail.textContent = text;
+                    }
+                    function reset() { detail.textContent = defaultText; }
+                    el.addEventListener('mouseenter', show);
+                    el.addEventListener('focus', show);
+                    el.addEventListener('mouseleave', reset);
+                    el.addEventListener('blur', reset);
+                });
+            })();
+        </script>
     </div>
 
     <!-- 2 Kolom Ringkasan Data Bawah -->

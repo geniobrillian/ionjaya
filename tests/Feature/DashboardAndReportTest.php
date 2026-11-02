@@ -83,6 +83,28 @@ class DashboardAndReportTest extends TestCase
     }
 
     /**
+     * Card laba menampilkan margin estimasi, dan setiap hari pada grafik
+     * membawa data hover (penjualan + laba) untuk baris rincian interaktif.
+     */
+    public function test_dashboard_profit_card_shows_estimated_margin(): void
+    {
+        $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Margin estimasi');
+    }
+
+    public function test_dashboard_chart_days_carry_hover_data(): void
+    {
+        $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Arahkan kursor ke salah satu hari');
+        $response->assertSee('data-sales=', false);
+        $response->assertSee('data-profit=', false);
+    }
+
+    /**
      * Test 2: Filter rentang waktu pada dashboard.
      */
     public function test_super_admin_can_filter_dashboard_time_range(): void
