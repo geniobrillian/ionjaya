@@ -58,6 +58,27 @@ class DashboardAndReportTest extends TestCase
         $response->assertSee('/stok?status=perlu', false);
     }
 
+    /**
+     * Saat jumlah > 0, card Peringatan Stok memakai tint merah yang sama
+     * dengan hero alert Perlu Pengadaan (bg-red-50/border-red-200).
+     * Dicari lewat title-nya agar tidak tertukar dengan hero (yang tidak
+     * punya title dan tombolnya bg-red-600, bukan bg-red-50).
+     */
+    public function test_stock_warning_card_uses_alert_tint_when_low_stock_exists(): void
+    {
+        // Seeder punya barang menipis (mis. BRG001) sehingga jumlah > 0.
+        $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
+
+        $response->assertStatus(200);
+        preg_match_all('/<a\b[^>]*>/', $response->getContent(), $anchors);
+        $card = collect($anchors[0])->first(
+            fn ($tag) => str_contains($tag, 'title="Lihat barang yang perlu pengadaan"')
+        );
+        $this->assertNotNull($card, 'Card Peringatan Stok tidak ditemukan.');
+        $this->assertStringContainsString('bg-red-50', $card);
+        $this->assertStringContainsString('border-red-200', $card);
+    }
+
     public function test_stock_warning_card_is_not_a_link_when_no_low_stock(): void
     {
         Item::query()->update(['stock' => 999]);

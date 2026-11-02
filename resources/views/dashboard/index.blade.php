@@ -54,9 +54,12 @@
         <!-- Kartu 1: Peringatan Stok Menipis -->
         @if ($metrics['low_stock_count'] > 0)
             {{-- Seluruh card bisa diklik menuju daftar Perlu Pengadaan.
-                 Saat jumlah 0, card tetap div biasa (daftar kosong tidak ada gunanya dibuka). --}}
+                 Saat jumlah > 0, card memakai tint merah yang sama dengan
+                 hero alert Perlu Pengadaan (bg-red-50/border-red-200).
+                 Saat jumlah 0, card tetap div putih biasa (daftar kosong
+                 tidak ada gunanya dibuka). --}}
             <a href="{{ route('stock.index', ['status' => 'perlu']) }}" title="Lihat barang yang perlu pengadaan"
-                class="block bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5 hover:shadow-md hover:border-red-300 transition-shadow cursor-pointer">
+                class="block bg-red-50 rounded-lg border border-red-200 shadow-sm p-4 sm:p-5 hover:shadow-md hover:border-red-300 transition-shadow cursor-pointer">
                 <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Peringatan Stok</span>
                 <div class="text-xl sm:text-2xl font-bold text-red-600 mt-2">
                     {{ $metrics['low_stock_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
