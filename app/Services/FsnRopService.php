@@ -360,8 +360,14 @@ class FsnRopService
         // penulisan ulang ini menghapus konstruksi itu sepenuhnya.)
         $trendDetails = TransactionDetail::with(['item', 'transaction'])
             ->whereHas('transaction', function ($q) use ($today) {
+                // Batas akhir memakai akhir hari (23:59:59), bukan tanggal saja:
+                // di SQLite, nilai date tersimpan sebagai 'Y-m-d 00:00:00' (cast
+                // date model di-bind sebagai datetime), sehingga batas 'Y-m-d'
+                // mengecualikan seluruh transaksi di hari terakhir periode —
+                // itulah yang membuat tes tren gagal pada asersi hari ini,
+                // padahal asersi kemarin lulus. Di MySQL DATE, batas ini aman.
                 $q->where('transaction_type', 'penjualan')
-                    ->whereBetween('date', [$today->copy()->subDays(6)->toDateString(), $today->toDateString()]);
+                    ->whereBetween('date', [$today->copy()->subDays(6)->toDateString(), $today->copy()->endOfDay()->toDateTimeString()]);
             })
             ->get();
 
