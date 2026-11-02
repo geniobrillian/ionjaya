@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Item;
 use App\Models\Transaction;
 use App\Services\FsnRopService;
 use Illuminate\Http\Request;
@@ -43,6 +44,23 @@ class DashboardController extends Controller
         // Ambil 5 barang dengan stok paling menipis
         $lowStockItems = $this->fsnRopService->getLowStockItems()->take(5);
 
-        return view('dashboard.index', compact('metrics', 'range', 'recentTransactions', 'lowStockItems'));
+        // Hitungan Perlu Pengadaan untuk hero dashboard — definisi sama
+        // dengan halaman Stok (habis + menipis menurut status tampilan),
+        // agar angka hero tidak pernah berbeda dengan isi daftar yang
+        // dituju tautannya (pelajaran dari bug banner Stok).
+        $allItems = Item::all();
+        $perluHabis = $allItems->filter(fn ($item) => $item->stock_status === 'habis')->count();
+        $perluMenipis = $allItems->filter(fn ($item) => $item->stock_status === 'menipis')->count();
+        $perluCount = $perluHabis + $perluMenipis;
+        $perluParts = [];
+        if ($perluHabis > 0) {
+            $perluParts[] = "{$perluHabis} habis";
+        }
+        if ($perluMenipis > 0) {
+            $perluParts[] = "{$perluMenipis} menipis";
+        }
+        $perluBreakdown = implode(' dan ', $perluParts);
+
+        return view('dashboard.index', compact('metrics', 'range', 'recentTransactions', 'lowStockItems', 'perluCount', 'perluBreakdown'));
     }
 }

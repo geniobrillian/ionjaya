@@ -221,15 +221,44 @@ class DashboardAndReportTest extends TestCase
     }
 
     /**
-     * Test 6: Super Admin dapat mengakses laporan analisis FSN & ROP.
+     * Test 6: Super Admin dapat mengakses laporan persediaan (dulu: laporan
+     * analisis FSN & ROP). Judul dan header memakai bahasa owner; keterangan
+     * metode tetap tercantum kecil di bawah kop.
      */
     public function test_super_admin_can_access_fsn_rop_report(): void
     {
         $response = $this->actingAs($this->superAdmin)->get(route('reports.index', ['type' => 'fsn']));
 
         $response->assertStatus(200);
-        $response->assertSee('LAPORAN HASIL ANALISIS FSN', false);
+        $response->assertSee('LAPORAN PERSEDIAAN', false);
+        $response->assertSee('Analisis berdasarkan metode FSN dan ROP');
+        $response->assertSee('Pergerakan');
+        $response->assertDontSee('Laporan Hasil FSN');
         $response->assertSee('UD ION JAYA MOTOR');
+    }
+
+    /**
+     * Hero dashboard muncul saat ada barang yang perlu pengadaan, dan
+     * tersembunyi saat tidak ada.
+     */
+    public function test_dashboard_hero_shows_perlu_pengadaan_when_needed(): void
+    {
+        Item::first()->update(['stock' => 0]);
+
+        $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Lihat Barang yang Perlu Pengadaan');
+    }
+
+    public function test_dashboard_hero_hidden_when_no_procurement_needed(): void
+    {
+        Item::query()->update(['stock' => 999]);
+
+        $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Lihat Barang yang Perlu Pengadaan');
     }
 
     /**

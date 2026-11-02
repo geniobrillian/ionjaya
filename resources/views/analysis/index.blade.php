@@ -111,6 +111,18 @@
                 </form>
             </div>
 
+            <!-- Ringkasan jumlah per kategori -->
+            @php
+                $countCepat = collect($analysisResult['items'])->where('fsn_category', 'F')->count();
+                $countLambat = collect($analysisResult['items'])->where('fsn_category', 'S')->count();
+                $countJarang = collect($analysisResult['items'])->where('fsn_category', 'N')->count();
+            @endphp
+            <div class="px-4 sm:px-5 py-3 border-b border-gray-200 flex flex-wrap gap-2">
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">{{ $countCepat }} Barang Cepat Terjual</span>
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">{{ $countLambat }} Barang Lambat Terjual</span>
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">{{ $countJarang }} Barang Jarang/Tidak Terjual</span>
+            </div>
+
             <!-- Filter dan Pencarian -->
             <div class="p-4 border-b border-gray-200 flex flex-col sm:flex-row gap-3">
                 <div class="w-full sm:w-48 shrink-0">
@@ -136,6 +148,7 @@
                             <th class="py-3.5 px-4">Barang</th>
                             <th class="py-3.5 px-4 text-center w-36">Pergerakan</th>
                             <th class="py-3.5 px-4 text-center w-32">Batas Pesan</th>
+                            <th class="py-3.5 px-4 text-center w-24">Stok</th>
                             <th class="py-3.5 px-4 text-center w-32">Status</th>
                         </tr>
                     </thead>
@@ -160,6 +173,9 @@
                                 <td class="py-3.5 px-4 text-center font-mono font-bold text-gray-900">
                                     {{ $row['order_threshold'] > 0 ? $row['order_threshold'] : '—' }}
                                 </td>
+                                <td class="py-3.5 px-4 text-center font-mono text-gray-900">
+                                    {{ $row['stock'] }}
+                                </td>
                                 <td class="py-3.5 px-4 text-center">
                                     @if ($row['stock'] == 0)
                                         <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-200 text-red-900">Habis</span>
@@ -172,7 +188,7 @@
                             </tr>
                         @endforeach
                         <tr id="hasilKosong" class="hidden">
-                            <td colspan="5" class="py-8 text-center text-gray-400 text-sm">
+                            <td colspan="6" class="py-8 text-center text-gray-400 text-sm">
                                 Tidak ada barang yang cocok dengan filter atau pencarian.
                             </td>
                         </tr>
@@ -272,7 +288,7 @@
                 Apakah Anda yakin ingin menerapkan hasil analisis ini ke Master Data Barang?
             </p>
             <div class="rounded-md bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800 leading-relaxed">
-                Hasil analisis ini akan disimpan ke Data Barang dan dipakai sebagai ambang stok (kategori FSN, stok pengaman, dan batas pesan ROP). Ambang lama akan diganti.
+                Sistem akan memperbarui kategori barang dan batas pesan berdasarkan data transaksi pada periode yang dipilih. Ambang lama akan diganti.
             </div>
         </div>
 
