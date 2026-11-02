@@ -233,7 +233,7 @@
         <!-- Kolom Kanan: 5 Barang Stok Paling Menipis -->
         <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5">
             <div class="flex items-center justify-between pb-3 border-b border-gray-200 mb-4">
-                <h3 class="text-sm font-semibold text-gray-900">Barang Stok Paling Menipis</h3>
+                <h3 class="text-sm font-semibold text-gray-900">Barang Stok Perlu Pengadaan</h3>
                 <a href="{{ route('stock.index', ['status' => 'perlu']) }}" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Lihat Semua &rarr;</a>
             </div>
             <div class="overflow-x-auto">
