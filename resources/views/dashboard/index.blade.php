@@ -5,6 +5,24 @@
 
 @section('content')
 <div class="space-y-6">
+    @if ($perluCount > 0)
+        <!-- Hero Perlu Pengadaan: hal yang harus dilakukan, paling menonjol.
+             Istilah memakai "Perlu Pengadaan" (konsep yang sudah ada di banner,
+             filter, dan card) — bukan "Perlu Dibeli" yang masih diputuskan. -->
+        <div class="bg-red-50 rounded-lg border border-red-200 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-base font-semibold text-red-800">Perlu Pengadaan</h2>
+                <p class="text-sm text-red-700 mt-0.5">
+                    Terdapat <strong>{{ $perluCount }}</strong> jenis barang yang perlu pengadaan: {{ $perluBreakdown }}. Segera lakukan pengadaan.
+                </p>
+            </div>
+            <a href="{{ route('stock.index', ['status' => 'perlu']) }}"
+                class="shrink-0 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-md shadow-sm transition-colors text-center whitespace-nowrap">
+                Lihat Barang yang Perlu Pengadaan
+            </a>
+        </div>
+    @endif
+
     <!-- Header Dashboard & Filter Rentang Waktu -->
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>

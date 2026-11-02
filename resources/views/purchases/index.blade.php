@@ -78,6 +78,12 @@
                 <h2 class="text-base font-semibold text-gray-900 mb-2">Pilih Barang</h2>
                 <input type="text" id="catalogSearch" placeholder="Cari nama atau kode barang..."
                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <select id="catalogNeedFilter" onchange="applyCatalogFilter()"
+                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 mt-2">
+                    <option value="all">Semua barang</option>
+                    <option value="need">Perlu dibeli</option>
+                </select>
+                <p class="text-[11px] text-gray-500 mt-1">Filter Perlu dibeli menampilkan barang yang stoknya sudah mencapai atau di bawah batas pesan. Barang yang belum dianalisis tidak memiliki batas pesan sehingga tidak muncul di filter ini.</p>
                 <p class="text-[11px] text-gray-500 mt-2">Tidak menemukan barang? <a href="{{ route('items.index') }}" class="text-blue-600 hover:underline font-medium">Kelola pemasok barang di Data Barang &rarr;</a></p>
             </div>
 
@@ -85,14 +91,15 @@
                 Pilih pemasok untuk menampilkan barang yang tersedia.
             </div>
             <div id="catalogEmpty" class="py-8 text-center text-gray-400 text-sm" style="display: none;">
-                Tidak ada barang dari pemasok ini yang cocok dengan pencarian.
+                Tidak ada barang dari pemasok ini yang cocok dengan filter.
             </div>
             <div id="catalogList" class="overflow-y-auto max-h-[440px] divide-y divide-gray-100">
                 @foreach ($items as $item)
                     <div class="py-3 flex items-center justify-between catalog-item"
                         data-name="{{ strtolower($item->item_name) }}"
                         data-code="{{ strtolower($item->item_code) }}"
-                        data-supplier-ids="{{ $item->suppliers->pluck('id')->join(',') }}">
+                        data-supplier-ids="{{ $item->suppliers->pluck('id')->join(',') }}"
+                        data-need="{{ ($item->fsn_category !== null && $item->order_threshold !== null && $item->stock <= $item->order_threshold) ? '1' : '0' }}">
                         <div class="pr-3">
                             <p class="text-sm font-medium text-gray-900 leading-snug">{{ $item->item_name }}</p>
                             <div class="text-xs text-gray-500 mt-0.5">
@@ -101,6 +108,7 @@
                             <div class="text-xs text-gray-600 mt-0.5">
                                 Harga beli: <span class="font-semibold text-gray-800">Rp {{ number_format($item->purchase_price, 0, ',', '.') }}</span>
                                 &bull; Stok saat ini: {{ $item->stock }}
+                                &bull; Batas pesan: {{ ($item->order_threshold ?? 0) > 0 ? $item->order_threshold : '—' }}
                             </div>
                         </div>
                         <div>
@@ -273,11 +281,15 @@
     }
 
     // Filter katalog gabungan: barang tampil hanya bila (a) cocok dengan
-    // pencarian DAN (b) punya relasi dengan pemasok yang dipilih.
+    // pencarian DAN (b) punya relasi dengan pemasok yang dipilih DAN (c)
+    // lolos filter Perlu dibeli (bila dipilih: stok sudah mencapai atau di
+    // bawah batas pesan; barang yang belum dianalisis tidak punya batas
+    // sehingga tidak lolos filter ini).
     // Sebelum pemasok dipilih, semua baris disembunyikan dan placeholder tampil.
     function applyCatalogFilter() {
         const query = document.getElementById('catalogSearch').value.toLowerCase().trim();
         const supplierId = document.getElementById('supplierSelect').value;
+        const needFilter = document.getElementById('catalogNeedFilter').value;
         const items = document.querySelectorAll('.catalog-item');
         const placeholder = document.getElementById('catalogPlaceholder');
         const emptyState = document.getElementById('catalogEmpty');
@@ -289,7 +301,8 @@
             const supplierIds = (item.getAttribute('data-supplier-ids') || '').split(',').filter(Boolean);
             const matchesSearch = name.includes(query) || code.includes(query);
             const matchesSupplier = supplierId !== '' && supplierIds.includes(supplierId);
-            if (matchesSearch && matchesSupplier) {
+            const matchesNeed = needFilter === 'all' || item.getAttribute('data-need') === '1';
+            if (matchesSearch && matchesSupplier && matchesNeed) {
                 item.style.display = 'flex';
                 visibleCount++;
             } else {

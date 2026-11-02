@@ -22,6 +22,20 @@ class TransactionAndStockTest extends TestCase
         $this->admin = User::where('role', 'admin')->first();
     }
 
+    /**
+     * Katalog pembelian menampilkan batas pesan tiap barang dan filter
+     * cepat Perlu dibeli (stok sudah mencapai atau di bawah batas pesan).
+     */
+    public function test_purchase_catalog_shows_order_threshold_and_need_filter(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('purchases.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Batas pesan');
+        $response->assertSee('Perlu dibeli');
+        $response->assertSee('data-need=', false);
+    }
+
     public function test_sale_transaction_can_be_created_and_deducts_stock(): void
     {
         $item = Item::where('stock', '>', 5)->first();

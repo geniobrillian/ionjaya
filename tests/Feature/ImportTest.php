@@ -83,6 +83,19 @@ class ImportTest extends TestCase
         $response->assertSee('Impor Data');
     }
 
+    /**
+     * Petunjuk impor tersembunyi di balik disclosure (halaman utama hanya
+     * menampilkan Unduh Template dan form unggah).
+     */
+    public function test_import_page_collapses_instructions(): void
+    {
+        $response = $this->actingAs($this->superAdmin)->get('/impor');
+
+        $response->assertStatus(200);
+        $response->assertSee('Lihat petunjuk pengisian');
+        $response->assertSee('Unduh Template Excel');
+    }
+
     public function test_admin_cannot_access_import_page(): void
     {
         $response = $this->actingAs($this->adminKasir)->get('/impor');

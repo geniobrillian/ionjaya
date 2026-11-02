@@ -21,8 +21,9 @@
     </div>
 
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-6">
-        <h3 class="text-sm font-semibold text-gray-900 mb-3">Aturan impor (penting)</h3>
-        <ul class="text-xs text-gray-600 leading-relaxed list-disc pl-5 space-y-1">
+        <details>
+            <summary class="text-sm font-semibold text-gray-900 cursor-pointer">Lihat petunjuk pengisian</summary>
+            <ul class="text-xs text-gray-600 leading-relaxed list-disc pl-5 space-y-1 mt-3">
             <li>Barang dibuat dengan <strong>stok opname</strong> sebagai stok awal; Pembelian menambah stok, Penjualan mengurangi stok. Tidak ada edit stok manual.</li>
             <li>Harga di sheet Pembelian/Penjualan <strong>diabaikan</strong>: transaksi selalu memakai harga master dari sheet Data Barang (1 pintu harga).</li>
             <li>Penjualan yang membuat stok negatif <strong>menggagalkan seluruh impor</strong> (terlihat di pratinjau, sebelum konfirmasi).</li>
@@ -32,6 +33,7 @@
             <li>Transaksi diimpor atas nama akun Anda yang sedang login.</li>
             <li>Satu file diimpor dalam satu transaksi database: gagal satu baris berarti gagal semua.</li>
         </ul>
+        </details>
     </div>
 
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-6">

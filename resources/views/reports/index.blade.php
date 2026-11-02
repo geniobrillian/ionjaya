@@ -18,7 +18,7 @@
             </a>
             <a href="{{ route('reports.index', ['type' => 'fsn']) }}"
                 class="px-4 py-2 text-xs font-semibold rounded-md border transition-colors whitespace-nowrap {{ $reportType === 'fsn' ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100' }}">
-                3. Laporan Hasil FSN & ROP
+                3. Laporan Persediaan
             </a>
         </div>
 
@@ -81,7 +81,7 @@
                     @elseif ($reportType === 'transaksi')
                         LAPORAN RIWAYAT TRANSAKSI {{ strtoupper($transactionType === 'all' ? 'PENJUALAN & PEMBELIAN' : $transactionType) }}
                     @else
-                        LAPORAN HASIL ANALISIS FSN & PARAMETER REORDER POINT
+                        LAPORAN PERSEDIAAN
                     @endif
                 </h2>
                 <p class="text-[11px] text-gray-500 mt-0.5">
@@ -90,6 +90,9 @@
                         &bull; Periode: {{ Carbon\Carbon::parse($startDateStr)->translatedFormat('d M Y') }} s/d {{ Carbon\Carbon::parse($endDateStr)->translatedFormat('d M Y') }}
                     @endif
                 </p>
+                @if ($reportType === 'fsn')
+                    <p class="text-[11px] text-gray-500 mt-0.5">Analisis berdasarkan metode FSN dan ROP.</p>
+                @endif
             </div>
         </div>
 
@@ -117,7 +120,15 @@
                                 <td class="py-2 px-3 font-mono font-semibold border-r border-gray-300">{{ $item->item_code }}</td>
                                 <td class="py-2 px-3 font-medium border-r border-gray-300">{{ $item->item_name }}</td>
                                 <td class="py-2 px-3 text-center font-bold border-r border-gray-300">
-                                    {{ $item->fsn_category ?? '-' }}
+                                    @if ($item->fsn_category === 'F')
+                                        Cepat
+                                    @elseif ($item->fsn_category === 'S')
+                                        Lambat
+                                    @elseif ($item->fsn_category === 'N')
+                                        Tidak Bergerak
+                                    @else
+                                        Belum Dianalisis
+                                    @endif
                                 </td>
                                 <td class="py-2 px-3 text-right font-mono border-r border-gray-300">Rp {{ number_format($item->purchase_price, 0, ',', '.') }}</td>
                                 <td class="py-2 px-3 text-right font-mono border-r border-gray-300">Rp {{ number_format($item->selling_price, 0, ',', '.') }}</td>
@@ -189,7 +200,7 @@
             </div>
         @endif
 
-        <!-- Konten 3: Laporan Hasil Analisis FSN & ROP -->
+        <!-- Konten 3: Laporan Persediaan -->
         @if ($reportType === 'fsn')
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left text-gray-700 border border-gray-300">
@@ -198,7 +209,7 @@
                             <th class="py-2.5 px-3 w-10 text-center border-r border-gray-300">No</th>
                             <th class="py-2.5 px-3 w-24 border-r border-gray-300">Kode</th>
                             <th class="py-2.5 px-3 border-r border-gray-300">Nama Barang</th>
-                            <th class="py-2.5 px-3 w-28 text-center border-r border-gray-300">Kategori FSN</th>
+                            <th class="py-2.5 px-3 w-28 text-center border-r border-gray-300">Pergerakan</th>
                             <th class="py-2.5 px-3 text-center w-24 border-r border-gray-300">Lead Time</th>
                             <th class="py-2.5 px-3 text-center w-28 border-r border-gray-300">Safety Stock</th>
                             <th class="py-2.5 px-3 text-center w-28 border-r border-gray-300">Nilai ROP</th>
@@ -216,13 +227,13 @@
                                 </td>
                                 <td class="py-2 px-3 text-center font-bold border-r border-gray-300">
                                     @if ($item->fsn_category === 'F')
-                                        <span class="text-green-700">Fast Moving (F)</span>
+                                        <span class="text-green-700">Cepat (Fast Moving)</span>
                                     @elseif ($item->fsn_category === 'S')
-                                        <span class="text-yellow-700">Slow Moving (S)</span>
+                                        <span class="text-yellow-700">Lambat (Slow Moving)</span>
                                     @elseif ($item->fsn_category === 'N')
-                                        <span class="text-gray-600">Non Moving (N)</span>
+                                        <span class="text-gray-600">Tidak Bergerak (Non Moving)</span>
                                     @else
-                                        <span class="text-gray-400">Belum dihitung</span>
+                                        <span class="text-gray-400">Belum Dianalisis</span>
                                     @endif
                                 </td>
                                 <td class="py-2 px-3 text-center font-mono border-r border-gray-300">{{ $item->primarySupplier->lead_time ?? 1 }} hr</td>

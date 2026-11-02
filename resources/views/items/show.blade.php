@@ -27,7 +27,7 @@
             </div>
         </dl>
         <p class="text-xs text-gray-500 mt-4">
-            Pemasok Utama dipakai sebagai pemasok acuan pengadaan (lead time-nya dipakai perhitungan ROP).
+            Pemasok Utama dipakai sebagai pemasok acuan pengadaan (waktu tunggu-nya dipakai perhitungan batas pesan).
             Pemasok alternatif hanya dipakai ketika pemasok utama tidak dapat memenuhi kebutuhan pengadaan.
         </p>
     </div>
