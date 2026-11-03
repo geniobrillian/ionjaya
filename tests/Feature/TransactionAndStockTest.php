@@ -34,6 +34,10 @@ class TransactionAndStockTest extends TestCase
         $response->assertSee('Batas pesan');
         $response->assertSee('Perlu dibeli');
         $response->assertSee('data-need=', false);
+        // Keterangan di bawah dropdown: default (Semua barang) tampil
+        // sebagai teks, varian Perlu dibeli ada di skrip pengubahnya.
+        $response->assertSee('Menampilkan semua barang dari pemasok yang dipilih.');
+        $response->assertSee('Menampilkan barang yang sudah waktunya dibeli.');
     }
 
     public function test_sale_transaction_can_be_created_and_deducts_stock(): void

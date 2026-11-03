@@ -83,7 +83,7 @@
                     <option value="all">Semua barang</option>
                     <option value="need">Perlu dibeli</option>
                 </select>
-                <p class="text-[11px] text-gray-500 mt-1">Filter Perlu dibeli menampilkan barang yang stoknya sudah mencapai atau di bawah batas pesan. Barang yang belum dianalisis tidak memiliki batas pesan sehingga tidak muncul di filter ini.</p>
+                <p id="catalogNeedHint" class="text-[11px] text-gray-500 mt-1">Menampilkan semua barang dari pemasok yang dipilih.</p>
                 <p class="text-[11px] text-gray-500 mt-2">Tidak menemukan barang? <a href="{{ route('items.index') }}" class="text-blue-600 hover:underline font-medium">Kelola pemasok barang di Data Barang &rarr;</a></p>
             </div>
 
@@ -290,6 +290,13 @@
         const query = document.getElementById('catalogSearch').value.toLowerCase().trim();
         const supplierId = document.getElementById('supplierSelect').value;
         const needFilter = document.getElementById('catalogNeedFilter').value;
+        // Keterangan di bawah dropdown mengikuti pilihan filter.
+        const needHint = document.getElementById('catalogNeedHint');
+        if (needHint) {
+            needHint.textContent = needFilter === 'need'
+                ? 'Menampilkan barang yang sudah waktunya dibeli.'
+                : 'Menampilkan semua barang dari pemasok yang dipilih.';
+        }
         const items = document.querySelectorAll('.catalog-item');
         const placeholder = document.getElementById('catalogPlaceholder');
         const emptyState = document.getElementById('catalogEmpty');
