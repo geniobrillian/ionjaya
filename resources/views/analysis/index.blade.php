@@ -76,7 +76,7 @@
                 <div class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1">
                     {{ $analysisResult['summary']['slow_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">Barang yang jarang terjual.</p>
+                <p class="text-xs text-gray-500 mt-2">Barang yang lambat terjual.</p>
             </div>
 
             <!-- Non Moving -->
@@ -85,7 +85,7 @@
                 <div class="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1">
                     {{ $analysisResult['summary']['non_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">Barang yang tidak terjual.</p>
+                <p class="text-xs text-gray-500 mt-2">Barang yang jarang/tidak terjual.</p>
             </div>
         </div>
 
