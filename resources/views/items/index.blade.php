@@ -35,7 +35,12 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($items as $item)
-                        <tr class="hover:bg-gray-50 transition-colors">
+                        {{-- Klik di mana saja pada baris membuka Detail Barang
+                             (tujuan yang sama dengan klik nama barang).
+                             Sel Aksi menghentikan bubbling agar Ubah/Hapus
+                             tetap bekerja dan tidak ikut membuka detail. --}}
+                        <tr onclick="window.location='{{ route('items.show', $item->id) }}'"
+                            class="hover:bg-gray-50 transition-colors cursor-pointer">
                             <td class="py-3.5 px-4 text-center text-xs text-gray-500 font-mono">{{ $loop->iteration + ($items->currentPage() - 1) * $items->perPage() }}</td>
                             <td class="py-3.5 px-4 font-mono text-xs font-semibold text-gray-900">{{ $item->item_code }}</td>
                             <td class="py-3.5 px-4 font-medium"><a href="{{ route('items.show', $item->id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">{{ $item->item_name }}</a></td>
@@ -46,7 +51,7 @@
                             <td class="py-3.5 px-4 text-right font-mono text-xs font-semibold text-gray-900">
                                 Rp {{ number_format($item->selling_price, 0, ',', '.') }}
                             </td>
-                            <td class="py-3.5 px-4 text-center">
+                            <td class="py-3.5 px-4 text-center" onclick="event.stopPropagation()">
                                 <div class="flex items-center justify-center space-x-2">
                                     <button type="button"
                                         onclick="openEditModal({{ json_encode($item) }})"

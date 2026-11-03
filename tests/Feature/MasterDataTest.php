@@ -260,6 +260,22 @@ class MasterDataTest extends TestCase
         $response->assertSee('Utama');
     }
 
+    /**
+     * Baris Data Barang bisa diklik untuk membuka Detail Barang (tujuan
+     * yang sama dengan klik nama), sementara sel Aksi menghentikan
+     * bubbling agar Ubah/Hapus tidak ikut membuka detail.
+     */
+    public function test_item_rows_open_detail_page_on_row_click(): void
+    {
+        $item = Item::where('item_code', 'BRG001')->first();
+
+        $response = $this->actingAs($this->superAdmin)->get('/barang');
+
+        $response->assertStatus(200);
+        $response->assertSee("window.location='" . route('items.show', $item->id) . "'", false);
+        $response->assertSee('event.stopPropagation()', false);
+    }
+
     public function test_admin_cannot_access_item_detail_page(): void
     {
         $admin = User::where('role', 'admin')->first();
