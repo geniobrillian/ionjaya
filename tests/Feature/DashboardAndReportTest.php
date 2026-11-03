@@ -37,8 +37,8 @@ class DashboardAndReportTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewIs('dashboard.index');
-        $response->assertSee('Ringkasan Operasional', false);
-        $response->assertSee('Estimasi Laba Kotor');
+        $response->assertSee('Ringkasan Toko', false);
+        $response->assertSee('Estimasi Laba');
         $response->assertSee('Total Penjualan');
         $response->assertSee('Peringatan Stok');
     }
@@ -105,15 +105,18 @@ class DashboardAndReportTest extends TestCase
     }
 
     /**
-     * Card laba menampilkan margin estimasi, dan setiap hari pada grafik
-     * membawa data hover (penjualan + laba) untuk kartu tooltip.
+     * Card laba menampilkan estimasi laba (baris margin disembunyikan
+     * pada perapian label 2026-11-03, jadi tidak lagi diperiksa),
+     * dan setiap hari pada grafik membawa data hover (penjualan + laba)
+     * untuk kartu tooltip.
      */
-    public function test_dashboard_profit_card_shows_estimated_margin(): void
+    public function test_dashboard_profit_card_shows_estimated_profit(): void
     {
         $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
 
         $response->assertStatus(200);
-        $response->assertSee('Margin estimasi');
+        $response->assertSee('Estimasi Laba');
+        $response->assertSee('Berdasarkan harga beli terakhir');
     }
 
     /**
@@ -336,14 +339,14 @@ class DashboardAndReportTest extends TestCase
 
     /**
      * Urutan card dashboard: Peringatan Stok paling kiri, lalu Jumlah
-     * Transaksi, Estimasi Laba Kotor, dan Total Penjualan.
+     * Transaksi, Estimasi Laba, dan Total Penjualan.
      */
     public function test_dashboard_cards_order_starts_with_stock_warning(): void
     {
         $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
 
         $response->assertStatus(200);
-        $response->assertSeeInOrder(['Peringatan Stok', 'Jumlah Transaksi', 'Estimasi Laba Kotor', 'Total Penjualan']);
+        $response->assertSeeInOrder(['Peringatan Stok', 'Jumlah Transaksi', 'Estimasi Laba', 'Total Penjualan']);
     }
 
     /**
