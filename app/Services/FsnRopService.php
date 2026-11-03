@@ -24,6 +24,13 @@ class FsnRopService
         $startStr = $startDate->toDateString();
         $endStr = $endDate->toDateString();
 
+        // Batas akhir periode dipakai sampai akhir hari (23:59:59), bukan
+        // awal hari: di SQLite, transaksi tersimpan 'Y-m-d 00:00:00' sehingga
+        // whereBetween dengan 'Y-m-d' melewatkan seluruh hari terakhir
+        // (bug yang sama pernah menimpa grafik tren & card laba; diperbaiki
+        // di sana dengan pola end-of-day yang sama).
+        $endDateTime = $endDate->copy()->endOfDay()->toDateTimeString();
+
         // Hitung jumlah hari dalam periode pengamatan (J_hp)
         $jHp = max(1, (int) $startDate->diffInDays($endDate) + 1);
         $jHt = 365; // Jumlah hari dalam satu tahun acuan
@@ -35,7 +42,7 @@ class FsnRopService
         $salesQuantities = DB::table('transaction_details')
             ->join('transactions', 'transaction_details.transaction_id', '=', 'transactions.id')
             ->where('transactions.transaction_type', 'penjualan')
-            ->whereBetween('transactions.date', [$startStr, $endStr])
+            ->whereBetween('transactions.date', [$startStr, $endDateTime])
             ->groupBy('transaction_details.item_id')
             ->select('transaction_details.item_id', DB::raw('SUM(transaction_details.quantity) as total_sold'))
             ->pluck('total_sold', 'item_id');
@@ -44,7 +51,7 @@ class FsnRopService
         $purchaseQuantities = DB::table('transaction_details')
             ->join('transactions', 'transaction_details.transaction_id', '=', 'transactions.id')
             ->where('transactions.transaction_type', 'pembelian')
-            ->whereBetween('transactions.date', [$startStr, $endStr])
+            ->whereBetween('transactions.date', [$startStr, $endDateTime])
             ->groupBy('transaction_details.item_id')
             ->select('transaction_details.item_id', DB::raw('SUM(transaction_details.quantity) as total_bought'))
             ->pluck('total_bought', 'item_id');
@@ -53,7 +60,7 @@ class FsnRopService
         $dailySalesGroup = DB::table('transaction_details')
             ->join('transactions', 'transaction_details.transaction_id', '=', 'transactions.id')
             ->where('transactions.transaction_type', 'penjualan')
-            ->whereBetween('transactions.date', [$startStr, $endStr])
+            ->whereBetween('transactions.date', [$startStr, $endDateTime])
             ->groupBy('transaction_details.item_id', 'transactions.date')
             ->select('transaction_details.item_id', 'transactions.date', DB::raw('SUM(transaction_details.quantity) as daily_sold'))
             ->get()

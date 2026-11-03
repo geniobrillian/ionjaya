@@ -3,6 +3,9 @@
 namespace Tests\Unit;
 
 use App\Models\Item;
+use App\Models\Transaction;
+use App\Models\TransactionDetail;
+use App\Models\User;
 use App\Services\FsnRopService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -120,5 +123,38 @@ class FsnRopServiceTest extends TestCase
 
         $expectedProfit = round($profitData['total_sales'] - $profitData['total_cost'], 2);
         $this->assertEquals($expectedProfit, $profitData['total_profit']);
+    }
+
+    public function test_calculate_analysis_includes_transactions_on_end_date(): void
+    {
+        $item = Item::first();
+        $startDate = Carbon::now()->subDays(90)->startOfDay();
+        $endDate = Carbon::now()->startOfDay();
+
+        $before = collect($this->service->calculateAnalysis($startDate, $endDate)['items'])
+            ->firstWhere('item_id', $item->id);
+
+        $transaction = Transaction::create([
+            'date' => $endDate->toDateString(),
+            'time' => '10:00:00',
+            'transaction_type' => 'penjualan',
+            'total' => 5 * $item->selling_price,
+            'user_id' => User::first()->id,
+        ]);
+        TransactionDetail::create([
+            'transaction_id' => $transaction->id,
+            'item_id' => $item->id,
+            'quantity' => 5,
+            'unit_price' => $item->selling_price,
+            'subtotal' => 5 * $item->selling_price,
+        ]);
+
+        $after = collect($this->service->calculateAnalysis($startDate, $endDate)['items'])
+            ->firstWhere('item_id', $item->id);
+
+        // Transaksi tepat pada tanggal akhir periode harus terhitung: di
+        // SQLite, tanggal tersimpan 'Y-m-d 00:00:00' sehingga batas atas
+        // 'Y-m-d' dulu melewatkan seluruh hari terakhir.
+        $this->assertEquals($before['p_pk'] + 5, $after['p_pk']);
     }
 }
