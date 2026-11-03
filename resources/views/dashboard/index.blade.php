@@ -33,7 +33,7 @@
     <!-- Header Dashboard & Filter Rentang Waktu -->
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-            <h2 class="text-base font-semibold text-gray-900">Ringkasan Operasional & Estimasi Laba</h2>
+            <h2 class="text-base font-semibold text-gray-900">Ringkasan Toko</h2>
             <p class="text-xs text-gray-500 mt-0.5">
                 Periode data: <strong>{{ Carbon\Carbon::parse($metrics['start_date'])->translatedFormat('d M Y') }}</strong> s/d <strong>{{ Carbon\Carbon::parse($metrics['end_date'])->translatedFormat('d M Y') }}</strong>
             </p>
@@ -76,7 +76,7 @@
                     {{ $metrics['low_stock_count'] }} <span class="text-xs font-normal text-gray-500">barang</span>
                 </div>
                 <p class="text-[11px] text-red-600 font-semibold mt-1">
-                    Stok mencapai batas pemesanan
+                    Perlu segera dibeli
                 </p>
             </a>
         @else
@@ -95,24 +95,24 @@
         <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5">
             <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Jumlah Transaksi</span>
             <div class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">
-                {{ $metrics['total_transactions'] }} <span class="text-xs font-normal text-gray-500">struk</span>
+                {{ $metrics['total_transactions'] }} <span class="text-xs font-normal text-gray-500">transaksi</span>
             </div>
-            <p class="text-[11px] text-gray-400 mt-1">Total nota penjualan periode ini</p>
+            <!-- <p class="text-[11px] text-gray-400 mt-1">Total nota penjualan periode ini</p> -->
         </div>
 
         <!-- Kartu 3: Estimasi Laba Kotor (aksen hijau: satu-satunya card angka positif) -->
         <div class="bg-green-50 rounded-lg border border-green-200 shadow-sm p-4 sm:p-5">
-            <span class="text-xs font-semibold text-green-700 uppercase tracking-wider block">Estimasi Laba Kotor</span>
+            <span class="text-xs font-semibold text-green-700 uppercase tracking-wider block">Estimasi Laba</span>
             <div class="text-xl sm:text-2xl font-bold text-green-700 mt-2">
                 Rp {{ number_format($metrics['total_profit'], 0, ',', '.') }}
             </div>
-            <p class="text-[11px] text-gray-500 mt-1">Penjualan &minus; Harga Beli Terakhir</p>
+            <p class="text-[11px] text-gray-500 mt-1">Berdasarkan harga beli terakhir</p>
             @php
                 $profitMargin = $metrics['total_sales'] > 0
                     ? round($metrics['total_profit'] / $metrics['total_sales'] * 100, 1)
                     : 0;
             @endphp
-            <p class="text-[11px] text-green-700 font-semibold mt-1">Margin estimasi {{ number_format($profitMargin, 1, ',', '.') }}% dari penjualan</p>
+            <!-- <p class="text-[11px] text-green-700 font-semibold mt-1">Margin estimasi {{ number_format($profitMargin, 1, ',', '.') }}% dari penjualan</p> -->
         </div>
 
         <!-- Kartu 4: Total Omset Penjualan -->
@@ -121,7 +121,7 @@
             <div class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">
                 Rp {{ number_format($metrics['total_sales'], 0, ',', '.') }}
             </div>
-            <p class="text-[11px] text-gray-400 mt-1">Nilai kotor transaksi penjualan</p>
+            <p class="text-[11px] text-gray-400 mt-1">Total nilai penjualan</p>
         </div>
     </div>
 
@@ -129,8 +129,8 @@
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-gray-100 mb-6">
             <div>
-                <h3 class="text-base font-semibold text-gray-900">Tren Penjualan & Laba Harian (7 Hari Terakhir)</h3>
-                <p class="text-xs text-gray-500">Perbandingan nilai omset penjualan (biru) dan estimasi laba kotor (hijau). Grafik ini selalu menampilkan 7 hari terakhir, terlepas dari filter periode di atas.</p>
+                <h3 class="text-base font-semibold text-gray-900">Penjualan 7 Hari Terakhir</h3>
+                <!-- <p class="text-xs text-gray-500">Perbandingan nilai omset penjualan (biru) dan estimasi laba kotor (hijau). Grafik ini selalu menampilkan 7 hari terakhir, terlepas dari filter periode di atas.</p> -->
             </div>
             <div class="flex items-center space-x-4 text-xs shrink-0">
                 <span class="flex items-center"><span class="w-3 h-3 bg-blue-600 rounded-xs mr-1.5"></span> Penjualan</span>
@@ -213,7 +213,7 @@
         <!-- Kolom Kiri: 5 Transaksi Penjualan Terakhir -->
         <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5">
             <div class="flex items-center justify-between pb-3 border-b border-gray-200 mb-4">
-                <h3 class="text-sm font-semibold text-gray-900">Transaksi Penjualan Terkini</h3>
+                <h3 class="text-sm font-semibold text-gray-900">Penjualan Terbaru</h3>
                 <a href="{{ route('sales.index') }}" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Buka Kasir &rarr;</a>
             </div>
             <div class="overflow-x-auto">
@@ -247,7 +247,7 @@
         <!-- Kolom Kanan: 5 Barang Stok Paling Menipis -->
         <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5">
             <div class="flex items-center justify-between pb-3 border-b border-gray-200 mb-4">
-                <h3 class="text-sm font-semibold text-gray-900">Barang Stok Perlu Pengadaan</h3>
+                <h3 class="text-sm font-semibold text-gray-900">Barang Perlu Dibeli</h3>
                 <a href="{{ route('stock.index', ['status' => 'perlu']) }}" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Lihat Semua &rarr;</a>
             </div>
             <div class="overflow-x-auto">
