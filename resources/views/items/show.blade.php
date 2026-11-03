@@ -27,15 +27,14 @@
             </div>
         </dl>
         <p class="text-xs text-gray-500 mt-4">
-            Pemasok Utama dipakai sebagai pemasok acuan pengadaan (waktu tunggu-nya dipakai perhitungan batas pesan).
-            Pemasok alternatif hanya dipakai ketika pemasok utama tidak dapat memenuhi kebutuhan pengadaan.
+            Pemasok utama digunakan sebagai pilihan utama saat pembelian.
         </p>
     </div>
 
     <!-- Daftar Pemasok Barang -->
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         <div class="p-5 pb-3 border-b border-gray-200">
-            <h3 class="text-base font-semibold text-gray-900">Pemasok Barang Ini</h3>
+            <h3 class="text-base font-semibold text-gray-900">Pemasok</h3>
             <p class="text-xs text-gray-500 mt-0.5">Satu barang bisa punya banyak pemasok; paling banyak satu Pemasok Utama.</p>
         </div>
         <div class="overflow-x-auto">
@@ -43,7 +42,7 @@
                 <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
                     <tr>
                         <th class="py-3 px-4">Pemasok</th>
-                        <th class="py-3 px-4">Waktu Tunggu</th>
+                        <th class="py-3 px-4">Lama Pengiriman</th>
                         <th class="py-3 px-4">Status</th>
                         <th class="py-3 px-4 text-center">Aksi</th>
                     </tr>
@@ -109,7 +108,7 @@
                     <label for="supplier_id" class="block text-xs font-medium text-gray-700 mb-1">Pemasok</label>
                     <select name="supplier_id" id="supplier_id" required
                         class="w-full sm:w-80 rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
-                        <option value="">— Pilih Pemasok —</option>
+                        <option value="">== Pilih Pemasok ==</option>
                         @foreach ($availableSuppliers as $supplier)
                             <option value="{{ $supplier->id }}">{{ $supplier->supplier_name }} ({{ $supplier->supplier_code }})</option>
                         @endforeach
@@ -119,7 +118,7 @@
                     <div class="flex items-center gap-2">
                         <input type="checkbox" name="pemasok_utama" id="pemasok_utama" value="1"
                             class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <label for="pemasok_utama" class="text-sm text-gray-700">Jadikan pemasok utama (Utama lama dicabut)</label>
+                        <label for="pemasok_utama" class="text-sm text-gray-700">Jadikan pemasok utama</label>
                     </div>
                 @else
                     <p class="text-xs text-gray-500">Pemasok pertama otomatis menjadi Pemasok Utama.</p>

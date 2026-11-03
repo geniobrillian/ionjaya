@@ -162,11 +162,11 @@
                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
             </div>
 
-            <div class="rounded-md bg-gray-50 border border-gray-200 p-3">
+            <!-- <div class="rounded-md bg-gray-50 border border-gray-200 p-3">
                 <p class="text-xs text-gray-600">
                     Pemasok barang dikelola lewat halaman Detail Barang (klik nama barang di tabel) — satu barang bisa punya banyak pemasok.
                 </p>
-            </div>
+            </div> -->
 
             <div>
                 <label for="edit_selling_price" class="block text-xs font-medium text-gray-700 mb-1">Harga Jual (Rp)</label>
@@ -178,14 +178,14 @@
                 <label for="edit_purchase_price" class="block text-xs font-medium text-gray-700 mb-1">Harga Beli (Rp)</label>
                 <input type="number" name="purchase_price" id="edit_purchase_price" min="0" required
                     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none">
-                <span class="text-[10px] text-gray-500 mt-0.5 block">Satu-satunya pintu ubah harga beli; dipakai semua transaksi pembelian berikutnya.</span>
+                <!-- <span class="text-[10px] text-gray-500 mt-0.5 block">Satu-satunya pintu ubah harga beli; dipakai semua transaksi pembelian berikutnya.</span> -->
             </div>
 
-            <div class="rounded-md bg-gray-50 border border-gray-200 p-3">
+            <!-- <div class="rounded-md bg-gray-50 border border-gray-200 p-3">
                 <p class="text-xs text-gray-600">
                     <strong>Catatan:</strong> Stok fisik diperbarui secara otomatis melalui modul Transaksi (bertambah lewat Pembelian, berkurang lewat Penjualan) dan tidak bisa diubah di sini.
                 </p>
-            </div>
+            </div> -->
 
             <div class="pt-3 border-t border-gray-200 flex items-center justify-end space-x-2">
                 <button type="button" onclick="closeEditModal()"
