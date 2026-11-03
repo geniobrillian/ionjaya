@@ -157,7 +157,7 @@
                     $isOutlier = $outlierSales !== null && $day['sales'] === $outlierSales;
                 @endphp
                 <div class="chart-day flex flex-col items-center h-full justify-end group" tabindex="0"
-                    data-label="{{ $day['label'] }}"
+                    data-title="{{ $day['title'] }}"
                     data-sales="Rp {{ number_format($day['sales'], 0, ',', '.') }}"
                     data-profit="Rp {{ number_format($day['profit'], 0, ',', '.') }}"
                     data-outlier="{{ $isOutlier ? '1' : '0' }}">
@@ -181,28 +181,69 @@
         @if ($outlierSales !== null)
             <p class="text-[11px] text-amber-700 mt-3">Bar oranye menandai hari dengan penjualan jauh di atas hari lain dalam 7 hari ini.</p>
         @endif
-        {{-- Baris rincian interaktif: diperbarui saat kursor/fokus menyentuh salah satu hari.
-             Dipakai baris ini (bukan tooltip melayang) karena tooltip di atas bar akan
-             menabrak judul grafik; tanpa library apa pun sehingga tetap jalan offline. --}}
-        <p id="chart-detail" class="text-xs text-gray-600 mt-3">Arahkan kursor ke salah satu hari untuk melihat rinciannya.</p>
+        {{-- Ruang bekas baris rincian dipertahankan (satu baris kosong) agar
+             tata letak di bawah grafik tidak bergeser; rinciannya kini tampil
+             di kartu tooltip di atas kursor, bukan di baris ini. --}}
+        <p class="text-xs mt-3 leading-4 min-h-4" aria-hidden="true">&nbsp;</p>
+        {{-- Kartu tooltip grafik: satu elemen yang dipakai ulang untuk semua
+             hari, diposisikan lewat JS di atas kursor (atau di bawah kursor
+             bila ruang di atas tidak cukup, supaya tidak menabrak judul).
+             pointer-events-none agar kartu tidak merebut kursor dari batang.
+             Tanpa library apa pun sehingga tetap jalan offline. --}}
+        <div id="chart-tooltip"
+            class="fixed z-50 hidden pointer-events-none bg-gray-900 text-white text-xs rounded-md shadow-lg px-3 py-2 whitespace-nowrap"></div>
         <script>
             (function () {
-                var detail = document.getElementById('chart-detail');
-                if (!detail) return;
-                var defaultText = detail.textContent;
-                document.querySelectorAll('.chart-day').forEach(function (el) {
-                    function show() {
-                        var text = el.dataset.label + ' — Penjualan ' + el.dataset.sales + ' · Estimasi laba ' + el.dataset.profit;
-                        if (el.dataset.outlier === '1') {
-                            text += ' · Hari luar biasa';
-                        }
-                        detail.textContent = text;
+                var tip = document.getElementById('chart-tooltip');
+                if (!tip) return;
+                function build(el) {
+                    tip.replaceChildren();
+                    var title = document.createElement('div');
+                    title.className = 'font-semibold';
+                    title.textContent = el.dataset.title;
+                    tip.appendChild(title);
+                    var sales = document.createElement('div');
+                    sales.textContent = 'Penjualan: ' + el.dataset.sales;
+                    tip.appendChild(sales);
+                    var profit = document.createElement('div');
+                    profit.textContent = 'Estimasi laba: ' + el.dataset.profit;
+                    tip.appendChild(profit);
+                    if (el.dataset.outlier === '1') {
+                        var outlier = document.createElement('div');
+                        outlier.className = 'text-amber-300';
+                        outlier.textContent = 'Hari luar biasa';
+                        tip.appendChild(outlier);
                     }
-                    function reset() { detail.textContent = defaultText; }
-                    el.addEventListener('mouseenter', show);
-                    el.addEventListener('focus', show);
-                    el.addEventListener('mouseleave', reset);
-                    el.addEventListener('blur', reset);
+                }
+                function place(clientX, clientY) {
+                    var pad = 12;
+                    var rect = tip.getBoundingClientRect();
+                    var left = clientX - rect.width / 2;
+                    left = Math.max(8, Math.min(left, window.innerWidth - rect.width - 8));
+                    var top = clientY - rect.height - pad;
+                    if (top < 8) {
+                        top = clientY + 16;
+                    }
+                    tip.style.left = left + 'px';
+                    tip.style.top = top + 'px';
+                }
+                function showAt(el, clientX, clientY) {
+                    build(el);
+                    tip.style.visibility = 'hidden';
+                    tip.classList.remove('hidden');
+                    place(clientX, clientY);
+                    tip.style.visibility = '';
+                }
+                function hide() { tip.classList.add('hidden'); }
+                document.querySelectorAll('.chart-day').forEach(function (el) {
+                    el.addEventListener('mouseenter', function (e) { showAt(el, e.clientX, e.clientY); });
+                    el.addEventListener('mousemove', function (e) { place(e.clientX, e.clientY); });
+                    el.addEventListener('mouseleave', hide);
+                    el.addEventListener('focus', function () {
+                        var rect = el.getBoundingClientRect();
+                        showAt(el, rect.left + rect.width / 2, rect.top);
+                    });
+                    el.addEventListener('blur', hide);
                 });
             })();
         </script>

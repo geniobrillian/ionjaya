@@ -106,7 +106,7 @@ class DashboardAndReportTest extends TestCase
 
     /**
      * Card laba menampilkan margin estimasi, dan setiap hari pada grafik
-     * membawa data hover (penjualan + laba) untuk baris rincian interaktif.
+     * membawa data hover (penjualan + laba) untuk kartu tooltip.
      */
     public function test_dashboard_profit_card_shows_estimated_margin(): void
     {
@@ -116,14 +116,22 @@ class DashboardAndReportTest extends TestCase
         $response->assertSee('Margin estimasi');
     }
 
+    /**
+     * Grafik memakai kartu tooltip di atas kursor (bukan baris rincian):
+     * kalimat petunjuk lama hilang, ruangnya tetap ada, setiap hari
+     * membawa judul tanggal lengkap + data penjualan/laba, dan elemen
+     * kartu tooltip tersedia.
+     */
     public function test_dashboard_chart_days_carry_hover_data(): void
     {
         $response = $this->actingAs($this->superAdmin)->get(route('dashboard'));
 
         $response->assertStatus(200);
-        $response->assertSee('Arahkan kursor ke salah satu hari');
+        $response->assertDontSee('Arahkan kursor ke salah satu hari');
+        $response->assertSee('data-title=', false);
         $response->assertSee('data-sales=', false);
         $response->assertSee('data-profit=', false);
+        $response->assertSee('id="chart-tooltip"', false);
     }
 
     /**

@@ -358,6 +358,9 @@ class FsnRopService
             $trendDates[$d] = [
                 'date' => $d,
                 'label' => Carbon::parse($d)->translatedFormat('d M'),
+                // Judul lengkap untuk kartu tooltip (label sumbu tetap 'd M'
+                // agar muat di 7 kolom).
+                'title' => Carbon::parse($d)->translatedFormat('d M Y'),
                 'sales' => 0,
                 'profit' => 0,
             ];
