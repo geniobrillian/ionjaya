@@ -45,7 +45,7 @@
                     </div>
                     <button type="submit" id="submitBtn" disabled
                         class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-medium rounded-md transition-colors text-center">
-                        Simpan Transaksi Penjualan
+                        Simpan Penjualan
                     </button>
                 </div>
             </form>
