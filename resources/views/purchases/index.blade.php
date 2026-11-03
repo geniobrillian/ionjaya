@@ -11,8 +11,8 @@
         <div class="lg:col-span-7 bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-6">
             <div class="flex items-center justify-between pb-3 sm:pb-4 border-b border-gray-200 mb-4">
                 <div>
-                    <h2 class="text-base font-semibold text-gray-900">Daftar Barang Masuk</h2>
-                    <p class="text-xs text-gray-500">Mencatat barang yang diterima dari pemasok untuk menambah stok toko.</p>
+                    <h2 class="text-base font-semibold text-gray-900">Daftar Pembelian</h2>
+                    <!-- <p class="text-xs text-gray-500">Mencatat barang yang diterima dari pemasok untuk menambah stok toko.</p> -->
                 </div>
                 <span class="text-xs text-gray-500" id="cartItemCount">0 item dipilih</span>
             </div>
@@ -25,14 +25,14 @@
                     <label for="supplierSelect" class="block text-xs font-semibold text-gray-600 mb-1">Pemasok</label>
                     <select name="supplier_id" id="supplierSelect" required onchange="onSupplierChange()"
                         class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                        <option value="">— Pilih Pemasok —</option>
+                        <option value="">== Pilih Pemasok ==</option>
                         @foreach ($suppliers as $supplier)
                             <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
                                 {{ $supplier->supplier_name }} ({{ $supplier->supplier_code }})
                             </option>
                         @endforeach
                     </select>
-                    <p class="text-[11px] text-gray-500 mt-1">Seluruh barang dalam transaksi ini dicatat dibeli dari pemasok ini. Mengganti pemasok mengosongkan keranjang.</p>
+                    <!-- <p class="text-[11px] text-gray-500 mt-1">Seluruh barang dalam transaksi ini dicatat dibeli dari pemasok ini. Mengganti pemasok mengosongkan keranjang.</p> -->
                     @if ($suppliers->isEmpty())
                         <p class="text-[11px] text-red-600 mt-1">Belum ada pemasok. Buat dulu di Data Pemasok sebelum mencatat pembelian.</p>
                     @endif
