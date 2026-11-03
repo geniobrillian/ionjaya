@@ -222,6 +222,30 @@ class DashboardAndReportTest extends TestCase
     }
 
     /**
+     * Status Laporan Stok memakai aturan yang sama dengan halaman Stok:
+     * stok 0 tampil HABIS (bukan MENIPIS seperti aturan biner lama), dan
+     * barang yang belum pernah dianalisis tampil BELUM (bukan AMAN).
+     */
+    public function test_stock_report_status_matches_stock_page_status(): void
+    {
+        Item::first()->update(['stock' => 0]);
+        Item::create([
+            'item_code' => 'BRG999',
+            'item_name' => 'Barang Belum Dianalisis Uji',
+            'purchase_price' => 10000,
+            'selling_price' => 15000,
+            'stock' => 10,
+            'fsn_category' => null,
+        ]);
+
+        $response = $this->actingAs($this->superAdmin)->get(route('reports.index', ['type' => 'stok']));
+
+        $response->assertStatus(200);
+        $response->assertSee('HABIS');
+        $response->assertSee('BELUM');
+    }
+
+    /**
      * Test 5: Super Admin dapat mengakses laporan transaksi dengan filter tanggal dan jenis.
      */
     public function test_super_admin_can_access_transaction_report_with_filters(): void

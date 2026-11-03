@@ -132,16 +132,28 @@
                                 </td>
                                 <td class="py-2 px-3 text-right font-mono border-r border-gray-300">Rp {{ number_format($item->purchase_price, 0, ',', '.') }}</td>
                                 <td class="py-2 px-3 text-right font-mono border-r border-gray-300">Rp {{ number_format($item->selling_price, 0, ',', '.') }}</td>
-                                <td class="py-2 px-3 text-center font-bold border-r border-gray-300 {{ $item->is_low_stock ? 'text-red-600' : 'text-gray-900' }}">
+                                {{-- Status memakai stock_status yang sama dengan
+                                     halaman Stok (habis > belum > menipis > aman),
+                                     BUKAN is_low_stock biner: stok 0 adalah HABIS
+                                     (bukan MENIPIS), dan barang yang belum pernah
+                                     dianalisis adalah BELUM (bukan AMAN). Warna
+                                     dipertahankan dari tampilan lama. --}}
+                                <td class="py-2 px-3 text-center font-bold border-r border-gray-300 {{ in_array($item->stock_status, ['habis', 'menipis'], true) ? 'text-red-600' : 'text-gray-900' }}">
                                     {{ $item->stock }}
                                 </td>
                                 <td class="py-2 px-3 text-center font-mono border-r border-gray-300">
                                     {{ $item->order_threshold > 0 ? $item->order_threshold : '-' }}
                                 </td>
                                 <td class="py-2 px-3 text-center font-bold">
-                                    <span class="{{ $item->is_low_stock ? 'text-red-600' : 'text-green-700' }}">
-                                        {{ $item->is_low_stock ? 'MENIPIS' : 'AMAN' }}
-                                    </span>
+                                    @if ($item->stock_status === 'habis')
+                                        <span class="text-red-600">HABIS</span>
+                                    @elseif ($item->stock_status === 'menipis')
+                                        <span class="text-red-600">MENIPIS</span>
+                                    @elseif ($item->stock_status === 'belum')
+                                        <span class="text-gray-500">BELUM</span>
+                                    @else
+                                        <span class="text-green-700">AMAN</span>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
