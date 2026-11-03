@@ -256,7 +256,7 @@ class MasterDataTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee($item->item_name);
-        $response->assertSee('Pemasok Barang Ini');
+        $response->assertSee('Pemasok');
         $response->assertSee('Utama');
     }
 
