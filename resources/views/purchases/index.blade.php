@@ -61,12 +61,12 @@
                 <!-- Total & Tombol Simpan -->
                 <div class="mt-5 sm:mt-6 pt-4 border-t border-gray-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                     <div>
-                        <span class="text-xs text-gray-500 uppercase font-semibold">Total Nilai Pembelian</span>
+                        <span class="text-xs text-gray-500 uppercase font-semibold">Total Pembelian</span>
                         <div class="text-xl sm:text-2xl font-bold text-gray-900" id="cartTotalText">Rp 0</div>
                     </div>
                     <button type="submit" id="submitBtn" disabled
                         class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-medium rounded-md transition-colors text-center">
-                        Simpan Transaksi Pembelian
+                        Simpan Pembelian
                     </button>
                 </div>
             </form>
@@ -84,7 +84,7 @@
                     <option value="need">Perlu dibeli</option>
                 </select>
                 <p id="catalogNeedHint" class="text-[11px] text-gray-500 mt-1">Menampilkan semua barang dari pemasok yang dipilih.</p>
-                <p class="text-[11px] text-gray-500 mt-2">Tidak menemukan barang? <a href="{{ route('items.index') }}" class="text-blue-600 hover:underline font-medium">Kelola pemasok barang di Data Barang &rarr;</a></p>
+                <p class="text-[11px] text-gray-500 mt-2">Barang belum tersedia? <a href="{{ route('items.index') }}" class="text-blue-600 hover:underline font-medium">Atur pemasok di Data Barang.</a></p>
             </div>
 
             <div id="catalogPlaceholder" class="py-8 text-center text-gray-400 text-sm">
@@ -221,7 +221,7 @@
             tbody.innerHTML = `
                 <tr id="emptyCartRow">
                     <td colspan="5" class="py-8 text-center text-gray-400 text-sm">
-                        Daftar pembelian masih kosong. Klik tombol "+ Tambah" pada katalog di sebelah kanan.
+                        Belum ada barang yang dipilih.
                     </td>
                 </tr>`;
             countText.innerText = '0 item dipilih';
