@@ -93,7 +93,7 @@
 
         <!-- Kartu 2: Jumlah Transaksi -->
         <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-5">
-            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Jumlah Transaksi</span>
+            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Jumlah Transaksi Penjualan</span>
             <div class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">
                 {{ $metrics['total_transactions'] }} <span class="text-xs font-normal text-gray-500">transaksi</span>
             </div>
