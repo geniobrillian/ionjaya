@@ -84,7 +84,12 @@
                     <option value="need">Perlu dibeli</option>
                 </select>
                 <p id="catalogNeedHint" class="text-[11px] text-gray-500 mt-1">Menampilkan semua barang dari pemasok yang dipilih.</p>
-                <p class="text-[11px] text-gray-500 mt-2">Barang belum tersedia? <a href="{{ route('items.index') }}" class="text-blue-600 hover:underline font-medium">Atur pemasok di Data Barang.</a></p>
+                {{-- Tautan ke Data Barang hanya untuk Super Admin; halaman itu
+                     dijaga middleware role:super_admin sehingga kasir yang
+                     mengikutinya hanya mentok di 403. --}}
+                @if (Auth::user()->isSuperAdmin())
+                    <p class="text-[11px] text-gray-500 mt-2">Barang belum tersedia? <a href="{{ route('items.index') }}" class="text-blue-600 hover:underline font-medium">Atur pemasok di Data Barang.</a></p>
+                @endif
             </div>
 
             <div id="catalogPlaceholder" class="py-8 text-center text-gray-400 text-sm">
