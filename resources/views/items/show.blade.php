@@ -73,14 +73,11 @@
                                         </form>
                                         <span class="text-gray-300">|</span>
                                     @endif
-                                    <form action="{{ route('items.suppliers.detach', [$item->id, $supplier->id]) }}" method="POST"
-                                        onsubmit="return confirm('Hapus pemasok {{ addslashes($supplier->supplier_name) }} dari barang ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-800 text-xs font-medium">
-                                            Hapus
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                        onclick="openDeleteModal({{ $supplier->id }}, {{ json_encode($supplier->supplier_name) }})"
+                                        class="text-red-600 hover:text-red-800 text-xs font-medium">
+                                        Hapus
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -133,4 +130,66 @@
         @endif
     </div>
 </div>
+
+<!-- Modal Konfirmasi Hapus Pemasok dari Barang -->
+<div id="deleteModal" class="fixed inset-0 z-50 hidden bg-gray-900/50 backdrop-blur-none flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="bg-white rounded-lg border border-gray-200 shadow-lg max-w-md w-full p-6" style="max-width: 28rem;">
+        <div class="flex items-center justify-between pb-3 border-b border-gray-200 mb-4">
+            <h3 id="deleteModalTitle" class="text-base font-semibold text-gray-900">Hapus Pemasok dari Barang</h3>
+            <button type="button" onclick="closeDeleteModal()" class="text-gray-400 hover:text-gray-600 text-lg font-bold leading-none" aria-label="Tutup">&times;</button>
+        </div>
+
+        <div class="space-y-3 mb-5">
+            <p class="text-sm text-gray-700 leading-relaxed">
+                Hapus pemasok <span id="deleteItemName" class="font-semibold text-gray-900"></span> dari barang ini?
+            </p>
+            <div class="rounded-md bg-red-50 border border-red-200 p-3 text-xs text-red-800 leading-relaxed">
+                Pemasok bisa ditambahkan kembali lewat form Tambah Pemasok di bawah.
+            </div>
+        </div>
+
+        <div class="pt-3 border-t border-gray-200 flex items-center justify-end space-x-2">
+            <button type="button" onclick="closeDeleteModal()"
+                class="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 font-medium">
+                Batal
+            </button>
+            <button type="button" onclick="confirmDelete()" id="deleteConfirmBtn"
+                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-medium">
+                Ya, Hapus
+            </button>
+        </div>
+    </div>
+</div>
+
+<form id="deleteForm" method="POST" class="hidden">
+    @csrf
+    @method('DELETE')
+</form>
 @endsection
+
+@push('scripts')
+<script>
+    // Modal Konfirmasi Hapus Pemasok dari Barang
+    function openDeleteModal(supplierId, supplierName) {
+        const form = document.getElementById('deleteForm');
+        form.action = '/barang/{{ $item->id }}/pemasok/' + supplierId;
+        document.getElementById('deleteItemName').textContent = supplierName;
+
+        const modal = document.getElementById('deleteModal');
+        modal.classList.remove('hidden');
+        const confirmBtn = document.getElementById('deleteConfirmBtn');
+        if (confirmBtn) confirmBtn.focus();
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    function confirmDelete() {
+        document.getElementById('deleteForm').submit();
+    }
+</script>
+@endpush
