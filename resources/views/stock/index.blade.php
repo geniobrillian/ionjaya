@@ -112,7 +112,7 @@
                                         Tidak Bergerak
                                     </span>
                                 @else
-                                    <span class="text-xs text-gray-400">— Belum Dianalisis</span>
+                                    <span class="text-xs text-gray-400">| Belum Dianalisis</span>
                                 @endif
                             </td>
                             <td class="py-3 px-4 text-center font-mono text-xs">

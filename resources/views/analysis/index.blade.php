@@ -171,7 +171,7 @@
                                     @endif
                                 </td>
                                 <td class="py-3.5 px-4 text-center font-mono font-bold text-gray-900">
-                                    {{ $row['order_threshold'] > 0 ? $row['order_threshold'] : '—' }}
+                                    {{ $row['order_threshold'] > 0 ? $row['order_threshold'] : '|' }}
                                 </td>
                                 <td class="py-3.5 px-4 text-center font-mono text-gray-900">
                                     {{ $row['stock'] }}
@@ -378,23 +378,23 @@
         const takeaway = document.getElementById('detailTakeaway');
         if (d.stock == 0) {
             statusPill.innerHTML = '<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-200 text-red-900">Habis</span>';
-            takeaway.textContent = (d.fsn_category === 'N' ? 'Stok kosong — pesan hanya saat ada permintaan.' : 'Stok kosong — barang ini tidak bisa dijual. Pesan segera.');
+            takeaway.textContent = (d.fsn_category === 'N' ? 'Stok kosong | pesan hanya saat ada permintaan.' : 'Stok kosong | barang ini tidak bisa dijual. Pesan segera.');
             takeaway.className = 'rounded-md px-3.5 py-2.5 text-xs font-medium bg-red-50 text-red-900 border border-red-200 mb-4';
         } else if (d.fsn_category !== 'N' && d.is_low_stock) {
             statusPill.innerHTML = '<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">Menipis</span>';
-            takeaway.textContent = 'Stok sudah di bawah batas pesan — segera pesan.';
+            takeaway.textContent = 'Stok sudah di bawah batas pesan | segera pesan.';
             takeaway.className = 'rounded-md px-3.5 py-2.5 text-xs font-medium bg-yellow-50 text-yellow-900 border border-yellow-200 mb-4';
         } else if (d.fsn_category === 'N') {
             statusPill.innerHTML = '<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">Aman</span>';
-            takeaway.textContent = 'Barang on-demand — pesan hanya saat ada permintaan.';
+            takeaway.textContent = 'Barang on-demand | pesan hanya saat ada permintaan.';
             takeaway.className = 'rounded-md px-3.5 py-2.5 text-xs font-medium bg-gray-50 text-gray-700 border border-gray-200 mb-4';
         } else {
             statusPill.innerHTML = '<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">Aman</span>';
-            takeaway.textContent = 'Stok masih di atas batas pesan — belum perlu pesan.';
+            takeaway.textContent = 'Stok masih di atas batas pesan | belum perlu pesan.';
             takeaway.className = 'rounded-md px-3.5 py-2.5 text-xs font-medium bg-green-50 text-green-900 border border-green-200 mb-4';
         }
-        document.getElementById('detailSs').textContent = (d.safety_stock !== null ? d.safety_stock + ' unit' : '—');
-        document.getElementById('detailBatas').textContent = (d.order_threshold > 0 ? d.order_threshold + ' unit' : '— (sesuai permintaan)');
+        document.getElementById('detailSs').textContent = (d.safety_stock !== null ? d.safety_stock + ' unit' : '|');
+        document.getElementById('detailBatas').textContent = (d.order_threshold > 0 ? d.order_threshold + ' unit' : '| (sesuai permintaan)');
         document.getElementById('detailLead').textContent = d.lead_time + ' hari';
 
         let hitung = '';

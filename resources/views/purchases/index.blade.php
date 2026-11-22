@@ -113,7 +113,7 @@
                             <div class="text-xs text-gray-600 mt-0.5">
                                 Harga beli: <span class="font-semibold text-gray-800">Rp {{ number_format($item->purchase_price, 0, ',', '.') }}</span>
                                 &bull; Stok saat ini: {{ $item->stock }}
-                                &bull; Batas pesan: {{ ($item->order_threshold ?? 0) > 0 ? $item->order_threshold : '—' }}
+                                &bull; Batas pesan: {{ ($item->order_threshold ?? 0) > 0 ? $item->order_threshold : '|' }}
                             </div>
                         </div>
                         <div>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Sistem Persediaan') — UD Ion Jaya Motor</title>
+    <title>@yield('title', 'Sistem Persediaan') | UD Ion Jaya Motor</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased h-screen flex overflow-hidden print:h-auto print:overflow-visible">
@@ -108,7 +108,7 @@
                     </details>
 
                     {{-- LAPORAN (menu tunggal: tautan langsung seperti Dashboard,
-                         bukan dropdown — grup ini hanya berisi satu halaman) --}}
+                         bukan dropdown | grup ini hanya berisi satu halaman) --}}
                     <a href="{{ route('reports.index') }}"
                         class="flex items-center px-3 py-2 rounded-md font-medium transition-colors {{ request()->routeIs('reports.*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
                         Laporan
@@ -209,7 +209,7 @@
 
         <!-- Footer -->
         <footer class="bg-white border-t border-gray-200 py-3 sm:py-4 px-4 sm:px-8 text-center text-[11px] sm:text-xs text-gray-500 shrink-0 print:hidden">
-            UD Ion Jaya Motor — Sistem Persediaan Sparepart Motor Menggunakan Metode FSN dan ROP
+            UD Ion Jaya Motor | Sistem Persediaan Sparepart Motor Menggunakan Metode FSN dan ROP
         </footer>
     </div>
 

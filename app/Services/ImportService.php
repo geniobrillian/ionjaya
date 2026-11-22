@@ -57,13 +57,13 @@ class ImportService
 
         $petunjuk = $spreadsheet->createSheet();
         $petunjuk->setTitle('Petunjuk');
-        $petunjuk->setCellValue('A1', 'TEMPLATE IMPOR DATA — Sistem Persediaan UD Ion Jaya Motor');
+        $petunjuk->setCellValue('A1', 'TEMPLATE IMPOR DATA | Sistem Persediaan UD Ion Jaya Motor');
         $petunjuk->setCellValue('A2', '1. Isi sheet Data Barang, Stok Opname, Pembelian, dan Penjualan. Sheet Rekap tidak diimpor.');
         $petunjuk->setCellValue('A3', '2. HAPUS baris contoh di tiap sheet sebelum impor; baris contoh yang tertinggal ikut terimpor sebagai data.');
         $petunjuk->setCellValue('A4', '3. Kode barang dan kode pemasok harus unik dan konsisten antar sheet (huruf besar/kecil tidak dipermasalahkan).');
         $petunjuk->setCellValue('A5', '4. Harga di sheet Pembelian/Penjualan DIABAIKAN: transaksi selalu memakai harga master dari sheet Data Barang (1 pintu harga).');
         $petunjuk->setCellValue('A6', '5. Stok Awal = stok saat periode dimulai. Barang dibuat dengan stok ini, lalu transaksi mengubahnya (Pembelian +, Penjualan -).');
-        $petunjuk->setCellValue('A7', '6. Stok Akhir (opsional): bila diisi, hasil impor diverifikasi — stok akhir hitung harus sama, kalau tidak impor ditolak.');
+        $petunjuk->setCellValue('A7', '6. Stok Akhir (opsional): bila diisi, hasil impor diverifikasi | stok akhir hitung harus sama, kalau tidak impor ditolak.');
         $petunjuk->setCellValue('A8', '7. Penjualan yang membuat stok negatif MENGGAGALKAN seluruh impor (ditampilkan di pratinjau).');
         $petunjuk->setCellValue('A9', '8. Pemasok yang kodenya belum ada dibuat otomatis dari file (lead time dari Data Barang, atau 1 hari bila hanya muncul di Pembelian).');
         $petunjuk->setCellValue('A10', '9. Barang yang kodenya sudah ada di database DITOLAK (tidak ditimpa). Gunakan database kosong (migrate fresh tanpa seed) untuk impor awal.');

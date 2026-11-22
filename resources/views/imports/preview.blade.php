@@ -29,7 +29,7 @@
 
     @if ($result['errors'] !== [])
         <div class="bg-red-50 rounded-lg border border-red-200 shadow-sm p-4 sm:p-6">
-            <h3 class="text-sm font-semibold text-red-800 mb-2">Impor tidak bisa dilanjutkan — {{ count($result['errors']) }} masalah ditemukan</h3>
+            <h3 class="text-sm font-semibold text-red-800 mb-2">Impor tidak bisa dilanjutkan | {{ count($result['errors']) }} masalah ditemukan</h3>
             <ul class="text-xs text-red-700 leading-relaxed list-disc pl-5 space-y-1">
                 @foreach ($result['errors'] as $error)
                     <li>{{ $error }}</li>

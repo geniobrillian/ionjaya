@@ -10,7 +10,7 @@
         <p class="text-xs text-gray-600 leading-relaxed mb-4">
             Impor data luar ke dalam sistem memakai file Excel dengan 4 sheet:
             <strong>Data Barang</strong>, <strong>Stok Opname</strong>, <strong>Pembelian</strong>, dan <strong>Penjualan</strong>
-            (format sama dengan file simulasi). File diunggah, divalidasi, dan ditampilkan pratinjaunya dulu —
+            (format sama dengan file simulasi). File diunggah, divalidasi, dan ditampilkan pratinjaunya dulu |
             data baru masuk database setelah Anda menekan tombol konfirmasi.
         </p>
 

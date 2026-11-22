@@ -59,7 +59,7 @@
                                 @if ($supplier->pivot->pemasok_utama)
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">&#9733; Utama</span>
                                 @else
-                                    <span class="text-xs text-gray-400">—</span>
+                                    <span class="text-xs text-gray-400">|</span>
                                 @endif
                             </td>
                             <td class="py-3 px-4 text-center">
@@ -84,7 +84,7 @@
                     @empty
                         <tr>
                             <td colspan="4" class="py-8 text-center text-gray-400 text-sm">
-                                Barang ini belum punya pemasok. Tambahkan di bawah — barang tanpa pemasok tidak bisa dibeli sampai punya pemasok.
+                                Barang ini belum punya pemasok. Tambahkan di bawah | barang tanpa pemasok tidak bisa dibeli sampai punya pemasok.
                             </td>
                         </tr>
                     @endforelse
