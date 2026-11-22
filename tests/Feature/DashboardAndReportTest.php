@@ -276,6 +276,43 @@ class DashboardAndReportTest extends TestCase
     }
 
     /**
+     * Test 5b: Filter "Semua" pada laporan transaksi menampilkan total
+     * terpisah per jenis (Penjualan & Pembelian), bukan satu total gabungan
+     * yang menjumlahkan uang masuk dan uang keluar.
+     */
+    public function test_transaction_report_all_filter_shows_separate_totals(): void
+    {
+        $today = Carbon::today()->toDateString();
+
+        Transaction::create([
+            'user_id' => $this->superAdmin->id,
+            'transaction_type' => 'penjualan',
+            'date' => $today,
+            'total' => 123456,
+        ]);
+        Transaction::create([
+            'user_id' => $this->superAdmin->id,
+            'transaction_type' => 'pembelian',
+            'date' => $today,
+            'total' => 65432,
+        ]);
+
+        $response = $this->actingAs($this->superAdmin)->get(route('reports.index', [
+            'type' => 'transaksi',
+            'start_date' => Carbon::now()->subDays(30)->toDateString(),
+            'end_date' => $today,
+            'transaction_type' => 'all',
+        ]));
+
+        $response->assertStatus(200);
+        $response->assertSee('Total Penjualan:');
+        $response->assertSee('Rp 123.456');
+        $response->assertSee('Total Pembelian:');
+        $response->assertSee('Rp 65.432');
+        $response->assertDontSee('Total Keseluruhan Nilai Transaksi:');
+    }
+
+    /**
      * Test 6: Super Admin dapat mengakses laporan persediaan (dulu: laporan
      * analisis FSN & ROP). Judul dan header memakai bahasa owner; keterangan
      * metode tetap tercantum kecil di bawah kop.

@@ -203,10 +203,21 @@
                         @endforelse
                     </tbody>
                     <tfoot class="bg-gray-100 font-bold border-t-2 border-gray-400 text-gray-900">
-                        <tr>
-                            <td colspan="6" class="py-3 px-4 text-right uppercase border-r border-gray-300">Total Keseluruhan Nilai Transaksi:</td>
-                            <td class="py-3 px-3 text-right font-mono text-sm">Rp {{ number_format($totalAmount, 0, ',', '.') }}</td>
-                        </tr>
+                        @if ($transactionType === 'all')
+                            <tr>
+                                <td colspan="6" class="py-3 px-4 text-right uppercase border-r border-gray-300">Total Penjualan:</td>
+                                <td class="py-3 px-3 text-right font-mono text-sm">Rp {{ number_format($totalPenjualan, 0, ',', '.') }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" class="py-3 px-4 text-right uppercase border-r border-gray-300">Total Pembelian:</td>
+                                <td class="py-3 px-3 text-right font-mono text-sm">Rp {{ number_format($totalPembelian, 0, ',', '.') }}</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td colspan="6" class="py-3 px-4 text-right uppercase border-r border-gray-300">Total Keseluruhan Nilai Transaksi:</td>
+                                <td class="py-3 px-3 text-right font-mono text-sm">Rp {{ number_format($totalAmount, 0, ',', '.') }}</td>
+                            </tr>
+                        @endif
                     </tfoot>
                 </table>
             </div>

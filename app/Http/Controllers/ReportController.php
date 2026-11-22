@@ -30,6 +30,8 @@ class ReportController extends Controller
 
         $reportData = [];
         $totalAmount = 0;
+        $totalPenjualan = 0;
+        $totalPembelian = 0;
 
         if ($reportType === 'stok') {
             $reportData = Item::with('suppliers')->orderBy('item_name')->get();
@@ -45,6 +47,10 @@ class ReportController extends Controller
 
             $reportData = $query->get();
             $totalAmount = $reportData->sum('total');
+            // Total dipisah per jenis agar filter "Semua" tidak menjumlahkan
+            // uang masuk (penjualan) dan uang keluar (pembelian) jadi satu angka.
+            $totalPenjualan = $reportData->where('transaction_type', 'penjualan')->sum('total');
+            $totalPembelian = $reportData->where('transaction_type', 'pembelian')->sum('total');
         } elseif ($reportType === 'fsn') {
             $reportData = Item::with('suppliers')
                 ->orderByRaw("CASE WHEN fsn_category = 'F' THEN 1 WHEN fsn_category = 'S' THEN 2 WHEN fsn_category = 'N' THEN 3 ELSE 4 END")
@@ -58,7 +64,9 @@ class ReportController extends Controller
             'startDateStr',
             'endDateStr',
             'transactionType',
-            'totalAmount'
+            'totalAmount',
+            'totalPenjualan',
+            'totalPembelian'
         ));
     }
 }
