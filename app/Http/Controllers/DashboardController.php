@@ -32,7 +32,12 @@ class DashboardController extends Controller
             $range = 'weekly';
         }
 
-        $metrics = $this->fsnRopService->calculateProfit($range);
+        // Tanggal mulai grafik tren (opsional): bila diisi, grafik menampilkan
+        // 7 hari sejak tanggal itu; bila kosong/tidak valid, grafik kembali ke
+        // 7 hari terakhir. Nilai array (?chart_start[]=...) ditolak di sini
+        // supaya tidak menembus type-hint string di service.
+        $chartStart = $request->query('chart_start');
+        $metrics = $this->fsnRopService->calculateProfit($range, is_string($chartStart) ? $chartStart : null);
 
         // Ambil 5 transaksi penjualan terakhir
         $recentTransactions = Transaction::with(['user', 'details.item'])

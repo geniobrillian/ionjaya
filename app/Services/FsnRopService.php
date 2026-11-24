@@ -292,9 +292,10 @@ class FsnRopService
      * Rumus: Laba = Jumlah x (Harga Jual - Harga Beli Terakhir).
      *
      * @param string $range 'today', 'weekly', 'monthly', atau 'all'
+     * @param string|null $chartStart tanggal mulai grafik (Y-m-d) atau null
      * @return array
      */
-    public function calculateProfit(string $range = 'weekly'): array
+    public function calculateProfit(string $range = 'weekly', ?string $chartStart = null): array
     {
         $today = Carbon::today();
 
@@ -358,10 +359,32 @@ class FsnRopService
         // Hitung jumlah barang menipis saat ini
         $lowStockCount = $this->getLowStockItems()->count();
 
-        // Susun grafik tren laba 7 hari terakhir
+        // Jendela grafik tren: default 7 hari terakhir; bila pengguna memilih
+        // tanggal mulai (chart_start), grafik menampilkan 7 hari sejak tanggal
+        // itu. Tanggal tidak valid (bukan Y-m-d) atau di masa depan ditolak
+        // diam-diam dan kembali ke default, supaya grafik tidak pernah kosong
+        // karena parameter yang salah ketik.
+        $trendStart = $today->copy()->subDays(6)->startOfDay();
+        $trendCustom = false;
+        if (is_string($chartStart) && $chartStart !== '') {
+            try {
+                $parsed = Carbon::createFromFormat('Y-m-d', $chartStart)->startOfDay();
+            } catch (\Throwable) {
+                $parsed = null;
+            }
+            // Format harus persis Y-m-d (tolak '2026-02-30' yang meluber ke
+            // 2 Mar) dan tanggal mulai tidak boleh di masa depan.
+            if ($parsed !== null && $parsed->format('Y-m-d') === $chartStart && ! $parsed->isFuture()) {
+                $trendStart = $parsed;
+                $trendCustom = true;
+            }
+        }
+        $trendEnd = $trendStart->copy()->addDays(6)->endOfDay();
+
+        // Susun grafik tren laba 7 hari (terakhir, atau sejak tanggal mulai)
         $trendDates = [];
-        for ($i = 6; $i >= 0; $i--) {
-            $d = $today->copy()->subDays($i)->toDateString();
+        for ($i = 0; $i <= 6; $i++) {
+            $d = $trendStart->copy()->addDays($i)->toDateString();
             $trendDates[$d] = [
                 'date' => $d,
                 'label' => Carbon::parse($d)->translatedFormat('d M'),
@@ -379,7 +402,7 @@ class FsnRopService
         // (Versi lama memakai join + alias tx_date untuk mencocokkan hari;
         // penulisan ulang ini menghapus konstruksi itu sepenuhnya.)
         $trendDetails = TransactionDetail::with(['item', 'transaction'])
-            ->whereHas('transaction', function ($q) use ($today) {
+            ->whereHas('transaction', function ($q) use ($trendStart, $trendEnd) {
                 // Batas akhir memakai akhir hari (23:59:59), bukan tanggal saja:
                 // di SQLite, nilai date tersimpan sebagai 'Y-m-d 00:00:00' (cast
                 // date model di-bind sebagai datetime), sehingga batas 'Y-m-d'
@@ -387,7 +410,7 @@ class FsnRopService
                 // itulah yang membuat tes tren gagal pada asersi hari ini,
                 // padahal asersi kemarin lulus. Di MySQL DATE, batas ini aman.
                 $q->where('transaction_type', 'penjualan')
-                    ->whereBetween('date', [$today->copy()->subDays(6)->toDateString(), $today->copy()->endOfDay()->toDateTimeString()]);
+                    ->whereBetween('date', [$trendStart->toDateString(), $trendEnd->toDateTimeString()]);
             })
             ->get();
 
@@ -416,6 +439,9 @@ class FsnRopService
             'total_transactions' => $totalTransactions,
             'low_stock_count' => $lowStockCount,
             'daily_trend' => array_values($trendDates),
+            'chart_start' => $trendStart->toDateString(),
+            'chart_end' => $trendEnd->toDateString(),
+            'chart_custom' => $trendCustom,
         ];
     }
 }

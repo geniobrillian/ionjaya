@@ -129,8 +129,28 @@
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-gray-100 mb-6">
             <div>
-                <h3 class="text-base font-semibold text-gray-900">Penjualan 7 Hari Terakhir</h3>
-                <!-- <p class="text-xs text-gray-500">Perbandingan nilai omset penjualan (biru) dan estimasi laba kotor (hijau). Grafik ini selalu menampilkan 7 hari terakhir, terlepas dari filter periode di atas.</p> -->
+                @php
+                    $chartTitle = $metrics['chart_custom']
+                        ? 'Penjualan ' . \Carbon\Carbon::parse($metrics['chart_start'])->translatedFormat('j M Y') . ' s/d ' . \Carbon\Carbon::parse($metrics['chart_end'])->translatedFormat('j M Y')
+                        : 'Penjualan 7 Hari Terakhir';
+                @endphp
+                <h3 class="text-base font-semibold text-gray-900">{{ $chartTitle }}</h3>
+                {{-- Filter tanggal mulai grafik: kosong = 7 hari terakhir yang
+                     bergeser tiap hari; terisi = 7 hari sejak tanggal itu.
+                     Filter periode Ringkasan di atas tidak ikut berubah. --}}
+                <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap items-center gap-2 mt-2">
+                    <input type="hidden" name="range" value="{{ $range }}">
+                    <label for="chart_start" class="text-xs text-gray-500">Mulai:</label>
+                    <input type="date" id="chart_start" name="chart_start"
+                        value="{{ $metrics['chart_custom'] ? $metrics['chart_start'] : '' }}"
+                        class="text-xs border border-gray-300 rounded-md px-2 py-1 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit"
+                        class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1 rounded-md">Terapkan</button>
+                    @if ($metrics['chart_custom'])
+                        <a href="{{ route('dashboard', ['range' => $range]) }}"
+                            class="text-xs text-gray-500 hover:text-gray-900 underline">Reset</a>
+                    @endif
+                </form>
             </div>
             <div class="flex items-center space-x-4 text-xs shrink-0">
                 <span class="flex items-center"><span class="w-3 h-3 bg-blue-600 rounded-xs mr-1.5"></span> Penjualan</span>

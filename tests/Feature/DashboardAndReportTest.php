@@ -192,6 +192,60 @@ class DashboardAndReportTest extends TestCase
     }
 
     /**
+     * Grafik tren menerima tanggal mulai kustom: memilih tanggal 1
+     * menampilkan 7 hari sejak tanggal itu (1-7), bukan 7 hari terakhir.
+     * Tanggal tidak valid atau di masa depan kembali ke default.
+     */
+    public function test_dashboard_chart_accepts_custom_start_date(): void
+    {
+        $service = app(FsnRopService::class);
+        $item = Item::first();
+        $this->assertNotNull($item);
+
+        // Jendela 30 hari lalu, jauh dari data seeder yang baru.
+        $start = Carbon::today()->subDays(30);
+        $txDate = $start->copy()->addDays(2);
+
+        $before = collect($service->calculateProfit('weekly', $start->toDateString())['daily_trend'])->keyBy('date');
+
+        $tx = Transaction::create([
+            'user_id' => $this->superAdmin->id,
+            'transaction_type' => 'penjualan',
+            'date' => $txDate->toDateString(),
+            'total' => 300000,
+        ]);
+        TransactionDetail::create([
+            'transaction_id' => $tx->id,
+            'item_id' => $item->id,
+            'quantity' => 3,
+            'unit_price' => 100000,
+            'subtotal' => 300000,
+        ]);
+
+        $after = collect($service->calculateProfit('weekly', $start->toDateString())['daily_trend'])->keyBy('date');
+
+        // Jendela tepat 7 hari sejak tanggal mulai.
+        $this->assertCount(7, $after);
+        $this->assertSame($start->toDateString(), $after->keys()->first());
+        $this->assertSame($start->copy()->addDays(6)->toDateString(), $after->keys()->last());
+        // Penjualan pada hari ke-3 jendela bertambah persis 300000.
+        $this->assertEqualsWithDelta($before[$txDate->toDateString()]['sales'] + 300000, $after[$txDate->toDateString()]['sales'], 0.01);
+
+        // Tanggal di masa depan dan format salah kembali ke default.
+        $defaultDates = collect($service->calculateProfit('weekly')['daily_trend'])->pluck('date')->all();
+        $futureDates = collect($service->calculateProfit('weekly', Carbon::today()->addDay()->toDateString())['daily_trend'])->pluck('date')->all();
+        $this->assertSame($defaultDates, $futureDates);
+        $invalidDates = collect($service->calculateProfit('weekly', '2026-02-30')['daily_trend'])->pluck('date')->all();
+        $this->assertSame($defaultDates, $invalidDates);
+
+        // Halaman dashboard menampilkan judul rentang kustom saat dipakai.
+        $response = $this->actingAs($this->superAdmin)->get(route('dashboard', ['chart_start' => $start->toDateString()]));
+        $response->assertStatus(200);
+        $expectedTitle = 'Penjualan ' . $start->translatedFormat('j M Y') . ' s/d ' . $start->copy()->addDays(6)->translatedFormat('j M Y');
+        $response->assertSee($expectedTitle, false);
+    }
+
+    /**
      * Test 2: Filter rentang waktu pada dashboard.
      */
     public function test_super_admin_can_filter_dashboard_time_range(): void
