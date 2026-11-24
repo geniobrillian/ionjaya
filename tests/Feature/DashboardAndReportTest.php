@@ -336,25 +336,28 @@ class DashboardAndReportTest extends TestCase
      */
     public function test_transaction_report_all_filter_shows_separate_totals(): void
     {
-        $today = Carbon::today()->toDateString();
+        // Tanggal 120 hari lalu: di luar jangkauan TransactionSeeder (90 hari
+        // terakhir), supaya total laporan hanya berisi dua transaksi di bawah
+        // ini dan tidak tercemar data seeder.
+        $txDate = Carbon::today()->subDays(120)->toDateString();
 
         Transaction::create([
             'user_id' => $this->superAdmin->id,
             'transaction_type' => 'penjualan',
-            'date' => $today,
+            'date' => $txDate,
             'total' => 123456,
         ]);
         Transaction::create([
             'user_id' => $this->superAdmin->id,
             'transaction_type' => 'pembelian',
-            'date' => $today,
+            'date' => $txDate,
             'total' => 65432,
         ]);
 
         $response = $this->actingAs($this->superAdmin)->get(route('reports.index', [
             'type' => 'transaksi',
-            'start_date' => Carbon::now()->subDays(30)->toDateString(),
-            'end_date' => $today,
+            'start_date' => $txDate,
+            'end_date' => $txDate,
             'transaction_type' => 'all',
         ]));
 
