@@ -18,8 +18,8 @@
             <!-- Header Sidebar -->
             <div class="p-5 sm:p-6 border-b border-gray-800 shrink-0 flex items-center justify-between">
                 <a href="{{ Auth::user()->isSuperAdmin() ? route('dashboard') : route('sales.index') }}" class="block">
-                    <span class="text-lg font-bold tracking-tight text-white block">ION JAYA MOTOR</span>
-                    <span class="text-xs text-gray-400 block mt-0.5">Sistem Persediaan</span>
+                    <img src="{{ asset('images/logo-ion-jaya-motor.png') }}" alt="Logo UD Ion Jaya Motor" class="h-12 w-auto">
+                    <span class="text-xs text-gray-400 block mt-2">Sistem Persediaan</span>
                 </a>
                 <!-- Tombol Tutup di Mobile / Tablet -->
                 <button type="button" onclick="toggleSidebar()"

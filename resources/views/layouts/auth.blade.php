@@ -10,8 +10,8 @@
 <body class="bg-gray-50 text-gray-900 antialiased min-h-screen flex flex-col justify-center py-8 px-4 sm:py-12 sm:px-6 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
         <div class="text-center">
-            <h1 class="text-2xl font-bold tracking-tight text-gray-900">UD ION JAYA MOTOR</h1>
-            <p class="mt-1 text-sm text-gray-500">Sistem Persediaan Sparepart Motor (FSN & ROP)</p>
+            <img src="{{ asset('images/logo-ion-jaya-motor.png') }}" alt="Logo UD Ion Jaya Motor" class="mx-auto h-24 w-auto">
+            <p class="mt-3 text-sm text-gray-500">Sistem Persediaan Sparepart Motor (FSN & ROP)</p>
         </div>
     </div>
 
