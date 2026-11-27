@@ -16,14 +16,14 @@
         class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white h-screen flex flex-col justify-between shrink-0 select-none print:hidden transform -translate-x-full lg:translate-x-0 lg:static lg:inset-auto transition-transform duration-200 ease-in-out shadow-xl lg:shadow-none">
         <div class="flex-1 flex flex-col min-h-0">
             <!-- Header Sidebar -->
-            <div class="p-5 sm:p-6 border-b border-gray-800 shrink-0 flex items-center justify-between">
+            <div class="p-5 sm:p-6 border-b border-gray-800 shrink-0 relative text-center">
                 <a href="{{ Auth::user()->isSuperAdmin() ? route('dashboard') : route('sales.index') }}" class="block">
-                    <img src="{{ asset('images/logo-ion-jaya-motor.png') }}" alt="Logo UD Ion Jaya Motor" class="h-12 w-auto">
+                    <img src="{{ asset('images/logo-ion-jaya-motor.png') }}" alt="Logo UD Ion Jaya Motor" class="h-12 w-auto mx-auto">
                     <span class="text-xs text-gray-400 block mt-2">Sistem Persediaan</span>
                 </a>
                 <!-- Tombol Tutup di Mobile / Tablet -->
                 <button type="button" onclick="toggleSidebar()"
-                    class="lg:hidden text-gray-400 hover:text-white p-1 rounded-md border border-gray-700 hover:border-gray-500 transition-colors"
+                    class="absolute top-5 right-5 lg:hidden text-gray-400 hover:text-white p-1 rounded-md border border-gray-700 hover:border-gray-500 transition-colors"
                     title="Tutup Menu">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
