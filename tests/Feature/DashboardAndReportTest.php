@@ -339,7 +339,15 @@ class DashboardAndReportTest extends TestCase
         // Tanggal 120 hari lalu: di luar jangkauan TransactionSeeder (90 hari
         // terakhir), supaya total laporan hanya berisi dua transaksi di bawah
         // ini dan tidak tercemar data seeder.
+        // Jendela dibuat 2 hari (bukan 1 hari): Eloquent menyimpan tanggal
+        // sebagai 'Y-m-d H:i:s', dan kolom DATE di SQLite (test) tidak
+        // memangkas jam seperti MySQL — sehingga whereBetween satu hari
+        // ('2026-07-30' s/d '2026-07-30') justru mengecualikan transaksi
+        // test itu sendiri ('2026-07-30 00:00:00' > '2026-07-30'). Di
+        // aplikasi (MySQL) hal ini tidak terjadi. Jendela 2 hari tetap
+        // di luar jangkauan seeder, jadi totalnya tetap persis.
         $txDate = Carbon::today()->subDays(120)->toDateString();
+        $txEndDate = Carbon::today()->subDays(119)->toDateString();
 
         Transaction::create([
             'user_id' => $this->superAdmin->id,
@@ -357,7 +365,7 @@ class DashboardAndReportTest extends TestCase
         $response = $this->actingAs($this->superAdmin)->get(route('reports.index', [
             'type' => 'transaksi',
             'start_date' => $txDate,
-            'end_date' => $txDate,
+            'end_date' => $txEndDate,
             'transaction_type' => 'all',
         ]));
 
