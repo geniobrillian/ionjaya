@@ -21,7 +21,10 @@ class AuthAndRoleTest extends TestCase
         $response = $this->get('/login');
 
         $response->assertStatus(200);
-        $response->assertSee('UD ION JAYA MOTOR');
+        // Logo toko menggantikan judul teks "UD ION JAYA MOTOR" (commit 42a4f55):
+        // nama toko kini ada di dalam gambar logo, bukan lagi sebagai <h1>.
+        $response->assertSee('logo-ion-jaya-motor.png', false);
+        $response->assertSee('Logo UD Ion Jaya Motor', false);
         $response->assertSee('Sistem Persediaan Sparepart Motor');
     }
 
