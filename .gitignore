@@ -30,3 +30,4 @@ Thumbs.db
 /terraform/terraform.tfvars
 /terraform/*.plan
 # .terraform.lock.hcl SENGAJA tidak di-ignore: mengunci versi provider (disarankan Terraform)
+/terraform/tfplan
