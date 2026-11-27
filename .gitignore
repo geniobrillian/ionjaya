@@ -23,3 +23,10 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /.agents
+# Terraform (deploy Azure) — state & secret lokal jangan ikut commit
+/terraform/.terraform
+/terraform/terraform.tfstate
+/terraform/terraform.tfstate.backup
+/terraform/terraform.tfvars
+/terraform/*.plan
+# .terraform.lock.hcl SENGAJA tidak di-ignore: mengunci versi provider (disarankan Terraform)

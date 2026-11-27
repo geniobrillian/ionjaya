@@ -1,0 +1,51 @@
+# Deploy Ion Jaya Motor ke Azure App Service (B1)
+#
+# Jalan saat: push ke branch main, atau manual (Run workflow).
+# Prasyarat (sekali saja): simpan 2 secret di repo GitHub —
+#   AZURE_WEBAPP_NAME            = nama Web App dari output Terraform (mis. ionjaya-a1b2)
+#   AZURE_WEBAPP_PUBLISH_PROFILE = isi XML publish profile
+#     (az webapp deployment list-publishing-profiles --name <app> --resource-group ionjaya-production-rg --xml)
+#
+# Alur: build aset frontend di Actions -> zip (tanpa vendor) -> deploy.
+# `composer install` dijalankan Oryx di server (SCM_DO_BUILD_DURING_DEPLOYMENT=true).
+# Migrasi + storage:link + impor data v5 dilakukan manual sekali saja
+# (lihat terraform/README.md langkah 5) — TIDAK otomatis di workflow ini.
+
+name: Deploy ke Azure App Service
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout kode
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Build aset frontend (Vite + Tailwind)
+        run: |
+          npm ci
+          npm run build
+
+      - name: Siapkan paket deploy
+        run: |
+          zip -r release.zip . \
+            -x ".git/*" ".github/*" "node_modules/*" "vendor/*" \
+               "storage/logs/*" "tests/*" ".env" "terraform/*"
+
+      - name: Deploy ke Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: release.zip

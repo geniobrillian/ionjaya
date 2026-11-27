@@ -1,0 +1,11 @@
+# Salin file ini menjadi `terraform.tfvars`, lalu isi nilainya.
+#   cp terraform.tfvars.example terraform.tfvars
+# JANGAN commit terraform.tfvars (sudah ada di .gitignore).
+
+# APP_KEY Laravel — ambil dari .env di laptop:
+#   php artisan key:generate --show
+app_key = "base64:ISI_DENGAN_APP_KEY_DARI_LAPTOP"
+
+# IP publik laptop (opsional). Kosongkan ("") bila tidak perlu konek
+# langsung ke MySQL dari laptop. Cek IP di https://ifconfig.me
+admin_client_ip = ""
