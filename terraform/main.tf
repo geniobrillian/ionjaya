@@ -37,7 +37,10 @@ locals {
     Environment = var.environment
     ManagedBy   = "terraform"
   }
-  webapp_name = "${var.project}-${random_string.suffix.result}"
+  # Nama Web App TETAP (tanpa suffix acak) — "ionjayamotor".
+  # MySQL di bawah TETAP pakai suffix supaya server database tidak
+  # diganti: data (tabel + akun) aman saat rename Web App.
+  webapp_name = "ionjayamotor"
   mysql_name  = "${var.project}-mysql-${random_string.suffix.result}"
 }
 
@@ -66,6 +69,12 @@ resource "azurerm_linux_web_app" "main" {
   service_plan_id     = azurerm_service_plan.main.id
   https_only          = true
   tags                = local.common_tags
+
+  # Buat app baru dulu sebelum hapus app lama: kalau nama baru ternyata
+  # sudah dipakai orang, apply gagal aman tanpa menyentuh app lama.
+  lifecycle {
+    create_before_destroy = true
+  }
 
   site_config {
     always_on           = true # B1 mendukung Always On: aplikasi tidak "tidur"
