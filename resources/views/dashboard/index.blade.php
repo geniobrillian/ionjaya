@@ -330,7 +330,11 @@
                                 <td class="py-2.5 px-3 text-center font-bold text-red-600">{{ $item->stock }}</td>
                                 <td class="py-2.5 px-3 text-center font-mono text-gray-600">{{ $item->order_threshold }}</td>
                                 <td class="py-2.5 px-3 text-center">
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600 text-white">MENIPIS</span>
+                                    @if ($item->stock_status === 'habis')
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600 text-white">HABIS</span>
+                                    @else
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-600 text-white">MENIPIS</span>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
