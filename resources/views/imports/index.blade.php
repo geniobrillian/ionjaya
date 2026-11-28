@@ -8,10 +8,7 @@
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-6">
         <h2 class="text-base font-semibold text-gray-900 mb-2">Impor Data dari Excel (.xlsx)</h2>
         <p class="text-xs text-gray-600 leading-relaxed mb-4">
-            Impor data luar ke dalam sistem memakai file Excel dengan 4 sheet:
-            <strong>Data Barang</strong>, <strong>Stok Opname</strong>, <strong>Pembelian</strong>, dan <strong>Penjualan</strong>
-            (format sama dengan file simulasi). File diunggah, divalidasi, dan ditampilkan pratinjaunya dulu |
-            data baru masuk database setelah Anda menekan tombol konfirmasi.
+            Impor data luar ke dalam sistem memakai file Excel dengan template 4 sheet: Data Barang, Stok Opname, Pembelian, dan Penjualan. File diunggah, divalidasi, dan ditampilkan pratinjaunya dulu
         </p>
 
         <a href="{{ route('imports.template') }}"
